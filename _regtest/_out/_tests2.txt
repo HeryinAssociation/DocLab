@@ -1,0 +1,55 @@
+=== test_key: rc=0
+      == 真实数据不被改动 ==
+        manual_edits.json: 26 处定级 · 36 条删除 · sha256=b6b47f8b6c57…
+        PASS  本测试没有写过 manual_edits.json（只读）
+      全通过：一条标题一把钥匙，改谁就只动谁
+=== test_manual: rc=0
+        PASS  对已删条目再定级后重删，定级仍被清掉
+        PASS  恢复后从删除表移除
+        PASS  撤销后回到空
+      全通过
+=== test_add: rc=0
+        PASS  目录列表里出现待重算的新增行
+        PASS  新增行有特殊底色  class="trow lv2 pending
+        PASS  新增行的 × 是撤销（不是删除）
+      全通过：漏掉的标题能在正文里定位、立断点，正文一字不动
+=== test_chars: rc=0
+        PASS  整体降一级  → ['1', '6']
+        PASS  整体提一级 的级数  → {'2': 1, '3': 2, '4': 2}
+        PASS  整体降一级 的级数  → {'1': 2, '6': 2}
+      全通过：界面上看到的字数，就是点「应用并重算」之后落盘的字数；批量定级只动你勾的那些
+=== test_pagemap: rc=0
+        PASS  单锚点 P1:15→3（落在正文段起点）
+        PASS  多锚点 P2 分段
+        PASS  三片各有锚点
+      全通过：界面上看到的页码，就是会写进 md 的页码
+=== test_multisel: rc=1
+          at Function._load (node:internal/modules/cjs/loader:1263:12)
+          at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+          at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+      Node.js v22.22.2
+=== test_audit: rc=0
+        ✅ severity 计数与 findings 一致
+      ============================================================
+      通过 45／失败 0
+      夹具目录：C:\Users\ZHAOSH~1\AppData\Local\Temp\doclab-audit-u9erg67z
+=== test_fixplan: rc=0
+      [幂等]
+        ✅ 同一单连跑两次结果一致
+      ============================================================
+      通过 25／失败 0
+=== test_shards: rc=0
+          P2：MineruError: 未找到 MinerU token。请设置环境变量 MI
+        ✓ 只有 P2 被标为未就绪（P1/P3 未被牵连）
+        ✓ 每片跑完即落盘 ingest_state.json
+      ✓ 分片计划与断点逻辑全部通过
+=== test_download: rc=0
+              [下载] 中断（提前结束（3670016/6291994 字节）），已收 3.5 MB，断点续传 …
+              [下载] 中断（提前结束（5767168/6291994 字节）），已收 5.5 MB，断点续传 …
+              [下载] 第 5 轮补齐完成（6.0 MB）
+      全部 4 项通过
+=== test_epub: rc=0
+      == 归位：把本次合成源移出工作台 ==
+        PASS  合成源已移出工作台（_work 与 out 都不再有它）
+        PASS  既有源一个没动
+      全通过：EPUB 走的是本机解析，层级来自标签，页码一律不伪造

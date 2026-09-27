@@ -1,0 +1,3 @@
+node: ok
+agent-browser: NOT FOUND
+npm prefix: C:\Users\Zhaoshuochen\.workbuddy\binaries\node\versions\22.22.2-3

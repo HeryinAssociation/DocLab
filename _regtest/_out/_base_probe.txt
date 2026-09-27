@@ -1,0 +1,67 @@
+=== 含「中国艺术学科」/「数字艺术史」的节点 ===
+d2 nid=5.5 L2 key=toc:P2:2294:中国艺术学科数字人文发展报告 gid=None page=99 loc=None flags=['from_toc', 'needs_review'] title='中国艺术学科数字人文发展报告'
+d3 nid=5.5.2 L3 key=2309 gid=None page=101 loc=None flags=[] title='一、有待承认：艺术学学科内的数字艺术史'
+d3 nid=5.5.3 L3 key=2347 gid=None page=106 loc=None flags=[] title='二、局部引爆：基于主题的数字艺术史研究'
+d3 nid=5.5.4 L3 key=2426 gid=None page=114 loc=None flags=[] title='三、有待深入：基于方法的数字艺术史研究的反思'
+
+=== 顶层 L1/L2 ===
+L1 nid=1 key=0 gid=None shard=P1 page=0 page_end=None title='前置（封面·书名页·版权页）' flags=[]
+L1 nid=2 key=38 gid=None shard=P1 page=5 page_end=None title='见证、相遇与发现' flags=[]
+L1 nid=3 key=61 gid=None shard=P1 page=9 page_end=None title='骐骥驰骋，悟道先行' flags=[]
+L1 nid=4 key=80 gid=None shard=P1 page=13 page_end=None title='第一部分 中国数字人文发展鸟瞰' flags=[]
+L2 nid=4.1 key=82 gid=None shard=P1 page=15 page_end=None title='技术与政策：中国数字人文发展的外部条件环视' flags=[]
+L2 nid=4.2 key=457 gid=None shard=P1 page=69 page_end=None title='多方交融：中国数字人文的理论脉络与方法体系' flags=[]
+L2 nid=4.3 key=708 gid=None shard=P1 page=97 page_end=None title='异彩纷呈：中国数字人文的多样化实践探索' flags=[]
+L2 nid=4.4 key=934 gid=None shard=P1 page=128 page_end=None title='星斗满天：中国数字人文研究机构发展状况' flags=[]
+L2 nid=4.5 key=1178 gid=None shard=P1 page=160 page_end=None title='走向学科化建制：中国数字人文教育发展状况' flags=[]
+L2 nid=4.6 key=1350 gid=None shard=P1 page=185 page_end=None title='联结与分享：中国数字人文学术成果与学术交流' flags=[]
+L1 nid=5 key=1503 gid=None shard=P2 page=9 page_end=None title='第二部分相关学科与业界内数字人文发展分梳' flags=[]
+L2 nid=5.1 key=1505 gid=None shard=P2 page=11 page_end=None title='中国语言文字学数字人文发展报告' flags=[]
+L2 nid=5.2 key=1769 gid=None shard=P2 page=31 page_end=None title='中国文学数字人文发展报告' flags=[]
+L2 nid=5.3 key=1972 gid=None shard=P2 page=56 page_end=None title='中国史学（含思想史）数字人文发展报告' flags=[]
+L2 nid=5.4 key=2128 gid=None shard=P2 page=78 page_end=None title='中国历史地理学数字人文发展报告' flags=[]
+L2 nid=5.5 key=toc:P2:2294:中国艺术学科数字人文发展报告 gid=None shard=P2 page=99 page_end=None title='中国艺术学科数字人文发展报告' flags=['from_toc', 'needs_review']
+L2 nid=5.6 key=2462 gid=None shard=P2 page=119 page_end=None title='中国图书馆与图书馆学科数字人文发展报告' flags=[]
+L2 nid=5.7 key=2703 gid=None shard=P2 page=140 page_end=None title='中国档案馆与档案学科数字人文发展报告' flags=[]
+L2 nid=5.8 key=2848 gid=None shard=P2 page=158 page_end=None title='中国博物馆及其相关学科数字人文发展报告' flags=[]
+L2 nid=5.9 key=3187 gid=None shard=P2 page=194 page_end=None title='中国数字记忆与数字重建发展报告' flags=[]
+L2 nid=5.10 key=3384 gid=None shard=P3 page=20 page_end=None title='中国信息技术及其产业界数字人文发展报告' flags=[]
+L1 nid=6 key=3638 gid=None shard=P3 page=53 page_end=None title='第三部分 比较研究视野下的 国外数字人文发展前沿' flags=[]
+L2 nid=6.1 key=3639 gid=None shard=P3 page=55 page_end=None title='国外数字人文发展：五个维度的分析与比较' flags=[]
+L1 nid=7 key=3852 gid=None shard=P3 page=89 page_end=None title='第四部分 中国数字人文年度专题 聚焦' flags=[]
+L2 nid=7.1 key=3854 gid=None shard=P3 page=91 page_end=None title='AI技术在数字人文领域中的应用' flags=[]
+
+=== printed_toc entries ===
+{"title": "见证、相遇与发现", "printed": 1, "kind": "chapter", "page_idx": null}
+{"title": "骐骥驰骋，悟道先行", "printed": 5, "kind": "chapter", "page_idx": null}
+{"title": "第一部分 中国数字人文发展鸟瞰", "printed": null, "kind": "part", "page_idx": 3}
+{"title": "技术与政策：中国数字人文发展的外部条件环视", "printed": 3, "kind": "chapter", "page_idx": null}
+{"title": "多方交融：中国数字人文的理论脉络与方法体系", "printed": 57, "kind": "chapter", "page_idx": null}
+{"title": "异彩纷呈：中国数字人文的多样化实践探索", "printed": 85, "kind": "chapter", "page_idx": null}
+{"title": "星斗满天：中国数字人文研究机构发展状况", "printed": 116, "kind": "chapter", "page_idx": null}
+{"title": "走向学科化建制：中国数字人文教育发展状况", "printed": 148, "kind": "chapter", "page_idx": null}
+{"title": "联结与分享：中国数字人文学术成果与学术交流", "printed": 173, "kind": "chapter", "page_idx": null}
+{"title": "第二部分 相关学科与业界内数字人文发展分梳", "printed": null, "kind": "part", "page_idx": 3}
+{"title": "中国语言文字学数字人文发展报告", "printed": 199, "kind": "chapter", "page_idx": null}
+{"title": "中国文学数字人文发展报告", "printed": 219, "kind": "chapter", "page_idx": null}
+{"title": "中国史学（含思想史）数字人文发展报告", "printed": 244, "kind": "chapter", "page_idx": null}
+{"title": "中国历史地理学数字人文发展报告", "printed": 266, "kind": "chapter", "page_idx": null}
+{"title": "中国艺术学科数字人文发展报告", "printed": 287, "kind": "chapter", "page_idx": null}
+{"title": "中国图书馆与图书馆学科数字人文发展报告", "printed": 307, "kind": "chapter", "page_idx": null}
+{"title": "中国档案馆与档案学科数字人文发展报告", "printed": 328, "kind": "chapter", "page_idx": null}
+{"title": "中国博物馆及其相关学科数字人文发展报告", "printed": 346, "kind": "chapter", "page_idx": null}
+{"title": "中国数字记忆与数字重建发展报告", "printed": 382, "kind": "chapter", "page_idx": null}
+{"title": "中国信息技术及其产业界数字人文发展报告", "printed": 408, "kind": "chapter", "page_idx": null}
+{"title": "第三部分 比较研究视野下的国外数字人文发展前沿", "printed": null, "kind": "part", "page_idx": 3}
+{"title": "国外数字人文发展：五个维度的分析与比较", "printed": 443, "kind": "chapter", "page_idx": null}
+{"title": "第四部分 中国数字人文年度专题聚焦", "printed": null, "kind": "part", "page_idx": 3}
+{"title": "AI 技术在数字人文领域中的应用", "printed": 479, "kind": "chapter", "page_idx": null}
+
+=== audit delta histogram ===
+{"entries": 24, "matched": 24, "undetected": 0, "noisy": 0, "audit_coverage": 1.0, "outline_reported_coverage": 1.0, "delta_histogram": {"0": 12, "2": 5}}
+toc_page_offset_shift high | 同一区间内多条同时偏同一个值 —— 是**校准 offset 偏了**，不是这些标题各自定位错了。优先查人工锚点与前置/正文分界。 | {"delta": 2, "count": 5, "nids": ["4.2", "4.3", "4.4", "4.5", "4.6"]}
+toc_page_mismatch info | 4.2 多方交融：中国数字人文的理论脉络与方法体系；小差值，多半是标题页与该章正文起始页的排版差 | {"toc_title": "多方交融：中国数字人文的理论脉络与方法体系", "toc_printed": 57, "printed": 59, "loc": "59", "ocr_suspect": false}
+toc_page_mismatch info | 4.3 异彩纷呈：中国数字人文的多样化实践探索；小差值，多半是标题页与该章正文起始页的排版差 | {"toc_title": "异彩纷呈：中国数字人文的多样化实践探索", "toc_printed": 85, "printed": 87, "loc": "87", "ocr_suspect": false}
+toc_page_mismatch info | 4.4 星斗满天：中国数字人文研究机构发展状况；小差值，多半是标题页与该章正文起始页的排版差 | {"toc_title": "星斗满天：中国数字人文研究机构发展状况", "toc_printed": 116, "printed": 118, "loc": "118", "ocr_suspect": false}
+toc_page_mismatch info | 4.5 走向学科化建制：中国数字人文教育发展状况；小差值，多半是标题页与该章正文起始页的排版差 | {"toc_title": "走向学科化建制：中国数字人文教育发展状况", "toc_printed": 148, "printed": 150, "loc": "150", "ocr_suspect": false}
+toc_page_mismatch info | 4.6 联结与分享：中国数字人文学术成果与学术交流；小差值，多半是标题页与该章正文起始页的排版差 | {"toc_title": "联结与分享：中国数字人文学术成果与学术交流", "toc_printed": 173, "printed": 175, "loc": "175", "ocr_suspect": false}

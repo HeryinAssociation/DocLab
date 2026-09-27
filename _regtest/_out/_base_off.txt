@@ -1,0 +1,57 @@
+blocks: 4009 shards: ['?', '?', '?']
+
+===== A 自动（无锚点） =====
+locator_type: paginated | reason: 正文区 3 个区间、共 480 页观测、覆盖 0.964，分片接续通过
+  P1 front idx 5-11 → printed 1-7 offset -4 obs=6 cov=0.857
+  P1 body  idx 15-199 → printed 3-187 offset -12 obs=181 cov=0.978
+  P2 body  idx 0-199 → printed 188-387 offset +188 obs=196 cov=0.98
+  P3 body  idx 0-112 → printed 388-500 offset +388 obs=103 cov=0.912
+    P1 idx 20 → 8
+    P1 idx 69 → 57
+    P1 idx 97 → 85
+    P1 idx 128 → 116
+    P1 idx 160 → 148
+    P1 idx 185 → 173
+    P1 idx 199 → 187
+
+===== B 现锚点 5↔1, 20↔10 =====
+locator_type: paginated | reason: 含 2 处人工锚点，按人给定的对应关系逐页递加；锚点之间 offset 变化处自然断开，不插值。原自动判定：正文区 3 个区间、共 480 页观测、覆盖 0.964，分片接续通过
+  P1 front idx 5-19 → printed 1-15 offset -4 obs=0 cov=0.0
+  P1 body  idx 20-199 → printed 10-189 offset -10 obs=0 cov=0.0
+  P2 body  idx 0-199 → printed 188-387 offset +188 obs=196 cov=0.98
+  P3 body  idx 0-112 → printed 388-500 offset +388 obs=103 cov=0.912
+    P1 idx 20 → 10
+    P1 idx 69 → 59
+    P1 idx 97 → 87
+    P1 idx 128 → 118
+    P1 idx 160 → 150
+    P1 idx 185 → 175
+    P1 idx 199 → 189
+
+===== C 候选锚点 5↔1, 20↔8 =====
+locator_type: paginated | reason: 含 2 处人工锚点，按人给定的对应关系逐页递加；锚点之间 offset 变化处自然断开，不插值。原自动判定：正文区 3 个区间、共 480 页观测、覆盖 0.964，分片接续通过
+  P1 front idx 5-19 → printed 1-15 offset -4 obs=0 cov=0.0
+  P1 body  idx 20-199 → printed 8-187 offset -12 obs=0 cov=0.0
+  P2 body  idx 0-199 → printed 188-387 offset +188 obs=196 cov=0.98
+  P3 body  idx 0-112 → printed 388-500 offset +388 obs=103 cov=0.912
+    P1 idx 20 → 8
+    P1 idx 69 → 57
+    P1 idx 97 → 85
+    P1 idx 128 → 116
+    P1 idx 160 → 148
+    P1 idx 185 → 173
+    P1 idx 199 → 187
+
+===== D 候选锚点 5↔1, 15↔3 =====
+locator_type: paginated | reason: 含 2 处人工锚点，按人给定的对应关系逐页递加；锚点之间 offset 变化处自然断开，不插值。原自动判定：正文区 3 个区间、共 480 页观测、覆盖 0.964，分片接续通过
+  P1 front idx 5-14 → printed 1-10 offset -4 obs=0 cov=0.0
+  P1 body  idx 15-199 → printed 3-187 offset -12 obs=0 cov=0.0
+  P2 body  idx 0-199 → printed 188-387 offset +188 obs=196 cov=0.98
+  P3 body  idx 0-112 → printed 388-500 offset +388 obs=103 cov=0.912
+    P1 idx 20 → 8
+    P1 idx 69 → 57
+    P1 idx 97 → 85
+    P1 idx 128 → 116
+    P1 idx 160 → 148
+    P1 idx 185 → 173
+    P1 idx 199 → 187

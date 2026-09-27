@@ -1,0 +1,21 @@
+{
+  "source_id": "现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4",
+  "q": "信息是否重要",
+  "gid_range": [
+    null,
+    null
+  ],
+  "total": 1,
+  "rows": [
+    {
+      "gid": 1547,
+      "shard": "P2",
+      "page_idx": 49,
+      "printed": "front-238",
+      "type": "text",
+      "is_heading": true,
+      "text": "（7）信息是否重要？",
+      "full_len": 10
+    }
+  ]
+}

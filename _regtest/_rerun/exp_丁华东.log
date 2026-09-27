@@ -1,0 +1,23 @@
+### export rc=0
+[export] 档案与社会记忆研究_丁华东.b8a64398d9 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\out\档案与社会记忆研究_丁华东.b8a64398d9\L2（深度 L2）
+[export] 62 个文件 / 373,262 字 / 5 张图
+[export] ⚠️ 4 处页锚无法映射到纸书页码，已标 p=pdf-N unmapped
+
+### verify rc=0
+[verify] 档案与社会记忆研究_丁华东.b8a64398d9 ← C:\Users\Zhaoshuochen\Desktop\书籍\doclab\out\档案与社会记忆研究_丁华东.b8a64398d9\L2
+[verify] 总判定：pass
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+# 校验报告：档案与社会记忆研究_丁华东.b8a64398d9
+
+- 生成：2026-09-22T12:04:00+08:00
+- 总判定：**✅ pass**
+
+| 闸门 | 名称 | 结果 | 说明 |
+| --- | --- | --- | --- |
+| G1 | 页锚覆盖率 | ✅ pass | 页锚覆盖良好 |
+| G2 | 内容无损 | ✅ pass | 全部源块可在导出文件中逐字回查 |
+| G3 | 页码一致性 | ✅ pass | 区间步长一致、跨片接续通过 |
+| G4 | 入库硬条件（§2.3） | ✅ pass | 62/62 个文件含页锚 |
+

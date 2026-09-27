@@ -1,0 +1,40 @@
+=== levels 明细 ===
+  68 -> L3
+  70 -> L3
+  77 -> L3
+  82 -> L3
+  123 -> L3
+  125 -> L3
+  131 -> L3
+  139 -> L3
+  161 -> L3
+  202 -> L3
+  219 -> L3
+  220 -> L3
+  233 -> L3
+  251 -> L3
+  279 -> L3
+  292 -> L3
+
+=== added 明细 ===
+  3425: {"title": "8.非洲成员国档案和文件管理系统和服务的需要研究", "level": 3, "offset": 0, "at": "2026-09-22T12:00:23+08:00"}
+  3442: {"title": "3.阿克拉（加纳）、达喀尔（塞内加尔）地区档案工作者培训中心专题讲座和奖学金条例", "level": 3, "offset": 0, "at": "2026-09-22T12:00:23+08:00"}
+  3569: {"title": "3.进一步发展档案工作的措施（特别是在专业训练和高级培训方面）", "level": 3, "offset": 0, "at": "2026-09-22T12:00:23+08:00"}
+
+=== gid=42 前言块 ===
+  type: text  level_hint: None  text: '前 言'
+  page_idx: 8  shard: P1
+
+=== collect_headings 里 gid=42 ===
+  命中: [{"cls": "plain", "gid": 42}]
+  dropped 里: 无
+
+=== gid<64 的标题候选（collect_headings 全量） ===
+  gid=0 p0 cls=plain '现代档案与文件管理必读 国际档案理事會工作組 彼得·瓦尔纳 主编'
+  gid=2 p1 cls=chapter '现代档案与文件管理必读'
+  gid=9 p2 cls=chapter '(京)新登字044号'
+  gid=18 p3 cls=chapter '序'
+  gid=19 p3 cls=plain '冯子直'
+  gid=30 p5 cls=plain '译 序'
+  gid=42 p8 cls=plain '前 言'
+  gid=59 p10 cls=toc '目 录'

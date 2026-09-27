@@ -1,0 +1,2 @@
+verdict: warn
+按严重度: {'warn': 33, 'info': 10}

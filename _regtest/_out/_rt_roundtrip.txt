@@ -1,0 +1,35 @@
+sid = 档案与社会记忆研究_丁华东.b8a64398d9
+已备份 manual_edits → _backup_dh_manual_edits.json
+[1] toc-export rc=0
+   [toc-export] 档案与社会记忆研究_丁华东.b8a64398d9：导出 210 条（核对深度 ≤L3，全书 337 条）→ C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\目录树.json
+    导出 210 条 / 全书 337；首条={'seq': 1, 'key': '0', 'nid': '1', 'level': 1, 'title': '前置（封面·书名页·版权页）', 'gid': 0, 'page': '', 'shard': 'P1', 'page_idx': 0, 'marker': 'front', 'offset': 0, 'blocks': 26, 'chars': 1819, 'own_chars': 1819, 'flags': []}
+[2] 无改动导入 rc=0 → ✅ 无改动
+[4] 演练 rc=0
+    [toc-import] 演练：3 条将被应用（加 --apply 才落盘）
+            删　key=134　「1.记忆与社会记忆」
+            级　key=34　「(一)档案学研究的实用取向」　L2→L3
+            增　gid=134　「1.记忆与社会记忆（核）」　L2
+[5] --apply rc=0
+    [toc-import] 应用 3 条
+    [toc-import] 重算目录树
+    [outline] 档案与社会记忆研究_丁华东.b8a64398d9：3 片 / 3984 块（含目录补章）
+    [outline] 叠加人工定级 1 处
+    [outline] 剔除人工删除 9 条
+    [outline] 并入人工新增标题 9 条
+    [outline] 节点 337 个 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\outline.json
+    [outline] 目录补章：补入 1 个漏标章（另有 0 个跳过）
+    doclab v0.1.0｜砚 · 文献处理工作台
+    层级统计（档案与社会记忆研究_丁华东.b8a64398d9）　层级来源：中文编号推断
+      层级    节点数         切到本层=文件数        总字数       平均    空节点
+      L1     17               17    380,066   22,356      0
+      L2     59               59    365,300    6,191      0
+      L3    134              134    332,818    2,483      0
+      L4    127              127    103,991      818      0
+    印刷目录交叉校验：目录 41 条，树里找到 40 条（目录覆盖率 98%）
+      本级标题 77 个，其中 40 个有目录背书（52%；目录通常只列到章，此数偏低属正常）
+    完整目录树见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\目录索引.md
+    选好深度后：python doclab.py export 档案与社会记忆研究_丁华东.b8a64398d9 --depth N
+    重算后 node_total=337
+    删生效=True　改级生效=True　新增生效=True
+[6] 恢复备份并重算：node_total=337（应与改前一致）
+RESULT PASS

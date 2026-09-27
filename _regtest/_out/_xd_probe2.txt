@@ -1,0 +1,26 @@
+=== 节点字段名 ===
+['children', 'flags', 'gid_end', 'gid_start', 'key', 'level', 'marker', 'n_blocks', 'n_chars', 'nid', 'offset', 'page_idx', 'parent', 'rank', 'shard', 'title']
+{"nid": "1", "level": 1, "title": "前置（封面·书名页·版权页）", "marker": "front", "rank": 5, "parent": "", "key": "0", "gid_start": 0, "gid_end": 41, "offset": 0, "shard": "P1", "page_idx": 0, "n_blocks": 34, "n_chars": 2818, "flags": []}
+
+=== 第九编 11 号节点整棵（L1=11）===
+- L1 nid=11 key=add:2361 gid=None start=2361 flags=['manual'] nch=27181 own=None gc=4 '第九编 展览、教育服务和公共关系'
+  - L2 nid=11.1 key=2363 gid=None start=2363 flags=[] nch=7447 own=None gc=1 '档案馆与学校教育—可能性、问题及局限'
+    - L3 nid=11.1.1 key=2365 gid=None start=2365 flags=[] nch=7411 own=None gc=1 '提要'
+      - L4 nid=11.1.1.1 key=2368 gid=None start=2368 flags=[] nch=7146 own=None gc=1 '各国的发端'
+  - L2 nid=11.2 key=2421 gid=None start=2421 flags=[] nch=5324 own=None gc=1 '利用档案进行教学'
+    - L3 nid=11.2.1 key=2448 gid=None start=2448 flags=[] nch=1388 own=None gc=1 '附件1 教育用查找工具举例（节录）'
+      - L4 nid=11.2.1.1 key=2449 gid=None start=2449 flags=[] nch=1371 own=None gc=0 '某州档案馆的教育服务'
+  - L2 nid=11.3 key=2477 gid=None start=2477 flags=[] nch=4460 own=None gc=1 '档案与公共关系'
+    - L3 nid=11.3.1 key=2508 gid=None start=2508 flags=['empty'] nch=0 own=None gc=0 '档案与文化'
+  - L2 nid=11.4 key=add:2508 gid=None start=2508 flags=['manual'] nch=9934 own=None gc=1 '档案与文化'
+    - L4 nid=11.4.1 key=2513 gid=None start=2513 flags=[] nch=9732 own=None gc=1 '档案的性质'
+      - L5 nid=11.4.1.1 key=2526 gid=None start=2526 flags=[] nch=7890 own=None gc=1 '档案文件的传统利用方式'
+
+=== 原 2508 节点（非 add:）在哪 ===
+  d3 L3 nid=11.3.1 key=2508 gid=None start=2508 flags=['empty'] n_chars=0 nch_children=0 title='档案与文化'
+
+=== manual_edits 里 2508 / 2361 / 42 相关 ===
+  [deleted] 2361 = {"at": "2026-09-22T18:20:55+08:00", "title": "第九编 展览、教育服务", "level": 1, "marker": "part", "shard": "P2", "page_idx": 186, "chars": 27181, "own_chars": 16, "blocks": 156, "gid": 2361}
+  [added] 42 = {"title": "前 言", "level": 1, "offset": 0, "at": "2026-09-22T18:20:55+08:00"}
+  [added] 2361 = {"title": "第九编 展览、教育服务和公共关系", "level": 1, "offset": 0, "at": "2026-09-22T18:20:55+08:00"}
+  [added] 2508 = {"title": "档案与文化", "level": 2, "offset": 0, "at": "2026-09-22T18:20:55+08:00"}

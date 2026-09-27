@@ -1,0 +1,52 @@
+sid=diag.02728d6c2e
+--- 块序列 ---
+  gid=  0 unit=0 type=text           lvl=None trusted=False | 'doclab EPUB 自测样书'
+  gid=  1 unit=0 type=text           lvl=None trusted=False | '合成样本，仅供回归'
+  gid=  2 unit=1 type=text           lvl=1 trusted=True | '目录'
+  gid=  3 unit=1 type=list           lvl=None trusted=False | '第一章数字人文的兴起'
+  gid=  4 unit=1 type=list           lvl=None trusted=False | '第二章记忆的空间转向'
+  gid=  5 unit=1 type=list           lvl=None trusted=False | '第三章数字记忆的空间生成'
+  gid=  6 unit=2 type=text           lvl=1 trusted=True | '第一章数字人文的兴起'
+  gid=  7 unit=2 type=text           lvl=None trusted=False | '数字人文并不是一个全新的领域，它的前身可以追溯到人文计算。'
+  gid=  8 unit=2 type=text           lvl=2 trusted=True | '第一节概念溯源'
+  gid=  9 unit=2 type=text           lvl=None trusted=False | '人文计算一词最早出现在二十世纪中叶。'
+  gid= 10 unit=2 type=text           lvl=None trusted=False | '`F7`'
+  gid= 11 unit=2 type=page_footnote  lvl=None trusted=False | '① 参见王军：《从人文计算到可视化》，《数字人文》2020年第1期。'
+  gid= 12 unit=2 type=text           lvl=None trusted=False | '这一段的结尾被切在下一个文档里，句子没有写完，的下半句应当与上一段合并成完整的一句。'
+  gid= 13 unit=3 type=text           lvl=None trusted=False | '顺带一提，这一段是为了测跨文档归并。'
+  gid= 14 unit=4 type=text           lvl=1 trusted=True | '第二章记忆的空间转向'
+  gid= 15 unit=4 type=text           lvl=None trusted=False | '空间不是容器，而是社会关系的产物。'
+  gid= 16 unit=4 type=text           lvl=2 trusted=True | '第一节列斐伏尔'
+  gid= 17 unit=4 type=text           lvl=None trusted=False | '> （社会）空间是（社会）产物。'
+  gid= 18 unit=4 type=table          lvl=None trusted=False | '年份 | 事件'
+  gid= 19 unit=4 type=table          lvl=None trusted=False | '---|---'
+  gid= 20 unit=4 type=table          lvl=None trusted=False | '1974 | 空间的生产出版'
+  gid= 21 unit=5 type=text           lvl=1 trusted=True | '第三章数字记忆的空间生成'
+  gid= 22 unit=5 type=text           lvl=2 trusted=True | '第一节三重空间'
+  gid= 23 unit=5 type=text           lvl=3 trusted=True | '一、空间实践'
+  gid= 24 unit=5 type=text           lvl=None trusted=False | '空间实践对应感知的空间。'
+  gid= 25 unit=5 type=image          lvl=None trusted=False | 'images/378ec20f_fig2.png'
+  gid= 26 unit=5 type=text           lvl=3 trusted=True | '二、空间表征'
+  gid= 27 unit=5 type=text           lvl=None trusted=False | '空间表征对应构想的空间。'
+  gid= 28 unit=6 type=text           lvl=1 trusted=True | '附录一术语对照'
+  gid= 29 unit=6 type=text           lvl=None trusted=False | '数字人文digital humanities'
+
+--- 树 ---
+  nid=1      L1 marker=front    rank=5   key=0          '前置（封面·书名页·版权页）' [59字/6块]
+  nid=2      L1 marker=chapter  rank=20  key=6          '第一章数字人文的兴起' [128字/7块]
+      nid=2.1    L2 marker=plain    rank=30  key=8          '第一节概念溯源' [89字/5块]
+  nid=3      L1 marker=chapter  rank=20  key=14         '第二章记忆的空间转向' [78字/7块]
+      nid=3.1    L2 marker=plain    rank=30  key=16         '第一节列斐伏尔' [51字/5块]
+  nid=4      L1 marker=chapter  rank=20  key=21         '第三章数字记忆的空间生成' [55字/6块]
+      nid=4.1    L2 marker=plain    rank=30  key=22         '第一节三重空间' [43字/5块]
+          nid=4.1.1  L3 marker=plain    rank=40  key=23         '一、空间实践' [18字/2块]
+          nid=4.1.2  L3 marker=plain    rank=40  key=26         '二、空间表征' [18字/2块]
+  nid=5      L1 marker=chapter  rank=20  key=28         '附录一术语对照' [29字/2块]
+
+level_source=tag  node_total=10
+level_stats={'1': 5, '2': 3, '3': 2}
+level_stats 全量={'1': {'nodes': 5, 'files_if_split': 5, 'chars': 349, 'min_chars': 29, 'max_chars': 128, 'empty': 0, 'avg_chars': 69}, '2': {'nodes': 3, 'files_if_split': 3, 'chars': 183, 'min_chars': 43, 'max_chars': 89, 'empty': 0, 'avg_chars': 61}, '3': {'nodes': 2, 'files_if_split': 2, 'chars': 36, 'min_chars': 18, 'max_chars': 18, 'empty': 0, 'avg_chars': 18}}
+
+dropped=[('R1 位于书内目录页（条目误标为标题）', '目录')]
+
+calib verdict=degraded locator=section_only segs=0

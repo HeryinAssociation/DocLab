@@ -1,0 +1,56 @@
+############################################################################
+魂系 nodes=166
+ [numbering_gap] 第五章 → 第七章：缺 1 条（第六章 … 第六章）
+    第五章 文件生命周期理论的产生与盛行… … ▸ 第七章 文件生命周期理论“笑对挑战” …
+    ev: {"tier": "chapter", "prev_n": 5, "n": 7, "gap": 1, "parent": "4"}
+ [toc_page_mismatch] 页序差 +2 页（目录 129 ／ 树里 131）
+    4.3 “重新发现”
+    ev: {"toc_title": "“重新发现”，文件生命周期理论“笑对挑战”", "toc_printed": 129, "printed": 131, "loc": "131"}
+ [toc_entry_undetected] 书内目录列了、树里没有：发展中遭受冲击，文件生命周期理论产生与盛行
+    kind=chapter printed=57
+    ev: {"toc_entry": {"title": "发展中遭受冲击，文件生命周期理论产生与盛行", "printed": 57, "kind": "chapter", "page_idx": null}}
+ [toc_entry_undetected] 书内目录列了、树里没有：第三部分 西方档案学两大支柱理论的完善——来源原则被
+    kind=part printed=None
+    ev: {"toc_entry": {"title": "第三部分 西方档案学两大支柱理论的完善——来源原则被", "printed": null, "kind": "part", "page_idx": 14}}
+ [toc_entry_undetected] 书内目录列了、树里没有：第六章 来源原则被“重新发现” .
+    kind=chapter printed=131
+    ev: {"toc_entry": {"title": "第六章 来源原则被“重新发现” .", "printed": 131, "kind": "chapter", "page_idx": null}}
+ [toc_entry_undetected] 书内目录列了、树里没有：第四部分 西方档案学两大支柱理论的深层联系与发展规律…… 191
+    kind=part printed=None
+    ev: {"toc_entry": {"title": "第四部分 西方档案学两大支柱理论的深层联系与发展规律…… 191", "printed": null, "kind": "part", "page_idx": 14}}
+ [toc_entry_undetected] 书内目录列了、树里没有：结束语
+    kind=chapter printed=227
+    ev: {"toc_entry": {"title": "结束语", "printed": 227, "kind": "chapter", "page_idx": null}}
+############################################################################
+现代档案 nodes=402
+ [numbering_gap] 2.  → 8. ：缺 5 条（3.  … 7. ）
+    2.档案馆——自身名声的牺牲品 ▸ 8.政府——档案馆名声的牺牲品
+    ev: {"tier": "arabic", "prev_n": 2, "n": 8, "gap": 5, "parent": "2.3"}
+ [numbering_gap] 27.  → 30. ：缺 2 条（28.  … 29. ）
+    27. 国际间的合作与理解 ▸ 30. 编制资料目录
+    ev: {"tier": "arabic", "prev_n": 27, "n": 30, "gap": 2, "parent": "4.2"}
+############################################################################
+丁华东 nodes=337
+ [toc_page_mismatch] 页序差 -3 页（目录 120 ／ 树里 117）
+    9 档案与社会记忆传承
+    ev: {"toc_title": "第三章档案与社会记忆传承....", "toc_printed": 120, "printed": 117, "loc": "117"}
+ [toc_page_mismatch] 页序差 -9 页（目录 193 ／ 树里 184）
+    10.3 第三节 档案建构社会记忆的机制
+    ev: {"toc_title": "第三节 档案建构社会记忆的机制...", "toc_printed": 193, "printed": 184, "loc": "184"}
+ [toc_page_mismatch] 页序差 +200 页（目录 24 ／ 树里 224）
+    11.2 第二节 档案是社会记忆控制的“结构性媒介”
+    ev: {"toc_title": "第二节 档案是社会记忆控制的“结构性媒介”", "toc_printed": 24, "printed": 224, "loc": "224"}
+ [toc_page_mismatch] 页序差 -9 页（目录 279 ／ 树里 270）
+    12.2 第二节 档案资源量与记忆能量
+    ev: {"toc_title": "第二节 档案资源量与记忆能量…..", "toc_printed": 279, "printed": 270, "loc": "270"}
+ [toc_page_mismatch] 页序差 -16 页（目录 344 ／ 树里 328）
+    13.3 第三节 现代传媒对档案记忆展演的方式
+    ev: {"toc_title": "第三节 现代传媒对档案记忆展演的方式…", "toc_printed": 344, "printed": 328, "loc": "328"}
+ [toc_entry_undetected] 书内目录列了、树里没有：后记.
+    kind=chapter printed=425
+    ev: {"toc_entry": {"title": "后记.", "printed": 425, "kind": "chapter", "page_idx": null}}
+############################################################################
+胡鸿杰 nodes=194
+ [toc_entry_undetected] 书内目录列了、树里没有：第四章 档案学的学者构成 … …
+    kind=chapter printed=113
+    ev: {"toc_entry": {"title": "第四章 档案学的学者构成 … …", "printed": 113, "kind": "chapter", "page_idx": null}}

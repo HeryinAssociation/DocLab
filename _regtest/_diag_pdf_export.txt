@@ -1,0 +1,31 @@
+临时输出目录（工作区之外）：C:\Users\ZHAOSH~1\AppData\Local\Temp\_doclab_pdfcheck\L2
+
+--- frontier 数 vs level_stats.files_if_split ---
+  depth=1: frontier=7  files_if_split=7  nodes=7  ✅一致
+  depth=2: frontier=21  files_if_split=18  nodes=18  ❌不一致
+  depth=3: frontier=98  files_if_split=95  nodes=95  ❌不一致
+
+--- 导出统计 ---
+  files=21（基线 21）  ✅
+  chars=400,233（基线 400,233）  ✅
+  images_copied=43（基线 43）  ✅
+  unmapped_pages=7  stale_removed=0
+  locator_type=paginated  verdict=manual
+
+--- 脚注（本轮唯一预期变化）---
+  随文稿记 <!-- footnote -->：0 条
+  页末脚注块：300 处
+  → ✅ 从 0 变成有内容
+
+--- 页锚 ---
+  锚总数 502，其中 unmapped 7（有降级页，属既有行为）
+  含「任剑涛」的书目引注出现：1 个文件（改动前为 0）
+
+--- 闸门 ---
+  G1 页锚覆盖率: pass —— 页锚覆盖良好
+  G2 内容无损: pass —— 全部源块可在导出文件中逐字回查
+  G3 页码一致性: pass —— 区间步长一致、跨片接续通过
+  G4 入库硬条件（§2.3）: pass —— 21/21 个文件含页锚
+  总判定：pass
+
+（临时目录 C:\Users\ZHAOSH~1\AppData\Local\Temp\_doclab_pdfcheck，可随时删；他的 out/ 与 _work/ 一个字节没动）

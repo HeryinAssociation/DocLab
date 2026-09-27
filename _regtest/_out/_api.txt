@@ -1,0 +1,3 @@
+['Block', 'Calibration', 'NUMBERED_HEADER_RE', 'Obs', 'Path', 'Segment', 'THRESHOLDS', 'annotations', 'apply_anchors', 'asdict', 'calibrate', 'calibration_report', 'collect_observations', 'copy', 'dataclass', 'field', 'front_label', 'load_calibration', 'now_iso', 'parse_page_number', 're', 'roman', 'write_calibration', 'write_json']
+(source_id: 'str', blocks: 'list[Block]', shards_meta: 'list[dict]', anchors: 'dict | None' = None) -> 'Calibration'
+(calib: "'Calibration'", anchors: 'dict') -> "'Calibration'"

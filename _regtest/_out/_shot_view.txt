@@ -1,0 +1,23 @@
+{
+  "sources": 8,
+  "nodes": 415,
+  "viewBar": "1 2 3 4 5 6 全部",
+  "showDelChecked": true,
+  "rowsAll": 415,
+  "shotAll": {
+    "f": "C:\\Users\\Zhaoshuochen\\Desktop\\书籍\\doclab\\_regtest\\shots\\ui_view_all_20260922.png",
+    "bytes": 161459
+  },
+  "viewAfter": {
+    "depth": "2",
+    "showDel": false,
+    "rows": 25,
+    "meta": "藏起 L3 及更深 390 条 —— 只是不显示，目录不动",
+    "hasL3": false
+  },
+  "storage": "{\"depth\":2,\"showDel\":false}",
+  "shotHidden": {
+    "f": "C:\\Users\\Zhaoshuochen\\Desktop\\书籍\\doclab\\_regtest\\shots\\ui_view_d2_20260922.png",
+    "bytes": 184027
+  }
+}

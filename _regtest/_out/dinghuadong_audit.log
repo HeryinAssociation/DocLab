@@ -1,0 +1,17 @@
+[audit] 档案与社会记忆研究_丁华东.b8a64398d9：校核目录结构…
+[audit] 判定 fail｜🔴 4 🟡 3 ⚪ 7
+[audit] → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\目录校核.json / C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\目录校核.md
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+目录校核：档案与社会记忆研究_丁华东.b8a64398d9
+  节点 337｜判定 fail｜🔴 4 🟡 3 ⚪ 7
+  dropped_long_candidate       7
+  numbering_restart            2
+  calib_segment_overlap        1
+  dropped_toc_backed           1
+  numbering_repeat             1
+  toc_page_mismatch            1
+  calib_short_segment          1
+
+完整清单见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\目录校核.md

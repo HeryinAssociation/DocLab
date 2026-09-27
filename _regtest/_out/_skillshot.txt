@@ -1,0 +1,4 @@
+>> JSON.stringify({rows: document.querySelectorAll("#treeList .trow").len  →  {"rows":415,"bar":"1 2 3 4 5 6 全部"}
+>> [...document.querySelectorAll("#vdKb b")].find(b=>b.textContent==="3")  →  undefined
+>> JSON.stringify({rows: document.querySelectorAll("#treeList .trow").len  →  {"rows":120,"meta":"藏起 L4 及更深 295 条 —— 只是不显示，目录不动"}
+saved: C:\Users\ZHAOSH~1\AppData\Local\Temp\skill_shot_test.png  (174612 bytes)

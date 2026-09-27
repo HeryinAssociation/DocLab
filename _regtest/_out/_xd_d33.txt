@@ -1,0 +1,21 @@
+{
+  "source_id": "现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4",
+  "q": "档案馆应该起历史研究中心的作用吗",
+  "gid_range": [
+    null,
+    null
+  ],
+  "total": 1,
+  "rows": [
+    {
+      "gid": 164,
+      "shard": "P1",
+      "page_idx": 25,
+      "printed": "front-14",
+      "type": "text",
+      "is_heading": true,
+      "text": "1.档案馆应该起历史研究中心的作用吗？",
+      "full_len": 19
+    }
+  ]
+}

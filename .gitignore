@@ -1,0 +1,21 @@
+# --- 私密配置 ---
+# MinerU token 落盘处（UI「MinerU Key 设置」写入）。绝不入库。
+.env.local
+.env.*
+
+# --- 工作区 / 回收站 ---
+# _work/<source_id>/ 每本书的工程索引、人工核定、校验结果 —— 数据大且含未公开文献
+# _trash/ 移除的源的整体归档（可人工捞回）
+_work/
+_trash/
+
+# --- 生成产物 ---
+# out/<source_id>/L<N>/ 全部由 export 从 _work 重算出来，不入库
+out/
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- 本地助手会话数据（WorkBuddy） ---
+.workbuddy/

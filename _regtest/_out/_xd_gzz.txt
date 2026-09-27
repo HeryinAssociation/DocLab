@@ -1,0 +1,311 @@
+{
+  "source_id": "现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4",
+  "q": "作者：",
+  "gid_range": [
+    null,
+    null
+  ],
+  "total": 38,
+  "rows": [
+    {
+      "gid": 66,
+      "shard": "P1",
+      "page_idx": 14,
+      "printed": null,
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：罗伯特·亨利·鲍蒂埃①",
+      "full_len": 14
+    },
+    {
+      "gid": 312,
+      "shard": "P1",
+      "page_idx": 49,
+      "printed": "front-38",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：迈克尔·库克",
+      "full_len": 9
+    },
+    {
+      "gid": 362,
+      "shard": "P1",
+      "page_idx": 60,
+      "printed": "front-49",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：查尔斯·凯斯凯姆蒂",
+      "full_len": 12
+    },
+    {
+      "gid": 456,
+      "shard": "P1",
+      "page_idx": 75,
+      "printed": "64",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：威尔弗雷德·I·史密斯",
+      "full_len": 14
+    },
+    {
+      "gid": 498,
+      "shard": "P1",
+      "page_idx": 84,
+      "printed": "73",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：菜斯特·J·卡彭",
+      "full_len": 11
+    },
+    {
+      "gid": 536,
+      "shard": "P1",
+      "page_idx": 93,
+      "printed": "82",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：米歇尔·迪香",
+      "full_len": 9
+    },
+    {
+      "gid": 729,
+      "shard": "P1",
+      "page_idx": 118,
+      "printed": "107",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：赫尔曼·哈登伯格",
+      "full_len": 11
+    },
+    {
+      "gid": 759,
+      "shard": "P1",
+      "page_idx": 123,
+      "printed": "112",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：恩·波兹奈尔",
+      "full_len": 9
+    },
+    {
+      "gid": 793,
+      "shard": "P1",
+      "page_idx": 130,
+      "printed": "119",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：詹姆斯·B·洛德博士",
+      "full_len": 13
+    },
+    {
+      "gid": 846,
+      "shard": "P1",
+      "page_idx": 140,
+      "printed": "129",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：罗伯特·亨利·鲍尔",
+      "full_len": 12
+    },
+    {
+      "gid": 871,
+      "shard": "P1",
+      "page_idx": 146,
+      "printed": "135",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：A·M·穆鲍",
+      "full_len": 9
+    },
+    {
+      "gid": 969,
+      "shard": "P1",
+      "page_idx": 156,
+      "printed": "145",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：马格丽特·C·诺顿",
+      "full_len": 12
+    },
+    {
+      "gid": 1040,
+      "shard": "P1",
+      "page_idx": 168,
+      "printed": "157",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：迈克尔·库克",
+      "full_len": 9
+    },
+    {
+      "gid": 1100,
+      "shard": "P1",
+      "page_idx": 182,
+      "printed": "171",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：弗兰克·B·伊万斯",
+      "full_len": 12
+    },
+    {
+      "gid": 1137,
+      "shard": "P1",
+      "page_idx": 190,
+      "printed": "179",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：德·安东尼奥、马蒂拉·泰斯科",
+      "full_len": 17
+    },
+    {
+      "gid": 1394,
+      "shard": "P2",
+      "page_idx": 20,
+      "printed": "front-209",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：皮埃尔·布瓦萨尔",
+      "full_len": 11
+    },
+    {
+      "gid": 1558,
+      "shard": "P2",
+      "page_idx": 52,
+      "printed": "241",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：艾克·克罗诺",
+      "full_len": 9
+    },
+    {
+      "gid": 1675,
+      "shard": "P2",
+      "page_idx": 67,
+      "printed": "256",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：凯叶·兰博",
+      "full_len": 8
+    },
+    {
+      "gid": 1715,
+      "shard": "P2",
+      "page_idx": 75,
+      "printed": "264",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：莫里斯·瑞杰①译者：丁志民",
+      "full_len": 16
+    },
+    {
+      "gid": 1799,
+      "shard": "P2",
+      "page_idx": 87,
+      "printed": "276",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：T·R·谢伦伯格",
+      "full_len": 11
+    },
+    {
+      "gid": 1888,
+      "shard": "P2",
+      "page_idx": 102,
+      "printed": "291",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：弗兰克·B·埃文斯①",
+      "full_len": 13
+    },
+    {
+      "gid": 2000,
+      "shard": "P2",
+      "page_idx": 121,
+      "printed": "310",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：艾廷纳·泰莱密特",
+      "full_len": 11
+    },
+    {
+      "gid": 2055,
+      "shard": "P2",
+      "page_idx": 130,
+      "printed": "319",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：E·弗兰茨",
+      "full_len": 8
+    },
+    {
+      "gid": 2140,
+      "shard": "P2",
+      "page_idx": 147,
+      "printed": "336",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：杰克·诺珀斯",
+      "full_len": 9
+    },
+    {
+      "gid": 2187,
+      "shard": "P2",
+      "page_idx": 153,
+      "printed": "342",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：艾伦·赖特曼①",
+      "full_len": 10
+    },
+    {
+      "gid": 2252,
+      "shard": "P2",
+      "page_idx": 163,
+      "printed": "352",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：迈克尔·罗珀",
+      "full_len": 9
+    },
+    {
+      "gid": 2324,
+      "shard": "P2",
+      "page_idx": 180,
+      "printed": "369",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：A·瓦格纳",
+      "full_len": 8
+    },
+    {
+      "gid": 2364,
+      "shard": "P2",
+      "page_idx": 188,
+      "printed": "377",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：汉斯一若阿瑟·贝尔译者：丁志民",
+      "full_len": 18
+    },
+    {
+      "gid": 2422,
+      "shard": "P2",
+      "page_idx": 199,
+      "printed": "388",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：迈克尔·库克",
+      "full_len": 9
+    },
+    {
+      "gid": 2478,
+      "shard": "P3",
+      "page_idx": 7,
+      "printed": "front-396",
+      "type": "text",
+      "is_heading": false,
+      "text": "作者：威尔弗雷德·史密斯博士译者：丁志民",
+      "full_len": 20
+    }
+  ]
+}

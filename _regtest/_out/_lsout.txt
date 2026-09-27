@@ -1,0 +1,50 @@
+{
+  "魂系": {
+    "exists": true,
+    "subdirs": [
+      {
+        "name": "L2",
+        "md": 19,
+        "chars": 162675
+      }
+    ],
+    "files": 0,
+    "chars": 0
+  },
+  "现代档案": {
+    "exists": true,
+    "subdirs": [
+      {
+        "name": "L2",
+        "md": 41,
+        "chars": 390436
+      }
+    ],
+    "files": 0,
+    "chars": 0
+  },
+  "丁华东": {
+    "exists": true,
+    "subdirs": [
+      {
+        "name": "L2",
+        "md": 64,
+        "chars": 483180
+      }
+    ],
+    "files": 0,
+    "chars": 0
+  },
+  "胡鸿杰": {
+    "exists": true,
+    "subdirs": [
+      {
+        "name": "L2",
+        "md": 37,
+        "chars": 227085
+      }
+    ],
+    "files": 0,
+    "chars": 0
+  }
+}

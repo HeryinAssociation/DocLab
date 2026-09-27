@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>doclab · 校对台</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#fff; --line:#e3e3df; --ink:#1c1c1a; --dim:#6b6b66;
+    --accent:#8a6d3b; --accent2:#3d6b8a; --ok:#2e7d4f; --warn:#9a6a12; --bad:#a83232;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Cascadia Mono",monospace;
+    /* 底部控制台高度。默认压扁；JS 在 折叠/默认/放大 三档间改。
+       同一个变量驱动 .wrap 的底部留白，所以内容不会被控制台盖住。 */
+    --logh:96px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+  header{display:flex;align-items:baseline;gap:12px;padding:12px 18px;background:var(--panel);
+         border-bottom:1px solid var(--line);position:sticky;top:0;z-index:9;flex-wrap:wrap}
+  header h1{font-size:15px;margin:0;font-weight:600;letter-spacing:.3px}
+  /* 版本不一致的告警条：占满 header 一整行，常驻可见（header 是 sticky）。
+     后端是旧进程时，界面是新的 —— 不主动说的话，使用者只会看到一句
+     没头没尾的「unknown path」，然后去怀疑功能坏了。 */
+  .verbar{flex-basis:100%;margin-top:8px;padding:7px 11px;border-radius:6px;
+          background:#fdf2f2;border:1px solid #e6b8b8;color:#8a2222;font-size:12.5px;
+          line-height:1.65}
+  .verbar b{color:#7a1a1a}
+  .verbar code{font:11.5px/1.5 var(--mono);background:#f7e4e4;padding:1px 5px;border-radius:4px}
+  header .sub{color:var(--ink);font-size:13px;font-weight:500}
+  header .grow{flex:1}
+  .chip{font:11px/1.5 var(--mono);background:#f0efe9;border:1px solid var(--line);
+        border-radius:99px;padding:2px 9px;color:var(--dim)}
+  .wrap{display:grid;grid-template-columns:236px 1fr;gap:14px;
+        padding:14px 18px calc(var(--logh) + 18px);align-items:start;
+        transition:padding .14s ease}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+         padding:12px 14px;margin-bottom:14px}
+  .panel h2{font-size:12.5px;margin:0 0 8px;font-weight:600;color:var(--dim);
+            display:flex;justify-content:space-between;align-items:center}
+  .panel h2 .right,.right{font-weight:400;font-size:12px;color:var(--dim)}
+  details.panel>summary{font-size:12.5px;font-weight:600;color:var(--dim);cursor:pointer}
+  details.panel>summary::marker{color:#c4c3ba}
+  details.panel .body{margin-top:10px}
+  button{font:13px/1 inherit;padding:6px 11px;border-radius:6px;border:1px solid var(--line);
+         background:#fbfbf9;color:var(--ink);cursor:pointer}
+  button:hover{background:#f2f1ec}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{filter:brightness(1.08)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.sm{padding:3px 8px;font-size:12px}
+  input[type=text],select{font:13px/1.4 inherit;padding:5px 8px;border:1px solid var(--line);
+          border-radius:6px;background:#fff;color:var(--ink);width:100%}
+  label.fld{display:block;margin:7px 0 3px;font-size:12px;color:var(--dim)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .grow{flex:1}
+  .hint{color:var(--dim);font-size:12px}
+  /* ---- 源列表 ---- */
+  .src{padding:7px 9px;border:1px solid var(--line);border-radius:6px;margin-bottom:5px;
+       cursor:pointer;background:#fcfcfa;position:relative}
+  .src:hover{border-color:#c9c7bd}
+  .src.on{border-color:var(--accent);background:#fdf9f0}
+  .src .t{font-size:12.5px;font-weight:500;word-break:break-all;padding-right:34px}
+  .src .m{font:11px/1.5 var(--mono);color:var(--dim);display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+  .src .del{position:absolute;top:5px;right:5px;font:11px/1.4 var(--mono);color:var(--dim);
+            border:1px solid var(--line);border-radius:4px;padding:0 4px;background:#fff;
+            cursor:pointer;opacity:.4}
+  .src:hover .del{opacity:1}
+  .src .del:hover{color:var(--bad);border-color:#e3bcbc;background:#fdf0f0}
+  .dot{display:inline-block;width:6px;height:6px;border-radius:99px;background:#d4d3cc}
+  .dot.on{background:var(--ok)}
+  .tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:99px;
+       border:1px solid var(--line);color:var(--dim);background:#f6f5f0}
+  .tag.pass{color:var(--ok);border-color:#bcd9c7;background:#f1f8f3}
+  .tag.warn{color:var(--warn);border-color:#e2d2ab;background:#fdf7e8}
+  .tag.fail{color:var(--bad);border-color:#e3bcbc;background:#fdf0f0}
+  /* ---- 分片状态 ---- */
+  .shd{display:inline-flex;align-items:center;gap:5px;font:11px/1.6 var(--mono);
+       border:1px solid var(--line);border-radius:5px;padding:1px 7px;background:#fbfbf8;
+       color:var(--dim);margin:0 5px 5px 0}
+  .shd .sd{width:7px;height:7px;border-radius:99px;background:#d4d3cc}
+  .shd.unzipped{border-color:#bcd9c7;background:#f1f8f3;color:var(--ok)}
+  .shd.unzipped .sd{background:var(--ok)}
+  .shd.ocr_done{border-color:#cfdbe6;background:#f2f6fa;color:var(--accent2)}
+  .shd.ocr_done .sd{background:var(--accent2)}
+  .shd.uploaded .sd{background:var(--accent2)}
+  .shd.failed,.shd.ocr_failed{border-color:#e3bcbc;background:#fdf0f0;color:var(--bad)}
+  .shd.failed .sd,.shd.ocr_failed .sd{background:var(--bad)}
+  .mdlist{max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:8px;
+          background:#fcfcfa;margin-top:7px}
+  .mdrow{display:flex;align-items:center;gap:8px;padding:5px 8px;border-bottom:1px solid #f0efe9;
+         font-size:12px;cursor:pointer}
+  .mdrow:last-child{border-bottom:0}
+  .mdrow:hover{background:#f4f3ee}
+  .mdrow.sel{background:#eef4ec}
+  .mdrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mdrow .pg{color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .mdrow.done{opacity:.5}
+  /* ---- 校对台 ---- */
+  .tabs{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);
+        padding-bottom:9px;margin-bottom:10px}
+  .tab{font-size:13px;padding:5px 13px;border-radius:6px;border:1px solid transparent;
+       background:transparent;color:var(--dim)}
+  .tab:hover{background:#f2f1ec}
+  .tab.on{background:#f0efe9;border-color:var(--line);color:var(--ink);font-weight:600}
+  .dirty{font:11px/1.6 var(--mono);color:var(--warn);background:#fdf7e8;
+         border:1px solid #e2d2ab;border-radius:99px;padding:2px 9px}
+  .bar{margin-bottom:8px}
+  .tbl{border:1px solid var(--line);border-radius:6px;background:#fdfdfb;
+       max-height:calc(100vh - var(--logh) - 240px);overflow:auto}
+  /* 目录层级 */
+  /* 点**整行**就是选它（单击＝只选这条 / Ctrl＝加一条 / Shift＝连选一段），
+     不必再瞄准行首那个 13px 的小方框。 */
+  .trow{display:flex;align-items:center;gap:8px;padding:2px 9px;border-bottom:1px solid #f2f1ec;
+        font-size:12.5px;min-height:26px;cursor:pointer}
+  .trow:hover{background:#f6f5f0}
+  .trow .tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .trow .tt .mm{font-style:normal;font-size:10px;color:var(--accent);border:1px solid #e0d3b8;
+                background:#fdf9f0;border-radius:3px;padding:0 3px;margin-left:5px}
+  /* 「指定级 ≠ 实际级」：跳级被压平时的提示，要能一眼看见，不能只是一撇 Δ */
+  .trow .tt .mm.numchg{color:#a1570a;background:#fdf0e2;border-color:#e6c9a8;cursor:help}
+  .trow .meta{font:11px/1.5 var(--mono);color:#a5a49c;white-space:nowrap}
+  /* 字数按新层级重算后与已生效值不同 —— 标出来，别让人以为显示的是落盘值 */
+  .trow .meta .numchg{font-style:normal;color:var(--accent);font-weight:600;
+                      border-bottom:1px dashed #dbcaa6;cursor:help}
+  .kb{display:flex;gap:2px;flex:0 0 auto}
+  .kb b{display:inline-block;width:19px;height:19px;line-height:18px;text-align:center;
+        font:11px/1 var(--mono);font-weight:400;border:1px solid var(--line);border-radius:4px;
+        background:#fff;color:var(--dim);cursor:pointer}
+  .kb b:hover{border-color:var(--accent);color:var(--accent)}
+  .kb b.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .kb b.wide{width:auto;padding:0 6px}
+  .trow.lv1 .tt{font-weight:600}
+  .trow.lv2 .tt{font-weight:500}
+  .trow.lv3 .tt{color:#4f4f49}
+  /* 删除按钮：平时淡，指到那一行才实。不能全隐藏 —— 全隐藏等于没这个功能 */
+  .trow .x{flex:0 0 auto;width:19px;height:19px;line-height:17px;text-align:center;
+           font:12px/1 var(--mono);color:#dcdbd3;border:1px solid transparent;
+           border-radius:4px;cursor:pointer;user-select:none}
+  .trow:hover .x{color:#a9a89f;border-color:var(--line);background:#fff}
+  .trow .x:hover{color:var(--bad);border-color:#e3bcbc;background:#fdf0f0}
+  /* 已删条目：划线保留在原位，方便「删错了再恢复」，而不是直接消失找不回来 */
+  .trow.gone{opacity:.6;background:#faf9f6;cursor:default}
+  .trow.gone .tt{text-decoration:line-through;color:#9a9990}
+  .trow.gone .tt .mm{display:inline-block;color:var(--bad);border-color:#e3bcbc;
+                     background:#fdf0f0}
+  .trow.gone .kb{display:none}
+  /* 多选：勾上后整行底色，配合顶部批量条一起看，别让「选了哪几条」靠记忆 */
+  /* 勾选框只当**状态灯**：指针穿透过去，点哪儿都算点这一行 */
+  .trow .ck{flex:0 0 auto;width:13px;height:13px;margin:0;pointer-events:none;
+            accent-color:var(--accent)}
+  .trow.selrow{background:#f4f2e9}
+  .trow.selrow:hover{background:#efede2}
+  #batchBar{align-items:center;gap:8px;background:#f8f6ee;border-color:#e5e2d4;
+            border-radius:6px;margin:0 0 6px;padding:5px 9px}
+  #batchBar .hint.strong{color:var(--fg);font-weight:600}
+  /* 视图开关条：藏起来只是**不显示**，目录、字数、导出一样都不动 */
+  #viewBar{align-items:center;gap:8px;background:#faf9f4;border-color:#eceae0;
+           border-radius:6px;margin:0 0 6px;padding:4px 9px}
+  #viewBar label{display:flex;align-items:center;gap:4px;cursor:pointer;user-select:none;
+                 font:11px/1.6 var(--mono);color:var(--dim)}
+  #viewBar label input{margin:0;accent-color:var(--accent)}
+  #vdMeta{color:var(--warn)}
+  .lk.on{border-color:var(--accent);background:#fdf9f0;color:var(--accent);font-weight:600}
+  /* ---- 正文块视图（补 MinerU 漏掉的标题） ---- */
+  /* 漏掉的标题在 MinerU 眼里就是一段普通正文，目录列表里根本没有它。
+     所以这里把段落摊开、能按正文内容搜，人才能把那句话找出来、就地立断点。 */
+  .blk{display:flex;gap:8px;align-items:flex-start;padding:5px 9px;
+       border-bottom:1px solid #f2f1ec;font-size:12.5px}
+  .blk:hover{background:#f6f5f0}
+  .blk .bp{flex:0 0 66px;font:11px/1.6 var(--mono);color:var(--dim);padding-top:1px}
+  .blk .bt{flex:1;min-width:0}
+  .blk .bt .tx{color:#3f3f3a;line-height:1.55;word-break:break-word;
+               max-height:3.1em;overflow:hidden}
+  .blk.open .bt .tx{max-height:none}
+  .blk .bt mark{background:#fbeeb8;color:#6b4b00;padding:0 1px;border-radius:2px}
+  .blk .ba{flex:0 0 auto;display:flex;gap:4px;align-items:center;padding-top:1px}
+  .blk.in-tree{opacity:.72}
+  .blk .tag2{font:10px/1.7 var(--mono);border-radius:3px;padding:0 4px;white-space:nowrap;
+             border:1px solid var(--line);color:var(--dim);background:#f6f5f0}
+  .blk .tag2.add{color:var(--accent);border-color:#e0d3b8;background:#fdf9f0}
+  .blk .tag2.hd{color:var(--ok);border-color:#bcd9c7;background:#f1f8f3}
+  .blk .more{font-size:11px;color:#b0afa7;cursor:pointer;border-bottom:1px dashed #dcdbd3}
+  /* 就地编辑条：选中一块之后，就在这里填标题文本、选层级 */
+  .addbox{border:1px solid var(--accent);background:#fdf9f0;border-radius:7px;
+          padding:9px 11px;margin:0 0 8px}
+  .addbox .blkref{font:11px/1.65 var(--mono);color:var(--dim);margin:0 0 7px;
+                  max-height:56px;overflow:auto;word-break:break-word;
+                  border-left:2px solid #e0d3b8;padding-left:8px}
+  .addbox .row{margin-top:7px}
+  .addbox input[type=text]{flex:1}
+  .addbox .kb2{display:flex;gap:3px}
+  .addbox .kb2 b{display:inline-block;width:22px;height:22px;line-height:21px;text-align:center;
+                 font:11px/1 var(--mono);font-weight:400;border:1px solid var(--line);
+                 border-radius:4px;background:#fff;color:var(--dim);cursor:pointer}
+  .addbox .kb2 b:hover{border-color:var(--accent);color:var(--accent)}
+  .addbox .kb2 b.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .addbox input[type=number]{width:76px;font:12px/1.4 var(--mono);padding:4px 6px;
+                 border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+  /* 待新增的目录行（还没点「应用并重算」） */
+  .trow.pending{background:#fdf9f0}
+  .trow.pending .tt{color:#6b4b00}
+  /* 页码对照 */
+  .pghead{display:grid;grid-template-columns:76px 96px 54px 1fr;gap:8px;padding:0 9px 5px;
+          font:11px/1.6 var(--mono);color:var(--dim);border-bottom:1px solid var(--line);
+          margin-bottom:0;position:sticky;top:0;background:var(--panel);z-index:2}
+  .pgrow{display:grid;grid-template-columns:76px 96px 54px 1fr;gap:8px;align-items:center;
+         padding:1px 9px;border-bottom:1px solid #f6f5f0;font:12px/1.5 var(--mono)}
+  .pgrow:hover{background:#f6f5f0}
+  .pgrow .pdf{color:#4a4a45;font-variant-numeric:tabular-nums}
+  .pgrow .mk{font-size:10.5px;color:#b0afa7}
+  .pgrow .note{font-size:11px;color:#b0afa7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pgrow.sep{border-top:2px solid #d9d8d0}
+  .pgrow input.pv{width:86px;padding:1px 5px;font:12px/1.4 var(--mono);text-align:right;
+                  border:1px solid transparent;background:transparent;color:var(--ink);
+                  border-radius:4px}
+  .pgrow input.pv:hover{border-color:var(--line);background:#fff}
+  .pgrow input.pv:focus{border-color:var(--accent);background:#fff;outline:none}
+  .pgrow input.pv.obs{color:var(--ink);font-weight:600}
+  .pgrow input.pv.auto,.pgrow input.pv.man{color:#8f8e86}
+  .pgrow input.pv.front{color:#7b6a45}
+  .pgrow input.pv.anch{color:var(--accent);background:#fdf9f0;border-color:#e0d3b8;font-weight:600}
+  .pgrow input.pv.none{color:#c9c8c0}
+  /* ---- 产物 ---- */
+  .dep{display:flex;gap:7px;flex-wrap:wrap}
+  .dep .o{border:1px solid var(--line);border-radius:7px;padding:6px 12px;cursor:pointer;
+          background:#fcfcfa;text-align:center;min-width:76px}
+  .dep .o.on{border-color:var(--accent);background:#fdf9f0}
+  .dep .o b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+  .dep .o span{font-size:11px;color:var(--dim)}
+  .g{border-left:3px solid var(--line);padding:5px 9px;margin-bottom:5px;background:#fdfdfb;
+     border-radius:0 6px 6px 0;font-size:12.5px}
+  .g.pass{border-color:var(--ok)} .g.warn{border-color:var(--warn)} .g.fail{border-color:var(--bad)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:500;font-size:11.5px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  code,.mono{font-family:var(--mono);font-size:12px}
+  /* ---- 底部控制台 ---- */
+  .logwrap{position:fixed;left:0;right:0;bottom:0;z-index:20;height:var(--logh);
+           display:flex;flex-direction:column;background:#1f1f1d;border-top:1px solid #333;
+           transition:height .14s ease}
+  .logbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:3px 14px;
+          background:#26261f;border-bottom:1px solid #333;cursor:pointer;user-select:none}
+  .logbar:hover{background:#2d2d25}
+  .logbar .lt{font:11px/1.7 var(--mono);color:#a9a99f;letter-spacing:.5px;flex:0 0 auto}
+  .logbar .peek{flex:1;min-width:0;font:11px/1.7 var(--mono);color:#7e7e75;
+                overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .logbar .tg{flex:0 0 auto;font:11px/1.7 var(--mono);color:#a9a99f;border:1px solid #3d3d36;
+              border-radius:4px;padding:0 6px;background:#2e2e27}
+  pre.log{flex:1;min-height:0;margin:0;overflow:auto;background:transparent;color:#dcdcd4;
+          font:12px/1.55 var(--mono);padding:6px 14px 10px;white-space:pre-wrap}
+  .logwrap.min pre.log{display:none}
+  /* cfgChip 可点击 → 弹出 MinerU Key 面板 */
+  #cfgChip{cursor:pointer;user-select:none}
+  #cfgChip:hover{background:#eae9e2}
+  .keypanel{position:absolute;top:50px;right:18px;width:360px;max-width:calc(100vw - 36px);
+            background:var(--panel);border:1px solid var(--line);border-radius:8px;
+            padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.13);z-index:99}
+  .keypanel .row{margin-top:4px}
+  @media(max-width:1080px){.wrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>doclab</h1>
+  <span class="sub" id="hDoc">校对台</span>
+  <span class="grow"></span>
+  <span class="chip" id="cfgChip" title="点开：MinerU Key 设置" onclick="toggleKeyPanel()">加载中…</span>
+  <div class="keypanel" id="keyPanel" style="display:none">
+    <label class="fld">MinerU API Key</label>
+    <div class="row">
+      <input type="password" id="keyInput" class="grow" autocomplete="off"
+             placeholder="粘贴 mineru.net 的 API token">
+      <button class="sm" onclick="doSaveKey()">保存</button>
+      <button class="sm" onclick="doClearKey()">清除</button>
+    </div>
+    <p class="hint" id="keyState" style="margin:7px 0 0"></p>
+    <p class="hint" style="margin:5px 0 0">落盘到 doclab/.env.local（在 .gitignore 里，不会提交）。
+      token 在 mineru.net → 高级批量 → API Key 页生成。</p>
+  </div>
+  <div class="verbar" id="verBar" style="display:none"></div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="panel">
+      <h2>源<span class="right" id="srcCount"></span></h2>
+      <div id="srcList" class="hint">加载中…</div>
+    </div>
+    <div class="panel" id="pPend" style="display:none">
+      <h2>未完成 · 断点<span class="right" id="pendCount"></span></h2>
+      <div id="pendList"></div>
+    </div>
+    <details class="panel" id="pAdd">
+      <summary>新增源</summary>
+      <div class="body">
+        <label class="fld">本机 MinerU 工程（登记已有，不重跑 OCR）</label>
+        <input type="text" id="mdQuery" placeholder="过滤名称…（留空列全部）" oninput="loadMineruDirs()">
+        <div id="mdList" class="mdlist hint">加载中…</div>
+        <div class="row" style="margin-top:7px">
+          <input type="text" id="adoptDirs" class="grow" placeholder="目录路径，多个用 ; 分隔">
+          <button class="sm" onclick="doAdopt()">登记</button>
+        </div>
+        <hr style="border:0;border-top:1px solid var(--line);margin:12px 0">
+        <label class="fld">入库：PDF 走 MinerU OCR；EPUB 本机解析（不烧配额）</label>
+        <input type="text" id="ingestFile" placeholder="C:\...\book.pdf 或 C:\...\book.epub"
+               oninput="syncIngestUI()">
+        <div class="row" style="margin-top:7px">
+          <input type="text" id="ingestTitle" class="grow" placeholder="标题（可留空）">
+          <button class="sm" onclick="doIngest()">入库</button>
+        </div>
+        <p class="hint" id="ingestTip" style="margin:7px 0 0"></p>
+        <label class="fld">切块方式</label>
+        <div class="row">
+          <select id="shardMode" class="grow" onchange="this.dataset.touched=1;syncShardUI()">
+            <option value="mineru">MinerU 按页范围切（整本上传）</option>
+            <option value="local">本机 pypdf 先切（省流量）</option>
+          </select>
+          <input type="text" id="shardPages" style="width:62px" placeholder="200">
+          <span class="hint">页/片</span>
+        </div>
+        <p class="hint" id="shardTip" style="margin:7px 0 0"></p>
+      </div>
+    </details>
+  </aside>
+
+  <main>
+    <div class="panel" id="pNoSrc">
+      <h2>先选一个源</h2>
+      <p class="hint" style="margin:0">左栏点一本书，就能校对它的目录层级和页码。</p>
+    </div>
+
+    <div class="panel" id="pIng" style="display:none">
+      <h2>前置环节 · 分片进度<span class="right" id="ingMeta"></span></h2>
+      <div id="ingBody"></div>
+    </div>
+
+    <div class="panel" id="pNoOutline" style="display:none">
+      <h2>还没有目录索引</h2>
+      <p class="hint" style="margin:0 0 9px">这本书只跑到 OCR。先建目录索引，才能校对层级。</p>
+      <button class="primary sm" onclick="runStage('outline')">建目录索引</button>
+    </div>
+
+    <div class="panel" id="pEdit" style="display:none">
+      <div class="tabs">
+        <button class="tab on" id="tabBtnTree" onclick="setTab('tree')">目录层级</button>
+        <button class="tab" id="tabBtnPage" onclick="setTab('page')">页码对照</button>
+        <button class="tab" id="tabBtnBlk" onclick="setTab('blk')">正文块 · 补标题</button>
+        <span class="grow"></span>
+        <span class="dirty" id="dirtyTip" style="display:none"
+              title="改动已经记下了，但目录和正文文件还没变 —— 点右边的「应用并重算」才写进文件">改动待应用</span>
+        <button class="primary sm" id="btnApply" onclick="applyEdits()">应用并重算</button>
+      </div>
+
+      <div id="tabTree">
+        <div class="row bar">
+          <input type="text" id="treeQ" class="grow" placeholder="过滤标题…" oninput="renderTreeList()">
+          <button class="sm" id="selBtn" onclick="toggleSelAll()"></button>
+          <button class="sm" id="btnRestoreAll" style="display:none"
+                  onclick="restoreAllDeletes()">全部恢复</button>
+          <span class="hint" id="treeMeta"></span>
+        </div>
+        <div class="row bar" id="viewBar">
+          <span class="hint">显示到</span>
+          <span class="kb" id="vdKb"></span>
+          <span class="hint" id="vdMeta"></span>
+          <span class="grow"></span>
+          <label title="已删条目留在原位、划线显示，方便删错了再恢复；不想看见就取消勾选">
+            <input type="checkbox" id="showDelCk" onchange="setShowDel(this.checked)">显示已删
+          </label>
+        </div>
+        <div class="row bar" id="batchBar" style="display:none">
+          <span class="hint strong" id="batchN"></span>
+          <span class="hint">统一设为</span>
+          <span class="kb" id="batchKb"></span>
+          <button class="sm" onclick="bumpSel(-1)"
+                  title="把选中的每一条各自往上提一级（层级数字减 1，最小 1）">↑ 提一级</button>
+          <button class="sm" onclick="bumpSel(1)"
+                  title="把选中的每一条各自往下降一级（层级数字加 1，最大 9）">↓ 降一级</button>
+          <button class="sm" onclick="clearSel()">清除选择</button>
+        </div>
+        <div class="tbl" id="treeList"></div>
+      </div>
+
+      <div id="tabPage" style="display:none">
+        <div class="row bar">
+          <span class="hint">跳到 PDF 第</span>
+          <input type="text" id="jumpPdf" style="width:64px" onkeydown="if(event.key==='Enter')jumpPdf()">
+          <span class="hint">页</span>
+          <button class="sm" onclick="jumpPdf()">跳</button>
+          <span class="grow"></span>
+          <span class="hint" id="pageMeta"></span>
+          <button class="sm" onclick="clearAnchors()">清空锚点</button>
+        </div>
+        <div class="pghead"><span>PDF 页</span><span>印刷页码</span><span>来源</span>
+          <span>说明</span></div>
+        <div class="tbl" id="pageList" style="max-height:calc(100vh - var(--logh) - 210px)"></div>
+      </div>
+
+      <div id="tabBlk" style="display:none">
+        <div class="row bar">
+          <input type="text" id="blkQ" class="grow"
+                 placeholder="搜正文里那一句（如「第三节 数字人文的范式演进」），回车搜索"
+                 onkeydown="if(event.key==='Enter')loadBlocks(0)">
+          <button class="sm" onclick="loadBlocks(0)">搜索</button>
+          <button class="sm" onclick="blkClearQ()">清空</button>
+          <span class="hint" id="blkMeta"></span>
+        </div>
+        <p class="hint" style="margin:0 0 8px">
+          MinerU 漏掉的标题，在它眼里就是一段普通正文 —— 目录里找不到，只能在这里搜出来。
+          找到后点「设为标题」，就地立一个断点；正文原文一字不动。
+        </p>
+        <div id="blkAddHost"></div>
+        <div class="tbl" id="blkList" style="max-height:calc(100vh - var(--logh) - 268px)"></div>
+        <div class="row bar" id="blkPageBar" style="display:none;margin-top:7px">
+          <button class="sm" onclick="blkPage(-1)">← 上一页</button>
+          <span class="hint" id="blkPageInfo"></span>
+          <button class="sm" onclick="blkPage(1)">下一页 →</button>
+          <span class="hint" id="blkTotalTip"></span>
+        </div>
+      </div>
+    </div>
+
+    <details class="panel" id="pOut" style="display:none">
+      <summary>导出与校验</summary>
+      <div class="body" id="outBody"></div>
+    </details>
+  </main>
+</div>
+
+<div class="logwrap" id="logwrap">
+  <div class="logbar" onclick="cycleLog()" title="点击切换：折叠 / 默认 / 放大">
+    <span class="lt">控制台</span>
+    <span class="peek" id="logPeek">等待操作…</span>
+    <span class="tg" id="logTg">放大</span>
+  </div>
+  <pre class="log" id="log">等待操作…</pre>
+</div>
+
+<script>
+let BOOT = null, CUR = null, EDIT = null, DETAIL = null;
+let DEPTH = 2, TAB = 'tree', DIRTY = false, BUSY = false;
+let PAGE_ROWS = [], PAGE_BY_SHARD = {};
+/* 选中集合：存条目的**主键 key**，不是 gid。
+   为什么不拿 gid 当键：从印刷目录补出来的合成节点借用了「该页第一个真实块」的 gid，
+   于是《认识论引论》的「第一章」(真实) 与「一认识论的对象」(合成) 共用 gid=19 ——
+   用 gid 做键，点一条会带出另一条，正是景晔发现的那个毛病。
+   后端 manual_edits.json 同样按 key 存，两边是同一把钥匙。 */
+const SEL = new Set();
+let SEL_ANCHOR = null;    // 上一次点选的**行下标**，Shift 范围选用
+let VISIBLE = [];         // 上一次渲染出来的行下标（过滤后），供「全选可见」用
+/* 视图开关：只决定「屏幕上看得见什么」，不动目录本身 —— 层级、字数、导出全不受影响。
+   VDEPTH=2 就是「只看到 L2」，L3 及更深的一律藏起来（正对着核对重点的口径）。 */
+let VDEPTH = 0;           // 0＝全部显示
+let SHOW_DEL = true;      // 是否显示已删条目
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num = (n) => (n ?? 0).toLocaleString('en-US');
+
+/* ---------------------------------------------------------------- 日志 */
+function log(msg){
+  const el = $('log');
+  el.textContent += '\n' + msg;
+  el.scrollTop = el.scrollHeight;
+  peek(msg);
+}
+function setLog(msg){ $('log').textContent = msg; peek(msg); }
+function peek(msg){
+  const last = String(msg).split('\n').filter(Boolean).pop() || '';
+  $('logPeek').textContent = last.slice(0, 200);
+}
+/* 三档高度：默认压扁 96px → 放大 → 折叠 30px → 回默认。
+   注意别在启动时调它 —— 初始就该是压扁档，调一次等于开局先放大。 */
+let LOGH = 'def';
+function cycleLog(){
+  LOGH = LOGH === 'def' ? 'big' : (LOGH === 'big' ? 'min' : 'def');
+  const w = $('logwrap');
+  w.classList.toggle('min', LOGH === 'min');
+  w.classList.toggle('big', LOGH === 'big');
+  document.documentElement.style.setProperty('--logh',
+    LOGH === 'min' ? '30px' : (LOGH === 'big' ? '46vh' : '96px'));
+  $('logTg').textContent = LOGH === 'def' ? '放大' : (LOGH === 'big' ? '收起' : '展开');
+}
+
+/* ---------------------------------------------------------------- 通信 */
+/* 后端把「这个路径我不认识」一律回 404 unknown path。路径真写错的情况也有，
+   但本机更常见的是**服务还是上次那个进程** —— 而 `index.html` 是每次请求现
+   从磁盘读的，Python 代码只在启动时 import 一次，于是「界面是新的、后端是旧的」。
+   原样把 unknown path 抛给使用者，完全看不出该做什么。 */
+function friendly(msg){
+  const m = String(msg ?? '');
+  /* 两种症状都指向同一件事「后端是旧进程」：
+       · GET 打到一个新路径 → 404 unknown path
+       · POST 打到一个新动作 → 「不认识的人工核定操作：add」 */
+  const stale = /\bunknown path\b/i.test(m) || /不认识的人工核定操作/.test(m);
+  if (stale)
+    return m + ' —— 这个服务是旧进程（Python 只在启动时读一次）。'
+             + '关掉黑窗，重新双击 启动界面.bat 再试。';
+  return m;
+}
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  const j = await r.json().catch(() => ({ error: 'bad json' }));
+  if (!r.ok || j.error) throw new Error(friendly(j.error || ('HTTP ' + r.status)));
+  return j;
+}
+const post = (path, body) => api(path, {method: 'POST',
+  headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+
+async function poll(jid){
+  for (;;){
+    await new Promise(r => setTimeout(r, 700));
+    const j = await api('/api/job?id=' + encodeURIComponent(jid));
+    if (j.log && j.log.length) setLog(j.log.join('\n'));
+    if (j.status !== 'running' && j.status !== 'pending') return j;
+  }
+}
+
+/* 界面要用到的后端接口。打开时拿 bootstrap.caps 对一遍 —— 缺了就直说
+   「后端是旧进程」，而不是等某个功能自己撞出 unknown path。
+   以后加后端接口，同时把名字加进这里，防呆才跟得上。 */
+const NEED_CAPS = {blocks: '正文块 · 补标题', edit_add: '新增标题断点', epub: 'EPUB 入库',
+                   config_token: 'MinerU Key 设置'};
+
+/* 后端有没有这个能力。boot 之前 BOOT 还是 null，一律按「没有」处理 ——
+   探针/离线渲染会在没 boot 的情况下直接调函数，不能假定 BOOT 已就位。 */
+const hasCap = (k) => !!(BOOT && BOOT.caps && BOOT.caps.includes(k));
+
+/* ---------------------------------------------------------------- 引导 */
+function checkCaps(){
+  const has = new Set(BOOT.caps || []);
+  const miss = Object.keys(NEED_CAPS).filter(k => !has.has(k));
+  const bar = $('verBar');
+  if (!miss.length){
+    bar.style.display = 'none';
+    log(`后端代码戳 ${BOOT.code_stamp || '?'}（进程 ${BOOT.pid || '?'}）· `
+        + `接口 ${(BOOT.caps || []).length} 项，与界面一致`);
+    return true;
+  }
+  bar.style.display = 'block';
+  bar.innerHTML = '<b>界面与后端不是同一版。</b>'
+    + '后端（进程 ' + esc(BOOT.pid || '?') + '，代码戳 <code>' + esc(BOOT.code_stamp || '?')
+    + '</code>）缺接口 <code>' + miss.map(k => esc(k)).join('</code>、<code>') + '</code>'
+    + '，即：' + esc(miss.map(k => NEED_CAPS[k]).join('、')) + '。<br>'
+    + 'Python 代码只在启动时读一次，所以黑窗里跑的还是上一版 —— '
+    + '<b>关掉黑窗，重新双击 启动界面.bat</b> 即可，数据没有任何损失。';
+  log('⚠️ 后端是旧进程：缺接口 ' + miss.join(' / ')
+      + '（代码戳 ' + (BOOT.code_stamp || '?') + '）');
+  log('   → 关掉黑窗，重新双击 启动界面.bat');
+  return false;
+}
+
+async function boot(){
+  loadView();          // 视图开关先就位，免得首屏把藏起来的条目闪一下
+  BOOT = await api('/api/bootstrap');
+  const c = BOOT.config;
+  checkCaps();
+  $('cfgChip').textContent = `MinerU ${c.token_present ? '已鉴权' : '未配 token'} · ${c.shard_pages} 页/片`;
+  if ($('shardPages') && !$('shardPages').dataset.touched) $('shardPages').value = c.shard_pages;
+  if ($('shardMode') && !$('shardMode').dataset.touched && c.shard_mode) $('shardMode').value = c.shard_mode;
+  syncShardUI();
+  renderSources();
+  renderPending();
+  loadMineruDirs();
+  if (!CUR && BOOT.sources.length) await selectSource(BOOT.sources[0].source_id);
+  if (!CUR) showNoSource();
+  // 允许 ?tab=page 直接落在页码对照上
+  const t = new URLSearchParams(location.search).get('tab');
+  if (t === 'page' || t === 'tree' || t === 'blk') setTab(t);
+}
+
+/* ------------------------------------------------ MinerU Key 面板 */
+/* cfgChip 点开的小面板：填 / 清 MinerU token。后端写 .env.local（gitignore
+   覆盖，永不入库），不碰 config.json —— 那个是入库文件。 */
+function refreshCfgChip(){
+  const c = BOOT.config;
+  $('cfgChip').textContent = `MinerU ${c.token_present ? '已鉴权' : '未配 token'} · ${c.shard_pages} 页/片`;
+}
+function toggleKeyPanel(){
+  const p = $('keyPanel');
+  const open = p.style.display === 'none';
+  p.style.display = open ? 'block' : 'none';
+  if (open){
+    renderKeyState();
+    $('keyInput').value = '';
+    $('keyInput').focus();
+  }
+}
+function renderKeyState(envOver){
+  const c = BOOT.config;
+  const src = {'.env.local': '.env.local',
+               'env:MINERU_TOKEN': '环境变量 MINERU_TOKEN',
+               'config.json(mineru.token)': 'config.json（不推荐，会入库）'}[c.token_source]
+              || '未配置';
+  $('keyState').innerHTML = c.token_present
+    ? `当前来源：${esc(src)} · <code>${esc(c.token_hint || '')}</code>`
+      + (envOver ? '<br><b>注意：环境变量 MINERU_TOKEN 优先级更高，这里保存的值不生效。</b>' : '')
+    : '未配置 token —— 入库 OCR 前需要先填一次。';
+}
+async function doSaveKey(){
+  const v = $('keyInput').value.trim();
+  if (!v){ log('Key 为空：要移除请点「清除」'); return; }
+  try{
+    const r = await post('/api/config/token', {token: v});
+    BOOT.config = r.config;
+    refreshCfgChip(); renderKeyState(r.env_overrides);
+    $('keyInput').value = '';
+    log('MinerU Key 已保存到 .env.local（不入库）');
+  }catch(e){ log('保存失败：' + e.message); }
+}
+async function doClearKey(){
+  if (!BOOT.config.token_present){ renderKeyState(); return; }
+  try{
+    const r = await post('/api/config/token', {token: ''});
+    BOOT.config = r.config;
+    refreshCfgChip(); renderKeyState(r.env_overrides);
+    log('MinerU Key 已从 .env.local 清除');
+  }catch(e){ log('清除失败：' + e.message); }
+}
+/* 点面板外面就收起。cfgChip 自己的点击交给 toggleKeyPanel。 */
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('#keyPanel,#cfgChip'))
+    $('keyPanel').style.display = 'none';
+});
+
+function showNoSource(){
+  $('pNoSrc').style.display = 'block';
+  $('pEdit').style.display = 'none';
+  $('pNoOutline').style.display = 'none';
+  $('pIng').style.display = 'none';
+  $('pOut').style.display = 'none';
+  $('hDoc').textContent = '校对台';
+}
+
+function renderSources(){
+  $('srcCount').textContent = BOOT.sources.length + ' 本';
+  if (!BOOT.sources.length){
+    $('srcList').innerHTML = '<span class="hint">还没有源。左边「新增源」登记或 OCR 一本。</span>';
+    return;
+  }
+  $('srcList').innerHTML = BOOT.sources.map(s => {
+    const d = (k) => `<span class="dot ${s.has[k] ? 'on' : ''}"></span>`;
+    return `<div class="src ${s.source_id === CUR ? 'on' : ''}"
+                 onclick="selectSource('${esc(s.source_id)}')">
+      <button class="del" title="移出工作台（可恢复）"
+              onclick="event.stopPropagation();doDelete('${esc(s.source_id)}','${esc(s.title)}')">移除</button>
+      <div class="t">${esc(s.title)}</div>
+      <div class="m">
+        <span>${s.pages}页/${s.shards.length}片</span>
+        <span>${d('pagecal')}页码 ${d('outline')}目录 ${d('export')}导出</span>
+        ${s.verify ? `<span class="tag ${esc(s.verify)}">${esc(s.verify)}</span>` : ''}
+      </div></div>`;
+  }).join('');
+}
+
+function shardChips(shards){
+  return (shards || []).map(s =>
+    `<span class="shd ${esc(s.state || '')}" title="${esc(s.err || '')}">
+       <i class="sd"></i>${esc(s.tag)} · ${esc(STATE_CN[s.state] || s.state || '')}</span>`).join('');
+}
+const STATE_CN = {pending: '待提交', uploaded: '已上传', ocr_done: 'OCR完成',
+                  unzipped: '已就绪', failed: '下载失败', ocr_failed: 'OCR失败'};
+
+function renderPending(){
+  const p = BOOT.pending || [];
+  $('pPend').style.display = p.length ? 'block' : 'none';
+  $('pendCount').textContent = p.length ? p.length + ' 个' : '';
+  $('pendList').innerHTML = p.map(r => `
+    <div style="margin-bottom:9px">
+      <div style="font-size:12.5px;font-weight:500">${esc(r.title || r.source_id)}</div>
+      <div style="margin-top:3px">${shardChips(r.shards)}</div>
+      <div class="row" style="margin-top:4px">
+        <button class="sm" onclick="doResume('${esc(r.source_id)}')">续跑缺片</button>
+        <button class="sm" onclick="doDelete('${esc(r.source_id)}','${esc(r.title || r.source_id)}')">放弃</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------------------------------------------------------------- 选源 */
+async function selectSource(id){
+  CUR = id;
+  DIRTY = false; showDirty();
+  // 换书：正文块视图整份作废（块的 gid 只对当前这本书成立），编辑条也要收起
+  BLK = {rows: [], total: 0, offset: 0, limit: 60, q: '', loaded: false};
+  BLK_PICK = null;
+  if ($('blkQ')) $('blkQ').value = '';
+  if ($('blkAddHost')) $('blkAddHost').innerHTML = '';
+  renderSources();
+  const row = (BOOT.sources || []).find(s => s.source_id === id);
+  $('hDoc').textContent = row ? row.title : id;
+  $('pNoSrc').style.display = 'none';
+
+  DETAIL = await api('/api/source?id=' + encodeURIComponent(id));
+  renderIngest();
+  renderOut();
+
+  if (!DETAIL.outline || (!DETAIL.outline.node_total
+                          && !DETAIL.outline.manual_deleted_count)){
+    $('pNoOutline').style.display = 'block';
+    $('pEdit').style.display = 'none';
+    return;
+  }
+  $('pNoOutline').style.display = 'none';
+  $('pEdit').style.display = 'block';
+  await loadEdit();
+}
+
+function renderIngest(){
+  const p = DETAIL.pending_ingest;
+  $('pIng').style.display = p ? 'block' : 'none';
+  if (!p) return;
+  $('ingMeta').textContent = `${p.shards.filter(s => s.state === 'unzipped').length}/${p.shards.length} 片就绪`;
+  $('ingBody').innerHTML = shardChips(p.shards) +
+    `<div class="row" style="margin-top:6px"><button class="sm"
+       onclick="doResume('${esc(p.source_id)}')">续跑缺片（已就绪的不会重做）</button></div>`;
+}
+
+/* ---------------------------------------------------------------- 校对台 */
+async function loadEdit(){
+  EDIT = await api('/api/edit?source=' + encodeURIComponent(CUR));
+  EDIT.added = EDIT.added || {};
+  // 换源/重算后，原来勾的那批 key 属于上一棵树，必须清掉 —— 留着的话
+  // 批量条会显示「已选 3 条」，而那 3 条在新树里根本不是你现在看到的东西。
+  SEL.clear(); SEL_ANCHOR = null;
+  renderTreeList();
+  renderPageList();
+  showDirty();
+}
+function setTab(t){
+  TAB = t;
+  $('tabBtnTree').classList.toggle('on', t === 'tree');
+  $('tabBtnPage').classList.toggle('on', t === 'page');
+  $('tabBtnBlk').classList.toggle('on', t === 'blk');
+  $('tabTree').style.display = t === 'tree' ? 'block' : 'none';
+  $('tabPage').style.display = t === 'page' ? 'block' : 'none';
+  $('tabBlk').style.display = t === 'blk' ? 'block' : 'none';
+  // 正文块懒加载：4000 块不必在选源时就拉一遍
+  if (t === 'blk' && !BLK.loaded) loadBlocks(0);
+}
+
+/* ---- 正文块：在 MinerU 漏掉标题的地方补一个断点 ----
+   「补漏掉的标题」的正路在这里，而不是去改导出的 md：md 是**产物**，每次
+   「应用并重算」全量重生成，手改的会被冲掉；而且目录树在 outline.json 里，
+   文件是按树的节点切的 —— 手加一个 `##` 不改变树，页码、字数、归属全是错的。
+   所以断点只能在工具里立：落在**文档流**的某个位置上（＝某个块的某个字符），
+   原文一字不动，人工层叠在它上面。 */
+let BLK = {rows: [], total: 0, offset: 0, limit: 60, q: '', loaded: false};
+let BLK_PICK = null;      // 正在填标题的那一块（gid），null ＝ 没在编辑
+let BLK_PICK_LV = 2;      // 编辑条里选中的层级
+let BLK_TITLE = '';       // 编辑条里的标题文本（oninput 实时同步，重渲染才不丢）
+let BLK_OFF = 0;          // 断点在块内的字符位移
+
+async function loadBlocks(offset){
+  // 后端是旧进程时别去撞墙：撞了只会在日志里刷三遍 404，一个字的信息都没有。
+  // boot 里的 checkCaps 已经说清该干什么了。
+  if (!hasCap('blocks')){
+    $('blkMeta').textContent = '后端是旧进程 · 没有这个接口';
+    $('blkList').innerHTML = '<div class="hint" style="padding:14px 4px">'
+      + '当前服务是上次启动的旧进程，没有「正文块」接口。'
+      + '关掉黑窗、重新双击 启动界面.bat 后再进来。</div>';
+    return;
+  }
+  const q = ($('blkQ').value || '').trim();
+  if (offset !== undefined && offset !== null) BLK.offset = Math.max(0, offset | 0);
+  $('blkMeta').textContent = '读取中…';
+  try {
+    const r = await api('/api/blocks?source=' + encodeURIComponent(CUR)
+        + '&q=' + encodeURIComponent(q)
+        + '&offset=' + BLK.offset + '&limit=' + BLK.limit);
+    BLK.rows = r.rows || []; BLK.total = r.total || 0; BLK.q = q;
+    BLK.loaded = true;
+    renderBlockList();
+  } catch (e){
+    $('blkMeta').textContent = '';
+    log('❌ 读正文块失败：' + e.message);
+  }
+}
+function blkClearQ(){ $('blkQ').value = ''; loadBlocks(0); }
+function blkPage(d){
+  const next = BLK.offset + d * BLK.limit;
+  if (next < 0 || next >= BLK.total) return;
+  loadBlocks(next);
+  $('blkList').scrollTop = 0;
+}
+/* 把命中片段标出来。先在**原文**上定位再逐段转义，别在转义后的串上找 ——
+   搜索词里带 & < 这类字符时会错位。 */
+function hl(text, ql){
+  const t = String(text || '');
+  if (!ql) return esc(t);
+  const i = t.toLowerCase().indexOf(ql);
+  if (i < 0) return esc(t);
+  return esc(t.slice(0, i)) + '<mark>' + esc(t.slice(i, i + ql.length)) + '</mark>'
+       + esc(t.slice(i + ql.length));
+}
+
+function renderBlockList(){
+  const rows = BLK.rows || [], q = BLK.q || '', ql = q.toLowerCase();
+  $('blkMeta').textContent = BLK.loaded
+    ? `${num(BLK.total)} 块` + (q ? `命中「${q}」` : '') : '';
+  if (!rows.length){
+    $('blkList').innerHTML = `<div class="hint" style="padding:10px">`
+      + (q ? '没有含这句话的块。换个更短的片段再搜 —— MinerU 可能把标题和上下文并进了同一段。'
+           : '这本书没有可显示的正文块。') + '</div>';
+    $('blkPageBar').style.display = 'none';
+    return;
+  }
+  $('blkList').innerHTML = rows.map(b => {
+    const tags = [];
+    if (b.in_tree) tags.push(`<span class="tag2 hd">已是标题${b.level ? ' L' + b.level : ''}</span>`);
+    else if (b.is_heading) tags.push('<span class="tag2 hd">MinerU 标为标题</span>');
+    if (b.added) tags.push('<span class="tag2 add">已新增</span>');
+    const long = (b.full_len || 0) > (b.text || '').length;
+    const btn = b.added
+      ? `<button class="sm" onclick="dropAdded(${b.gid})"
+                title="撤销在这一块上新增的标题。正文原文一字不动">撤销</button>`
+      : `<button class="sm" onclick="pickBlock(${b.gid})"
+                title="把这一块立成一个标题断点。原文仍留在正文里">设为标题</button>`;
+    return `<div class="blk${b.in_tree ? ' in-tree' : ''}" id="bk_${b.gid}">
+      <span class="bp">${b.printed ? 'p' + esc(b.printed) : '—'}<br>#${b.gid}</span>
+      <span class="bt"><span class="tx" onclick="this.classList.toggle('open')"
+            title="点击展开/收起全文">${hl(b.text, ql)}${long ? ' …' : ''}</span></span>
+      <span class="ba">${tags.join('')}${btn}</span>
+    </div>`;
+  }).join('');
+  const from = BLK.total ? BLK.offset + 1 : 0;
+  const to = BLK.offset + rows.length;
+  $('blkPageBar').style.display = BLK.total > BLK.limit ? 'flex' : 'none';
+  $('blkPageInfo').textContent = `${from}–${to}`;
+  $('blkTotalTip').textContent = `共 ${num(BLK.total)} 块`;
+}
+
+function pickBlock(gid){
+  const b = (BLK.rows || []).find(x => x.gid === gid);
+  if (!b) return;
+  BLK_PICK = gid;
+  // 标题文本预填**这一块的第一行** —— 漏掉的标题多半就长这样。可以在框里改。
+  const first = String(b.text || '').split('\n')[0].trim();
+  BLK_TITLE = first.length > 90 ? first.slice(0, 90) : first;
+  BLK_OFF = 0;
+  // 层级默认沿用上一块（上一行）的级数：补漏标题常常是连着补一串同级的，
+  // 每次都从 2 开始点一遍太烦。
+  const i = BLK.rows.indexOf(b);
+  BLK_PICK_LV = b.level || (i > 0 ? (BLK.rows[i - 1].level || 2) : 2);
+  renderAddBox();
+  const inp = $('addTitle');
+  if (inp){ inp.focus(); inp.select(); }
+}
+function pickLv(k){
+  syncAddBox(); BLK_PICK_LV = k; renderAddBox();
+}
+function syncAddBox(){
+  if ($('addTitle')) BLK_TITLE = $('addTitle').value;
+  if ($('addOff')) BLK_OFF = Math.max(0, parseInt($('addOff').value || '0', 10) || 0);
+}
+function cancelAdd(){ BLK_PICK = null; renderAddBox(); }
+function renderAddBox(){
+  const host = $('blkAddHost');
+  if (BLK_PICK === null){ host.innerHTML = ''; return; }
+  const b = (BLK.rows || []).find(x => x.gid === BLK_PICK);
+  if (!b){ BLK_PICK = null; host.innerHTML = ''; return; }
+  const kb = [1, 2, 3, 4, 5, 6].map(k =>
+    `<b class="${k === BLK_PICK_LV ? 'on' : ''}" title="定成第 ${k} 级"
+        onclick="pickLv(${k})">${k}</b>`).join('');
+  host.innerHTML = `<div class="addbox">
+    <div class="blkref">块 #${b.gid} · ${b.printed ? 'p' + esc(b.printed) : '页码未定'} ·
+      ${esc(String(b.text || '').slice(0, 150))}${(b.full_len || 0) > 150 ? ' …' : ''}</div>
+    <div class="row"><span class="hint">标题文本</span>
+      <input type="text" id="addTitle" value="${esc(BLK_TITLE)}"></div>
+    <div class="row"><span class="hint">定为第</span><span class="kb2">${kb}</span>
+      <span class="hint">级</span>
+      <span class="hint" style="margin-left:14px">从块内第</span>
+      <input type="number" id="addOff" min="0" value="${BLK_OFF}"
+             title="断点在这个块**内部**的字符位置。0 ＝ 从块首断开（绝大多数情况）；只有 MinerU 把标题和紧随的正文并进同一段时才需要改它">
+      <span class="hint">字断开</span></div>
+    <div class="row"><button class="primary sm" onclick="confirmAdd()">确认新增</button>
+      <button class="sm" onclick="cancelAdd()">取消</button>
+      <span class="hint">正文一字不动；点「应用并重算」后进目录</span></div>
+  </div>`;
+}
+
+async function confirmAdd(){
+  if (BLK_PICK === null) return;
+  if (!hasCap('edit_add')){
+    log('⚠️ 后端是旧进程，没有「新增标题断点」这个接口'
+        + ' → 关掉黑窗，重新双击 启动界面.bat');
+    return;
+  }
+  syncAddBox();
+  const gid = BLK_PICK, title = (BLK_TITLE || '').trim(), off = BLK_OFF;
+  if (!title){ log('先给这个断点填一个标题文本'); return; }
+  try {
+    await post('/api/edit/add', {source: CUR, gid, title, level: BLK_PICK_LV, offset: off});
+    EDIT.added[String(gid)] = {title, level: BLK_PICK_LV, offset: off};
+    // 编辑条必须先收掉：下面 loadEdit() 会重画目录、renderBlockList() 会重画块列表，
+    // 两者都不碰 blkAddHost —— 少了这一句，提交完编辑条还杵在那儿，
+    // 看着像没提交成功，人就会再点一次「确认新增」。
+    BLK_PICK = null;
+    renderAddBox();
+    markDirty();
+    log(`[新增] 块 #${gid}${off ? `（从块内第 ${off} 字断开）` : ''} → 第 ${BLK_PICK_LV} 级`
+        + `「${title}」。正文原文不动；点「应用并重算」后进目录`);
+    await loadEdit();          // 目录列表要立刻看得见它，不能等应用之后才出现
+    renderBlockList();
+    setTab('tree');
+  } catch (e){ log('❌ 新增没存上：' + e.message); }
+}
+
+async function dropAdded(gid){
+  const rec = (EDIT.added || {})[String(gid)];
+  const t = rec ? rec.title : `块 #${gid}`;
+  if (!confirm(`撤销新增的标题「${t}」？\n\n正文一字不动，只是不再有这个断点。`)) return;
+  try {
+    await post('/api/edit/add-clear', {source: CUR, gid});
+    delete EDIT.added[String(gid)];
+    delete EDIT.levels['add:' + gid];
+    markDirty();
+    log(`[撤销] 块 #${gid} 的人工标题已撤。点「应用并重算」后目录恢复原样`);
+    await loadEdit();
+    renderBlockList();
+  } catch (e){ log('❌ 撤销失败：' + e.message); }
+}
+function showDirty(){
+  $('dirtyTip').style.display = DIRTY ? 'inline-block' : 'none';
+  $('btnApply').classList.toggle('primary', DIRTY);
+}
+function markDirty(){ DIRTY = true; showDirty(); }
+
+/* ---- 目录层级 ---- */
+/* 每一条的级数 ＝ **你给的那个数**（没指定过就是自动识别的那个数）。
+   这里曾经用「层级栈」现算深度，那是个坑：把 A 从 L5 提到 L3，A 前面被抽掉一层，
+   紧随其后的邻居就从 L5 浮到 L4 —— 你只动了一条，屏幕上十几条的级数一起变。
+   他为此找过两次（"关了联动，另一个相邻标题同步变化了"）。
+   人工指定是权威，**谁也不许改写别人那一行的数字**。
+   父子关系（谁是谁的正文范围）仍按「前面最近一个级数更小的标题」归，
+   那是结构、是导出时算归属用的，不参与显示。 */
+function reflowPreview(){
+  const lv = {}, depth = {};
+  const alive = EDIT.nodes.filter(n => !n.deleted);
+  for (const n of alive){
+    lv[n.key] = EDIT.levels[n.key] || n.level || 1;
+    depth[n.key] = lv[n.key];
+  }
+
+  /* 区间字数：这一条 → 「下一个同级或更高级标题」之前的全部正文，
+     等于它在新树里整棵子树（含自身）的**自有正文**之和。
+     必须拿 own_chars 累加：n_chars 是含后代的，照新树重加会把子树算两遍。
+     被删条目名下的正文并进它前面最近的存活条目 —— 后端重建树时这些块
+     找不到标题可挂，就归给前一个节点，界面得跟它对齐，不然应用前后数字对不上。 */
+  const own = {};
+  let carry = 0, lastAlive = null;
+  for (const n of EDIT.nodes){
+    if (n.deleted){ carry += n.own_chars || 0; continue; }
+    own[n.key] = (n.own_chars || 0) + carry;
+    carry = 0; lastAlive = n.key;
+  }
+  if (carry && lastAlive !== null) own[lastAlive] += carry;  // 已删的排在最后
+
+  const ic = {};
+  for (let i = 0; i < alive.length; i++){
+    const g = alive[i].key, d0 = depth[g];
+    let s = own[g] || 0;
+    for (let k = i + 1; k < alive.length; k++){
+      if (depth[alive[k].key] > d0) s += own[alive[k].key] || 0;
+      else break;
+    }
+    ic[g] = s;
+  }
+  return {lv, depth, ic};
+}
+
+/* ---- 多选批量定级 ----
+   取消「联动上下级」开关：它按 MinerU 的自动层级去猜「哪些是一批」，猜错就带着
+   不该改的条目一起动。改为**完全按你的选择来** —— 初始层级仍按 MinerU 识别，
+   你对哪几条下手，就只有哪几条变。 */
+const keyOf = (i) => { const n = (EDIT.nodes || [])[i]; return n ? n.key : null; };
+const titleOfKey = (k) => {
+  const n = (EDIT.nodes || []).find(x => x.key === k);
+  return n ? n.title : k;
+};
+/* 当前生效层级：人工定级优先，否则 MinerU 自动值 */
+function curLevel(key){
+  const n = (EDIT.nodes || []).find(x => x.key === key);
+  return EDIT.levels[key] || (n ? (n.level || 1) : 1);
+}
+
+/* ---- 点行选择（跟文件列表一个按法）----
+     单击        → 只选这一条
+     Ctrl + 单击 → 加/减这一条，别的不动
+     Shift+ 单击 → 从上次点的那条到这里，整段全选
+   以前只能瞄准行首那个 13px 的小方框、一条一条点；现在点行本身就行。 */
+function rowClick(ev, i){
+  // 数字键、删除键是它们自己的活，别顺手改动选择
+  if (ev.target.closest('.kb, .x, button')) return;
+  const n = (EDIT.nodes || [])[i];
+  if (!n) return;
+  if (ev.shiftKey && SEL_ANCHOR !== null){
+    // 按**看得见的行序**取一段：视图里藏起来的行不参与，
+    // 否则会把屏幕上根本没显示的条目偷偷选进来。
+    const vis = VISIBLE.length ? VISIBLE : (EDIT.nodes || []).map((_, j) => j);
+    const a = vis.indexOf(SEL_ANCHOR), b = vis.indexOf(i);
+    if (a >= 0 && b >= 0){
+      for (let j = Math.min(a, b); j <= Math.max(a, b); j++){
+        const k = keyOf(vis[j]);
+        if (k && !(EDIT.nodes[vis[j]] || {}).deleted) SEL.add(k);
+      }
+      renderTreeList();
+      return;               // 锚点不动：接着 Shift 点，还是从当初那条起算
+    }
+  }
+  if (n.deleted) return;    // 已删条目不参与选择（但可以当 Shift 连选的终点）
+  if (ev.ctrlKey || ev.metaKey){
+    if (SEL.has(n.key)) SEL.delete(n.key); else SEL.add(n.key);
+  } else {
+    SEL.clear(); SEL.add(n.key);
+  }
+  SEL_ANCHOR = i;           // 锚点跟着最后一次点击走，跟资源管理器一致
+  renderTreeList();
+}
+
+function clearSel(){ SEL.clear(); SEL_ANCHOR = null; renderTreeList(); }
+
+/* ---- 视图（藏起来 ≠ 改目录）----
+   藏起来只影响这一屏看得见什么；层级、字数、导出、校核一律不动。
+   设置记在浏览器里，刷新、换书都还在 —— 不然每回都要重新藏一遍。 */
+const VIEW_KEY = 'doclab.view';
+function loadView(){
+  // 存坏了就当没设过：**必须回到默认**（全部显示）。
+  // 只 catch 不重置的话，上一次的「藏到 L2」会继续生效 —— 界面上没提示、
+  // 条目却少一截，人会以为目录坏了。
+  let v = null;
+  try { v = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null'); }
+  catch (e){ v = null; }
+  if (!v || typeof v !== 'object'){ VDEPTH = 0; SHOW_DEL = true; return; }
+  VDEPTH = Math.max(0, Math.min(9, Number(v.depth) || 0));
+  SHOW_DEL = v.showDel !== false;
+}
+function saveView(){
+  try {
+    localStorage.setItem(VIEW_KEY, JSON.stringify({depth: VDEPTH, showDel: SHOW_DEL}));
+  } catch (e){ /* 无痕模式之类存不上，无所谓 */ }
+}
+function setVDepth(k){
+  k = Number(k) || 0;
+  VDEPTH = (k === VDEPTH) ? 0 : k;      // 再点一次同一个数＝取消，回到全部
+  saveView(); renderTreeList();
+}
+function setShowDel(on){ SHOW_DEL = !!on; saveView(); renderTreeList(); }
+function renderViewBar(){
+  $('vdKb').innerHTML = [1, 2, 3, 4, 5, 6].map(k =>
+      `<b class="${k === VDEPTH ? 'on' : ''}"
+          title="只显示到第 ${k} 级：L${k + 1} 及更深的一律藏起来。只是不显示，目录本身不动"
+          onclick="setVDepth(${k})">${k}</b>`).join('')
+    + `<b class="wide${VDEPTH ? '' : ' on'}" title="全部显示"
+          onclick="setVDepth(0)">全部</b>`;
+  $('showDelCk').checked = SHOW_DEL;
+}
+
+function toggleSelAll(){
+  const vis = VISIBLE.length ? VISIBLE : (EDIT.nodes || []).map((_, i) => i);
+  const alive = vis.filter(i => !(EDIT.nodes[i] || {}).deleted);
+  const allIn = alive.length > 0 && alive.every(i => SEL.has(EDIT.nodes[i].key));
+  if (allIn){ alive.forEach(i => SEL.delete(EDIT.nodes[i].key)); }
+  else { alive.forEach(i => SEL.add(EDIT.nodes[i].key)); }
+  renderTreeList();
+}
+
+/* 把一组条目统一设为第 k 级。点单行的数字＝只改这一行；点选中集合里某行的数字＝
+   改整个选中集合。 */
+async function applyLevels(keys, k){
+  const pairs = {};
+  for (const key of keys) pairs[key] = k;
+  Object.assign(EDIT.levels, pairs);
+  markDirty(); renderTreeList();
+  const names = keys.slice(0, 3).map(titleOfKey);
+  log(`[定级] ${keys.length} 条 → 第 ${k} 级：${names.join('、')}`
+      + (keys.length > 3 ? ` 等 ${keys.length} 条` : '')
+      + '。点「应用并重算」后落盘');
+  try {
+    await post('/api/edit/levels', {source: CUR, pairs});
+  } catch (e){ log('❌ 定级没存上：' + e.message); }
+}
+
+/* 选中项整体升降一级（提一级＝层级数字减 1，数字越小越靠上） */
+async function bumpSel(delta){
+  const keys = [...SEL];
+  if (!keys.length){ log('先勾选要调整的条目'); return; }
+  const pairs = {};
+  let hitEdge = 0;
+  for (const key of keys){
+    const want = curLevel(key) + delta;
+    const cl = Math.min(9, Math.max(1, want));
+    if (cl !== want) hitEdge++;
+    pairs[key] = cl;
+  }
+  Object.assign(EDIT.levels, pairs);
+  markDirty(); renderTreeList();
+  log(`[定级] ${keys.length} 条整体${delta < 0 ? '提' : '降'}一级`
+      + (hitEdge ? `（其中 ${hitEdge} 条已到顶/到底，未再移动）` : '')
+      + '。点「应用并重算」后落盘');
+  try {
+    await post('/api/edit/levels', {source: CUR, pairs});
+  } catch (e){ log('❌ 定级没存上：' + e.message); }
+}
+
+function renderTreeList(){
+  const keep = $('treeList').scrollTop;
+  const q = ($('treeQ').value || '').trim();
+  const nodes = EDIT.nodes || [];
+  const manual = EDIT.levels || {};
+  const nDel = nodes.filter(n => n.deleted).length;
+  const {depth, ic} = reflowPreview();   // 提前算：下面 meta 的层级分布也要用它
+  // 分布必须按**预览后**的层级数，不能拿 outline.json 的 level_stats ——
+  // 你把一条从 L2 提到 L1，那张旧表还是 L2 的口径，同一屏里两套数字打架。
+  const distMap = {};
+  for (const n of nodes) if (!n.deleted) distMap[depth[n.key]] = (distMap[depth[n.key]] || 0) + 1;
+  const dist = Object.keys(distMap).sort((a, b) => a - b)
+    .map(k => `L${k}=${distMap[k]}`).join(' · ');
+  $('treeMeta').textContent = `${EDIT.node_total} 节点`
+    + (Object.keys(manual).length ? ` · 人工定级 ${Object.keys(manual).length} 处` : '')
+    + (nDel ? ` · 已删 ${nDel} 条` : '')
+    + (dist ? ` · ${dist}` : '');
+  // 视图统计：藏了多少条、为什么藏 —— 免得人以为目录里真的少了东西
+  let hidLv = 0, hidDel = 0;
+  for (const n of nodes){
+    if (n.deleted){ if (!SHOW_DEL) hidDel++; }
+    else if (VDEPTH && (depth[n.key] || 1) > VDEPTH) hidLv++;
+  }
+  const hid = [];
+  if (hidLv) hid.push(`L${VDEPTH + 1} 及更深 ${hidLv} 条`);
+  if (hidDel) hid.push(`已删 ${hidDel} 条`);
+  $('vdMeta').textContent = hid.length
+    ? `藏起 ${hid.join(' · ')} —— 只是不显示，目录不动` : '';
+  renderViewBar();
+  // 选中集合里可能残留已经不存在的 key（换源、重算之后）—— 先剔除再统计，
+  // 否则批量条上写着「已选 3 条」，屏幕上一条勾都没有。
+  const live = new Set(nodes.filter(n => !n.deleted).map(n => n.key));
+  for (const k of [...SEL]) if (!live.has(k)) SEL.delete(k);
+  const selN = SEL.size;
+
+  $('batchBar').style.display = selN ? 'flex' : 'none';
+  if (selN){
+    $('batchN').textContent = `已选 ${selN} 条`;
+    $('batchKb').innerHTML = [1, 2, 3, 4, 5, 6].map(k =>
+      `<b title="把选中的 ${selN} 条都定为第 ${k} 级" onclick="batchLevel(${k})">${k}</b>`
+    ).join('');
+  }
+  $('btnRestoreAll').style.display = nDel > 1 ? 'inline-block' : 'none';
+
+  const vis = [];
+  const html = nodes.map((n, i) => {
+    if (q && !n.title.includes(q)) return '';
+    // 视图过滤只决定「这张清单里有没有它」。被藏起来的行不进 VISIBLE，
+    // 所以「全选」和 Shift 连选都碰不到看不见的条目。
+    if (n.deleted ? !SHOW_DEL : (VDEPTH && (depth[n.key] || 1) > VDEPTH)) return '';
+    vis.push(i);
+    if (n.deleted){
+      const was = n.level ? `原 L${n.level} · ` : '';
+      return `<div class="trow gone" id="tr_${i}">
+        <span class="tt">${esc(n.title)}<i class="mm">已删</i></span>
+        <span class="meta">${was}${num(n.chars)}字</span>
+        <button class="sm" onclick="restoreNode(${i})">恢复</button>
+      </div>`;
+    }
+    const d = depth[n.key] || 1;
+    const mine = EDIT.levels[n.key];
+    const on = SEL.has(n.key);
+    // 高亮就是你给的那个数（没给过就是自动识别的那个数）。级数不再被层级栈
+    // 改写，也不会因为选了别的条目而变化 —— 点了几级就几级亮，永远。
+    const shown = d;
+    const kb = [1, 2, 3, 4, 5, 6].map(k =>
+      `<b class="${k === shown ? 'on' : ''}" title="定为第 ${k} 级"
+          onclick="setLevel(${i},${k})">${k}</b>`).join('');
+    const mm = mine ? '<i class="mm">人工</i>' : '';
+    // 刚补的标题，还没点「应用并重算」—— outline.json 是上一次重算的产物，
+    // 里面还没有这一条。标出来，免得人以为字数/位置已经是最终值了。
+    const pend = n.pending_add ? '<i class="mm">新增</i>' : '';
+    // 字数跟**新层级**实时走：你把一条提到第 1 级，它这一节的范围就从
+    // 「原来那几段」变成「一直到下一个同级标题之前」，字数必须当场跟着变，
+    // 否则你没法拿它判断切出来的文件多大。与已生效的值不同就标一下。
+    const c = ic[n.key] != null ? ic[n.key] : n.chars;
+    const cDelta = n.pending_add
+      ? `<span title="还没有点「应用并重算」—— 目录和正文文件都还没重算，这一条暂时没有字数">待重算</span>`
+      : ((c !== n.chars)
+          ? `<i class="mm numchg" title="按你改后的层级重算：${num(n.chars)} → ${num(c)} 字（点「应用并重算」后落盘）">${num(c)}字</i>`
+          : `<span>${num(c)}字</span>`);
+    // 合成的「前置」节点不给删：它承接第一个标题之前的全部块（封面/书名页/版权页），
+    // 剔掉会让这些块无主，导出时凭空少一截正文。
+    const del = n.marker === 'front' ? ''
+      : (n.pending_add || String(n.key).startsWith('add:')
+          ? `<span class="x" title="撤销这条新增（正文一字不动，只是不再有这个断点）"
+                   onclick="delNode(${i})">×</span>`
+          : `<span class="x" title="删掉这个条目（下级上提一级，正文不丢）"
+                   onclick="delNode(${i})">×</span>`);
+    return `<div class="trow lv${Math.min(d, 3)}${on ? ' selrow' : ''}${n.pending_add ? ' pending' : ''}"
+                 id="tr_${i}" style="padding-left:${10 + (d - 1) * 16}px"
+                 onclick="rowClick(event, ${i})">
+      <input type="checkbox" class="ck" ${on ? 'checked' : ''} tabindex="-1"
+             title="点整行来选：单击＝只选这条，Ctrl+单击＝加/减一条，Shift+单击＝连选一段">
+      <span class="tt">${esc(n.title)}${mm}${pend}</span>
+      <span class="meta">L${d} · ${cDelta}</span>
+      <span class="kb">${kb}</span>${del}
+    </div>`;
+  }).join('');
+  VISIBLE = vis;
+  const nVis = vis.filter(i => !(nodes[i] || {}).deleted).length;
+  $('selBtn').style.display = nVis ? 'inline-block' : 'none';
+  const allIn = nVis > 0 && vis.filter(i => !(nodes[i] || {}).deleted)
+                               .every(i => SEL.has(nodes[i].key));
+  $('selBtn').className = 'sm' + (allIn ? ' lk on' : '');
+  $('selBtn').textContent = allIn ? '取消全选' : '全选';
+  $('selBtn').title = '把当前列表里（过滤后）的条目全部加入选择，再统一定级。'
+    + '默认不动任何东西 —— 初始层级就是 MinerU 识别出来的那个';
+  $('treeList').innerHTML = html || '<div class="hint" style="padding:9px">没有匹配的标题。</div>';
+  $('treeList').scrollTop = keep;
+}
+
+/* 点某一行的数字按钮。
+   规则（取代原来的「联动上下级」开关）：
+     · 这一行**在选中集合里**且选了不止一条 → 作用于整个选中集合；
+     · 否则 → 只改这一行，并把它设为唯一选中。
+   这样「只动一条」是默认行为，要批量就先勾选 —— 完全按你的选择来，
+   不做任何「自动识别为同批」的猜测。 */
+async function setLevel(i, k){
+  const n = (EDIT.nodes || [])[i];
+  if (!n) return;
+  let keys;
+  if (SEL.size > 1 && SEL.has(n.key)) keys = [...SEL];
+  else { SEL.clear(); SEL.add(n.key); keys = [n.key]; }
+  await applyLevels(keys, k);
+}
+
+/* 批量条上的数字：把选中集合全部定为第 k 级 */
+async function batchLevel(k){
+  const keys = [...SEL];
+  if (!keys.length){ log('先在左边勾选要调整的条目'); return; }
+  await applyLevels(keys, k);
+}
+
+/* ---- 条目删除 ---- */
+async function delNode(i){
+  const n = (EDIT.nodes || [])[i];
+  if (!n || n.deleted) return;
+  // 人工新增的条目：删掉 ＝ **撤销这次新增**，不是「MinerU 认错、被我剔掉」。
+  // 后端 manual.set_deleted 对 add: 键也是这么处理的（不写进 deleted 档案）。
+  // 两边必须一致，否则「已删除」列表里会混进一条从来没被识别出来过的标题。
+  if (n.pending_add || String(n.key).startsWith('add:')){
+    await dropAdded(n.gid);
+    return;
+  }
+  n.deleted = true;                       // 本地先行，立刻退出层级栈
+  delete EDIT.levels[n.key];              // 后端也会一并清掉这一条的定级
+  SEL.delete(n.key);                      // 删掉的条目不该还留在选择里
+  markDirty(); renderTreeList();
+  try {
+    await post('/api/edit/delete', {source: CUR, key: n.key, gid: n.gid, node: {
+      title: n.title, level: n.level, marker: n.marker, shard: n.shard,
+      page_idx: n.page_idx, chars: n.chars, own_chars: n.own_chars,
+      blocks: n.blocks, gid: n.gid}});
+    log(`[删除] 「${n.title}」—— 下级上提一级，正文不丢。点「应用并重算」后进目录`);
+  } catch (e){
+    n.deleted = false; renderTreeList();
+    log('❌ 删除没存上：' + e.message);
+  }
+}
+
+async function restoreNode(i){
+  const n = (EDIT.nodes || [])[i];
+  if (!n) return;
+  try {
+    await post('/api/edit/delete-clear', {source: CUR, key: n.key, gid: n.gid});
+    n.deleted = false;
+    markDirty(); renderTreeList();
+    log('[恢复] 条目已回到目录树。点「应用并重算」后进目录');
+  } catch (e){ log('❌ 恢复失败：' + e.message); }
+}
+
+async function restoreAllDeletes(){
+  const nDel = (EDIT.nodes || []).filter(n => n.deleted).length;
+  if (!nDel || !confirm(`恢复全部 ${nDel} 条被删条目？`)) return;
+  try {
+    await post('/api/edit/deletes-clear', {source: CUR});
+    EDIT.nodes.forEach(n => { if (n.deleted) n.deleted = false; });
+    markDirty(); renderTreeList();
+    log('[恢复] 全部条目已回到目录树。点「应用并重算」后进目录');
+  } catch (e){ log('❌ 恢复失败：' + e.message); }
+}
+
+/* ---- 页码对照 ----
+   前端复刻后端 pagecal.apply_anchors 的规则，这样敲一格就能立刻看到后面整段跟着递加，
+   不必每敲一下都等一次往返。规则：人工锚点只影响它自己及其之后；
+   第一个锚点之前的页沿用机器识别的区间，不替人外推。 */
+function pageMap(){
+  const out = {};
+  for (const shard of (EDIT.shard_order || [])){
+    const total = (EDIT.shard_pages || {})[shard] || 0;
+    const segs = EDIT.auto_segments[shard] || [];
+    // 前置页的编号是它自己的（front-N），不是正文页码。界面上必须能分辨，
+    // 否则「序言第 1 页」会被当成「正文第 1 页」—— 校对时就对错了对象。
+    const kindAt = (i) => {
+      for (const s of segs) if (i >= s.start && i <= s.end) return s.kind || 'body';
+      return 'body';
+    };
+    const m = {};
+    for (const s of segs){
+      for (let i = s.start; i <= Math.min(s.end, total - 1); i++)
+        m[i] = {printed: i + s.offset, src: 'auto', kind: s.kind || 'body'};
+    }
+    const anchors = (EDIT.anchors[shard] || []).slice()
+      .sort((a, b) => a.page_idx - b.page_idx);
+    if (anchors.length){
+      const first = anchors[0].page_idx;
+      for (let i = first; i < total; i++) delete m[i];
+      anchors.forEach((a, k) => {
+        const end = (k + 1 < anchors.length) ? anchors[k + 1].page_idx - 1 : total - 1;
+        const off = a.printed - a.page_idx;
+        const kind = kindAt(a.page_idx);
+        for (let i = a.page_idx; i <= Math.min(end, total - 1); i++)
+          m[i] = {printed: i + off, src: 'manual', kind: kind};
+      });
+    }
+    out[shard] = m;
+  }
+  return out;
+}
+/* 页码格的样式与标记：渲染和局部刷新共用一份，避免两处漂移 */
+function pvClass(v, seen, isA){
+  if (isA) return 'anch';
+  if (v && v.kind === 'front') return 'front';       // 前置页自有编号，不是正文页码
+  if (seen !== undefined) return 'obs';              // 机器真读到过
+  return v ? (v.src === 'manual' ? 'man' : 'auto') : 'none';
+}
+function pvMark(v, seen, isA){
+  if (isA) return '锚';
+  if (v && v.kind === 'front') return '前置';
+  if (seen !== undefined) return '识别';
+  return v ? '推算' : '';
+}
+
+function renderPageList(){
+  const pm = pageMap();
+  PAGE_ROWS = []; PAGE_BY_SHARD = {};
+  const parts = [];
+  let prev = null, prevGap = false, prevFront = false;
+  for (const shard of (EDIT.shard_order || [])){
+    const total = (EDIT.shard_pages || {})[shard] || 0;
+    const base = (EDIT.shard_offsets || {})[shard] || 0;
+    const obs = (EDIT.observations || {})[shard] || {};
+    const anch = {};
+    (EDIT.anchors[shard] || []).forEach(a => { anch[a.page_idx] = a.printed; });
+    for (let i = 0; i < total; i++){
+      const pdf = base + i + 1;
+      const v = pm[shard][i];
+      const seen = obs[String(i)];
+      const isA = anch[i] !== undefined;
+      const gap = (!v && !isA);
+      const isFront = !!(v && v.kind === 'front');
+      const cls = pvClass(v, seen, isA);
+      const mk = pvMark(v, seen, isA);
+      // 说明只在真有信息时出现，且同一件事只说一次：
+      // 早先每行都写「机器读到 N」、每行都写「前置页自有编号」，纯占地方。
+      let note = '';
+      if (shard !== prev) note = `分片 ${shard} 起 · PDF 第 ${pdf} 页`;
+      else if (isA) note = '人工指定 → 其后逐页递加';
+      else if (isFront && !prevFront) note = '前置页自有编号，不是正文页码';
+      else if (gap && !prevGap) note = '以下无页码（机器没读到）';
+      parts.push(`<div class="pgrow ${shard !== prev ? 'sep' : ''}" data-shard="${esc(shard)}" data-i="${i}" data-pdf="${pdf}">
+        <span class="pdf">${pdf}</span>
+        <input class="pv ${cls}" value="${v ? v.printed : ''}" inputmode="numeric"
+               title="${isFront ? '前置页第 ' + v.printed + ' 页' : ''}"
+               placeholder="${gap ? '—' : ''}">
+        <span class="mk">${mk}</span>
+        <span class="note">${esc(note)}</span></div>`);
+      prev = shard; prevGap = gap; prevFront = isFront;
+    }
+  }
+  $('pageList').innerHTML = parts.join('');
+  $('pageList').querySelectorAll('.pgrow').forEach(el => {
+    const rec = {shard: el.dataset.shard, i: +el.dataset.i, pdf: +el.dataset.pdf, el: el};
+    PAGE_ROWS.push(rec);
+    (PAGE_BY_SHARD[rec.shard] = PAGE_BY_SHARD[rec.shard] || []).push(rec);
+  });
+  renderPageListMeta();
+}
+
+function refreshPages(shard, fromIdx){
+  const pm = pageMap()[shard] || {};
+  const obs = (EDIT.observations || {})[shard] || {};
+  const anch = {};
+  (EDIT.anchors[shard] || []).forEach(a => { anch[a.page_idx] = a.printed; });
+  for (const r of (PAGE_BY_SHARD[shard] || [])){
+    if (r.i < fromIdx) continue;
+    const v = pm[r.i];
+    const inp = r.el.querySelector('input.pv');
+    const seen = obs[String(r.i)];
+    const isA = anch[r.i] !== undefined;
+    inp.value = v ? v.printed : '';
+    inp.className = 'pv ' + pvClass(v, seen, isA);
+    r.el.querySelector('.mk').textContent = pvMark(v, seen, isA);
+  }
+}
+
+async function commitPage(inp){
+  const row = inp.closest('.pgrow');
+  const shard = row.dataset.shard, i = +row.dataset.i;
+  const raw = inp.value.trim();
+  const val = raw === '' ? null : parseInt(raw, 10);
+  if (val !== null && (isNaN(val) || val < 1)){
+    log('❌ 印刷页码要是正整数：' + raw);
+    renderPageList();
+    return;
+  }
+  try {
+    if (val === null){
+      await post('/api/edit/anchor-clear', {source: CUR, shard: shard, page_idx: i});
+      const arr = EDIT.anchors[shard] || [];
+      EDIT.anchors[shard] = arr.filter(a => a.page_idx !== i);
+      log(`[锚点] 清除 ${shard} p${i + 1}`);
+    } else {
+      await post('/api/edit/anchor', {source: CUR, shard: shard, page_idx: i, printed: val});
+      const arr = (EDIT.anchors[shard] || []).filter(a => a.page_idx !== i);
+      arr.push({page_idx: i, printed: val});
+      arr.sort((a, b) => a.page_idx - b.page_idx);
+      EDIT.anchors[shard] = arr;
+      log(`[锚点] ${shard} PDF 第 ${+row.dataset.pdf} 页 = 印刷第 ${val} 页 → 其后逐页递加`);
+    }
+    markDirty();
+    refreshPages(shard, 0);
+    renderPageListMeta();
+  } catch (e){ log('❌ 锚点没存上：' + e.message); }
+}
+
+function renderPageListMeta(){
+  const nA = Object.values(EDIT.anchors || {}).reduce((a, v) => a + v.length, 0);
+  const nObs = Object.values(EDIT.observations || {}).reduce((a, o) => a + Object.keys(o).length, 0);
+  $('pageMeta').textContent = `机器读到页码 ${nObs} 页`
+    + (nA ? ` · 人工锚点 ${nA} 处` : '') + ` · locator=${EDIT.calib.locator_type || '—'}`;
+}
+
+function jumpPdf(){
+  const n = parseInt($('jumpPdf').value, 10);
+  if (isNaN(n)) return;
+  const r = PAGE_ROWS.find(x => x.pdf === n);
+  if (r) r.el.scrollIntoView({block: 'center'});
+  else log(`❌ 没有 PDF 第 ${n} 页（全书 ${PAGE_ROWS.length} 页）`);
+}
+
+async function clearAnchors(){
+  if (!confirm('清空这本书的全部人工锚点？页码会回到机器识别的结果。')) return;
+  await post('/api/edit/anchors-clear', {source: CUR});
+  Object.keys(EDIT.anchors || {}).forEach(k => { EDIT.anchors[k] = []; });
+  markDirty(); renderPageList();
+  log('[锚点] 已全部清空');
+}
+
+/* ---- 应用 ---- */
+async function applyEdits(){
+  if (BUSY) return;
+  BUSY = true; $('btnApply').disabled = true;
+  setLog('[apply] 按人工核定重算页码与目录…');
+  try {
+    const r = await post('/api/apply', {source: CUR});
+    const j = await poll(r.job);
+    if (j.status === 'done'){
+      DIRTY = false; showDirty();
+      await selectSource(CUR);
+      log('[apply] 完成 —— 目录和页码已按你的核定重算');
+    } else {
+      log('❌ ' + (j.error || '重算失败'));
+    }
+  } catch (e){ log('❌ ' + e.message); }
+  BUSY = false; $('btnApply').disabled = false;
+}
+
+/* ---------------------------------------------------------------- 阶段 */
+async function runStage(kind){
+  const body = {source: CUR, depth: DEPTH, footnotes: ($('fnMode') || {}).value || 'page-end'};
+  try {
+    const r = await post('/api/' + kind, body);
+    const j = await poll(r.job);
+    if (j.status === 'done'){
+      await selectSource(CUR);
+    } else log('❌ ' + (j.error || '失败'));
+  } catch (e){ log('❌ ' + e.message); }
+}
+
+/* ---------------------------------------------------------------- 产物 */
+function renderOut(){
+  $('pOut').style.display = 'block';
+  const d = DETAIL, oc = d.outline || {}, pc = d.page_calibration || {}, vf = d.verify || {};
+  const stats = oc.level_stats || {};
+  const exports = d.exports || [];
+  const body = [];
+
+  body.push(`<div class="row" style="margin-bottom:9px">
+    <span class="hint">目录</span>
+    <b class="mono">${oc.node_total || 0} 节点</b>
+    <span class="hint">· 页码 <b class="mono">${esc(pc.verdict || '未校准')}</b>
+      <span class="mono">${esc(pc.locator_type || '')}</span></span>
+    ${vf.verdict ? `<span class="tag ${esc(vf.verdict)}">${esc(vf.verdict)}</span>` : ''}
+  </div>`);
+
+  const keys = Object.keys(stats).sort((a, b) => a - b);
+  body.push('<div class="hint" style="margin-bottom:5px">按第几层导出（数字＝切出的文件数）</div><div class="dep">');
+  keys.forEach(k => {
+    body.push(`<div class="o ${+k === DEPTH ? 'on' : ''}" onclick="DEPTH=${k};renderOut()">
+      <b>${stats[k].nodes}</b><span>第 ${k} 层</span></div>`);
+  });
+  body.push('</div>');
+
+  body.push(`<div class="row" style="margin-top:10px">
+    <label class="hint">脚注 <select id="fnMode" style="width:auto">
+      <option value="page-end">页末</option><option value="inline">随文</option>
+      <option value="drop">丢弃</option></select></label>
+    <button class="primary sm" onclick="runStage('export')">导出 L${DEPTH}</button>
+    <button class="sm" onclick="runStage('verify')">校验</button>
+    <button class="sm" onclick="dl()">下载 zip</button>
+  </div>`);
+
+
+  if (exports.length){
+    body.push('<table style="margin-top:10px"><tr><th>深度</th><th class="num">文件</th>'
+      + '<th class="num">字数</th><th class="num">图</th><th></th></tr>');
+    exports.forEach(e => {
+      const s = e.stats || {};
+      body.push(`<tr><td class="mono">${esc(e.depth)}</td><td class="num">${s.files || 0}</td>
+        <td class="num">${num(s.chars)}</td><td class="num">${s.images_copied || 0}</td>
+        <td><button class="sm" onclick="DEPTH=${parseInt(e.depth.replace('L',''),10)};renderOut()">选</button></td></tr>`);
+    });
+    body.push('</table>');
+  } else {
+    body.push('<p class="hint" style="margin:9px 0 0">还没导出过。</p>');
+  }
+
+  const gates = (vf.gates || []);
+  if (gates.length){
+    body.push('<div style="margin-top:11px">');
+    gates.forEach(g => body.push(
+      `<div class="g ${esc(g.status)}"><b>${esc(g.id)}</b> ${esc(g.title || '')}
+        <span class="tag ${esc(g.status)}">${esc(g.status)}</span>
+        <div class="hint">${esc(g.note || '')}</div></div>`));
+    body.push('</div>');
+  }
+  $('outBody').innerHTML = body.join('');
+  // 脚注档预选源自己的口径：EPUB 登记的页下注本来就随文，按 PDF 那套「攒到页末」
+  // 会把整章的注堆成一个大尾巴。人不改就沿用；改了以人选的为准。
+  // 必须在 innerHTML **之后**设置 —— 之前 $('fnMode') 拿到的还是上一轮那个节点。
+  if ($('fnMode') && d.footnote_default) $('fnMode').value = d.footnote_default;
+}
+function dl(){ window.location = `/api/download?id=${encodeURIComponent(CUR)}&depth=${DEPTH}`; }
+
+/* ---------------------------------------------------------------- 新增源 */
+async function loadMineruDirs(){
+  try {
+    const q = ($('mdQuery').value || '').trim();
+    const r = await api('/api/mineru_dirs?q=' + encodeURIComponent(q));
+    $('mdList').innerHTML = r.dirs.length ? r.dirs.map(d =>
+      `<div class="mdrow ${d.registered ? 'done' : ''}" onclick="pickDir(this)"
+            data-dir="${esc(d.dir)}">
+         <span class="nm">${esc(d.name)}</span>
+         <span class="pg">${d.pages}p · ${num(d.blocks)}块</span>
+         <span class="hint">${d.registered ? '已登记' : ''}</span></div>`).join('')
+      : '<div class="hint" style="padding:9px">没有匹配的工程。</div>';
+  } catch (e){ $('mdList').innerHTML = '<div class="hint" style="padding:9px">读不到：' + esc(e.message) + '</div>'; }
+}
+function pickDir(el){
+  if (!el.dataset.picked){
+    el.dataset.picked = '1'; el.classList.add('sel');
+    const cur = ($('adoptDirs').value || '').trim();
+    $('adoptDirs').value = cur ? cur + ';' + el.dataset.dir : el.dataset.dir;
+  } else {
+    delete el.dataset.picked; el.classList.remove('sel');
+    $('adoptDirs').value = ($('adoptDirs').value || '').split(';')
+      .filter(x => x.trim() && x.trim() !== el.dataset.dir).join(';');
+  }
+}
+function deriveTitle(name){
+  return String(name).replace(/\.(pdf|epub)$/i, '').replace(/[-_]\s*\d{4}\s*[-_].*$/, '').trim();
+}
+
+async function doAdopt(){
+  const dirs = ($('adoptDirs').value || '').split(';').map(s => s.trim()).filter(Boolean);
+  if (!dirs.length) return log('❌ 先选一个或多个 MinerU 工程目录');
+  try {
+    const r = await post('/api/adopt', {dirs: dirs, title: ($('ingestTitle').value || '').trim()});
+    const j = await poll(r.job);
+    if (j.status === 'done'){
+      $('adoptDirs').value = '';
+      CUR = j.result.source_id; await boot(); await selectSource(CUR);
+    } else log('❌ ' + (j.error || '登记失败'));
+  } catch (e){ log('❌ ' + e.message); }
+}
+
+async function doIngest(){
+  const f = ($('ingestFile').value || '').trim();
+  if (!f) return log('❌ 请填 PDF 或 EPUB 的绝对路径');
+  if (!/\.(pdf|epub)$/i.test(f)) return log('❌ 只认 .pdf 与 .epub');
+  setLog('[ingest] 提交中…');
+  try {
+    const r = await post('/api/ingest', {file: f, title: ($('ingestTitle').value || '').trim(),
+      shard_mode: $('shardMode').value, shard_pages: parseInt($('shardPages').value, 10) || null});
+    const j = await poll(r.job);
+    if (j.status === 'done'){ CUR = j.result.source_id; await boot(); await selectSource(CUR); }
+    else { await boot(); log('⚠️ OCR 没跑完，左栏「未完成」里可以续跑'); }
+  } catch (e){ log('❌ ' + e.message); }
+}
+
+async function doResume(sid){
+  try {
+    const r = await post('/api/resume', {source: sid});
+    const j = await poll(r.job);
+    if (j.status === 'done'){ await boot(); if (CUR) await selectSource(CUR); }
+    else log('❌ ' + (j.error || '续跑失败'));
+  } catch (e){ log('❌ ' + e.message); }
+}
+
+async function doDelete(sid, title){
+  if (!confirm(`把《${title}》移出工作台？\n\n` +
+               `· 只移走 doclab 自己的产物（目录/页码/导出），进 _trash 可恢复\n` +
+               `· 原始 PDF 不动\n· MinerU 本机工程目录不动\n\n` +
+               `OCR 重跑要烧配额和几十分钟，别误点。`)) return;
+  try {
+    const r = await post('/api/delete', {source: sid});
+    const j = await poll(r.job);
+    if (j.status === 'done'){
+      if (CUR === sid){ CUR = null; EDIT = null; }
+      await boot();
+    } else log('❌ ' + (j.error || '移除失败'));
+  } catch (e){ log('❌ ' + e.message); }
+}
+
+function syncShardUI(){
+  // EPUB 不分片，也没有「页」这个概念 —— 这一栏对它整段不适用，直说，别让人
+  // 以为选了 local 就会先切一遍。
+  if (/\.epub$/i.test(($('ingestFile') || {}).value || '')){
+    $('shardTip').textContent = 'EPUB 不分片：文本与标题标签是现成的，本机直接解析。';
+    return;
+  }
+  const m = $('shardMode').value;
+  $('shardTip').textContent = m === 'mineru'
+    ? '整本原 PDF 按片重复上传、每片带页范围，由 MinerU 选页。代价＝上传流量 × 片数。'
+    : '本机 pypdf 先切成分片再上传（需装 pypdf）。';
+}
+
+/* 入库栏随扩展名切换说明：PDF 要烧 MinerU 配额、EPUB 不烧也不能给纸书页码。 */
+function syncIngestUI(){
+  const f = (($('ingestFile') || {}).value || '').trim();
+  const isEpub = /\.epub$/i.test(f);
+  $('ingestTip').textContent = !f ? ''
+    : isEpub
+      ? 'EPUB：本机解析，不调 MinerU。⚠️ 源里没有纸书页码，页锚一律标 unmapped（页码校准降级 section_only）。'
+      : /\.pdf$/i.test(f) ? 'PDF：按下面的切块方式送 MinerU 做 OCR。'
+      : '只认 .pdf 与 .epub —— 其他格式请先转成 PDF。';
+  if ($('shardMode') && $('shardPages')){
+    $('shardMode').disabled = isEpub;
+    $('shardPages').disabled = isEpub;
+  }
+  syncShardUI();
+}
+
+/* ---------------------------------------------------------------- 页码格事件 */
+$('pageList').addEventListener('change', e => {
+  const inp = e.target.closest('input.pv');
+  if (inp && !BUSY) commitPage(inp);
+});
+$('pageList').addEventListener('keydown', e => {
+  if (e.target.closest('input.pv') && e.key === 'Enter'){ e.preventDefault(); e.target.blur(); }
+});
+
+boot().catch(e => { setLog('❌ 启动失败：' + e.message); });
+</script>
+</body>
+</html>

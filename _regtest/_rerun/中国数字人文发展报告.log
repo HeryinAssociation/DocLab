@@ -1,0 +1,76 @@
+### pagecal rc=0
+[pagecal] 中国数字人文发展报告：扫描 4009 块取页码观测 …
+[pagecal] 叠加人工锚点 2 处
+[pagecal] 判定 manual／paginated：含 2 处人工锚点，按人给定的对应关系逐页递加；锚点之间 offset 变化处自然断开，不插值。原自动判定：正文区 3 个区间、共 480 页观测、覆盖 0.964，分片接续通过
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+# 页码校准报告
+
+- 生成：2026-09-22T12:03:30+08:00
+- 判定：**manual** ／ locator_type = `paginated`
+- 依据：含 2 处人工锚点，按人给定的对应关系逐页递加；锚点之间 offset 变化处自然断开，不插值。原自动判定：正文区 3 个区间、共 480 页观测、覆盖 0.964，分片接续通过
+
+## 区间表
+
+| 分片 | 类型 | 物理页 range | 纸书页 range | offset | 观测 | 覆盖 | 置信 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| P1 | front | 5–19 | 1–15 | -4 | 0 | 0% | manual |
+| P1 | body | 20–199 | 10–189 | -10 | 0 | 0% | manual |
+| P2 | body | 0–199 | 188–387 | +188 | 196 | 98% | high |
+| P3 | body | 0–112 | 388–500 | +388 | 103 | 91% | high |
+
+> offset = 纸书页码 − 物理页序，区间内恒定。
+
+## 断点（不填、不外推）
+
+- P1 物理页 11→15 之间 漏 3 页（推算纸书页 [8, 9, 10]）
+
+## 跨分片接续
+
+| 从 | 到 | 期望 | 实际 | 结论 |
+| --- | --- | --- | --- | --- |
+| P1:199 | P2:0 | 188 | 188 | ✅ 接续 |
+| P2:199 | P3:0 | 388 | 388 | ✅ 接续 |
+### outline rc=0
+[outline] 中国数字人文发展报告：3 片 / 4009 块（含目录补章）
+[outline] 叠加人工定级 13 处
+[outline] 节点 415 个 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国数字人文发展报告\outline.json
+[outline] 目录补章：补入 1 个漏标章（另有 0 个跳过）
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+层级统计（中国数字人文发展报告）　层级来源：中文编号推断
+  层级    节点数         切到本层=文件数        总字数       平均    空节点
+  L1      7                7    400,310   57,187      0
+  L2     18               18    393,849   21,880      0
+  L3     95               95    391,096    4,116      0
+  L4    145              145    300,648    2,073      0
+  L5    149              149    119,208      800      0
+  L6      1                1        901      901      0
+
+印刷目录交叉校验：目录 24 条，树里找到 24 条（目录覆盖率 100%）
+  本级标题 25 个，其中 24 个有目录背书（96%；目录通常只列到章，此数偏低属正常）
+
+完整目录树见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国数字人文发展报告\目录索引.md
+选好深度后：python doclab.py export 中国数字人文发展报告 --depth N
+### audit rc=2
+[audit] 中国数字人文发展报告：校核目录结构…
+[audit] 判定 fail｜🔴 2 🟡 9 ⚪ 13
+[audit] → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国数字人文发展报告\目录校核.json / C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国数字人文发展报告\目录校核.md
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+目录校核：中国数字人文发展报告
+  节点 415｜判定 fail｜🔴 2 🟡 9 ⚪ 13
+  toc_page_mismatch            5
+  page_zone_crossing           4
+  page_parent_after_child      4
+  top_node_in_front_zone       4
+  dropped_long_candidate       3
+  dropped_toc_backed           1
+  toc_page_offset_shift        1
+  page_decreasing              1
+  calib_declared_gap           1
+
+完整清单见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国数字人文发展报告\目录校核.md

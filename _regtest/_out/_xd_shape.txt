@@ -1,0 +1,8 @@
+顶层字段: ['depth_limit', 'doc_title', 'generated_at', 'node_count', 'node_total_all', 'nodes', 'source_id']
+node_count: 53 node_total_all: 404 depth_limit: 2
+节点字段: ['blocks', 'chars', 'flags', 'gid', 'key', 'level', 'marker', 'nid', 'offset', 'own_chars', 'page', 'page_idx', 'seq', 'shard', 'title']
+前两条:
+   {"seq": 1, "key": "0", "nid": "1", "level": 1, "title": "前置（封面·书名页·版权页）", "gid": 0, "page": "", "shard": "P1", "page_idx": 0, "marker": "front", "offset": 0, "blocks": 34, "chars": 2818, "own_chars": 2818, "flags": []}
+   {"seq": 2, "key": "add:42", "nid": "2", "level": 1, "title": "前 言", "gid": 42, "page": "front-1", "shard": "P1", "page_idx": 8, "marker": "chapter", "offset": 0, "blocks": 17, "chars": 2766, "own_chars": 2766, "flags": ["manual"]}
+含 2508 的条:
+   {"seq": 43, "key": "add:2508", "nid": "11.4", "level": 2, "title": "档案与文化", "gid": 2508, "page": "front-402", "shard": "P3", "page_idx": 13, "marker": "chapter", "offset": 0, "blocks": 56, "chars": 9934, "own_chars": 202, "flags": ["manual"]}

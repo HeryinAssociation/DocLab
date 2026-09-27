@@ -1,0 +1,24 @@
+[ingest] 档案与社会记忆研究_丁华东.pdf：3 个分片（每片上限 200 页）｜切块方式 = 交由 MinerU（page_ranges）
+[ingest] P1 已上传 档案与社会记忆研究_丁华东.pdf（page_ranges=1-200）
+[ingest]   P1 档案与社会记忆研究_丁华东__1-200.pdf: pending
+[ingest]   P1 档案与社会记忆研究_丁华东__1-200.pdf: running 3/200 页
+[ingest]   P1 档案与社会记忆研究_丁华东__1-200.pdf: done
+[ingest] 下载 P1 ← 档案与社会记忆研究_丁华东__1-200.pdf …
+[ingest]   P1.zip 29.6 MB，校验收讫 ✓
+[ingest]   P1 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\projects\P1（200 页 / 1868 块）
+[ingest] P2 已上传 档案与社会记忆研究_丁华东.pdf（page_ranges=201-400）
+[ingest]   P2 档案与社会记忆研究_丁华东__201-400.pdf: waiting-file
+[ingest]   P2 档案与社会记忆研究_丁华东__201-400.pdf: pending
+[ingest]   P2 档案与社会记忆研究_丁华东__201-400.pdf: running 13/200 页
+[ingest]   P2 档案与社会记忆研究_丁华东__201-400.pdf: done
+[ingest] 下载 P2 ← 档案与社会记忆研究_丁华东__201-400.pdf …
+[ingest]   P2.zip 29.6 MB，校验收讫 ✓
+[ingest]   P2 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\projects\P2（200 页 / 1849 块）
+[ingest] P3 已上传 档案与社会记忆研究_丁华东.pdf（page_ranges=401-433）
+[ingest]   P3 档案与社会记忆研究_丁华东__401-433.pdf: waiting-file
+[ingest]   P3 档案与社会记忆研究_丁华东__401-433.pdf: running 3/33 页
+[ingest]   P3 档案与社会记忆研究_丁华东__401-433.pdf: done
+[ingest] 下载 P3 ← 档案与社会记忆研究_丁华东__401-433.pdf …
+[ingest]   P3.zip 4.1 MB，校验收讫 ✓
+[ingest]   P3 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\档案与社会记忆研究_丁华东.b8a64398d9\projects\P3（33 页 / 267 块）
+[ingest] 完成：source_id=档案与社会记忆研究_丁华东.b8a64398d9

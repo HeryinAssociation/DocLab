@@ -1,0 +1,42 @@
+临时输出目录（工作区之外）：C:\Users\ZHAOSH~1\AppData\Local\Temp\_doclab_namecheck
+
+================= L2 导出 =================
+  files=21  chars=400,233  images=43
+  PASS  每个节点都有对应文件，且名字 = 序号_标题链  缺 0 个：[]
+  PASS  层级链完整（近层祖先一截不缺）  0 处：[]
+  PASS  无撞名  21 - 21
+  PASS  00-目录.md 的链接全部指向真实文件  断链 0
+  PASS  manifest.csv 的 path 列全部落地  断链 0
+  PASS  manifest.csv 行数 = 文件数  21 vs 21
+  PASS  files 与基线一致（21）  21
+  PASS  chars 与基线一致（400,233）  400,233
+  PASS  images 与基线一致（43）  43
+  PASS  unmapped 页锚数与本轮改动前一致  新 7 / 旧 7（共 502 条锚）
+  PASS  页锚仍是 `p=N` / `p=front-N` 样式，无冒牌纸书页码  502 条锚
+  PASS  脚注仍在（本轮不改这块）  300 处
+  -- 闸门总判定：pass
+     G1 页锚覆盖率: pass
+     G2 内容无损: pass
+     G3 页码一致性: pass
+     G4 入库硬条件（§2.3）: pass
+  -- 前 3 个文件名：
+     001_前置（封面·书名页·版权页）.md
+     002_见证、相遇与发现.md
+     003_骐骥驰骋，悟道先行.md
+
+================= L3 导出 =================
+  files=98  chars=397,480  images=43
+  PASS  每个节点都有对应文件，且名字 = 序号_标题链  缺 0 个：[]
+  PASS  层级链完整（近层祖先一截不缺）  0 处：[]
+  PASS  无撞名  98 - 98
+  PASS  00-目录.md 的链接全部指向真实文件  断链 0
+  PASS  manifest.csv 的 path 列全部落地  断链 0
+  PASS  manifest.csv 行数 = 文件数  98 vs 98
+  -- 前 3 个文件名：
+     001_前置（封面·书名页·版权页）.md
+     002_见证、相遇与发现.md
+     003_骐骥驰骋，悟道先行.md
+
+============================================================
+总判定：全部通过
+（临时目录 C:\Users\ZHAOSH~1\AppData\Local\Temp\_doclab_namecheck，可随时删；他的 out/ 与 _work/ 一个字节没动）

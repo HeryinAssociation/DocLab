@@ -1,0 +1,22 @@
+--- 含「艺术」的节点 ---
+d4 nid=4.2.2.5 L4 key=556 gid=None gid_start=556 flags=[] title='（五）艺术学'
+d2 nid=5.5 L2 key=toc:P2:2294:中国艺术学科数字人文发展报告 gid=None gid_start=2294 flags=['from_toc', 'needs_review', 'empty'] title='中国艺术学科数字人文发展报告'
+d2 nid=5.6 L2 key=add:2294 gid=None gid_start=2294 flags=['manual'] title='中国艺术学科数字人文发展报告——是否存在一个“数字艺术史”？'
+d3 nid=5.6.2 L3 key=2309 gid=None gid_start=2309 flags=[] title='一、有待承认：艺术学学科内的数字艺术史'
+d3 nid=5.6.3 L3 key=2347 gid=None gid_start=2347 flags=[] title='二、局部引爆：基于主题的数字艺术史研究'
+d3 nid=5.6.4 L3 key=2426 gid=None gid_start=2426 flags=[] title='三、有待深入：基于方法的数字艺术史研究的反思'
+d4 nid=5.6.4.1 L4 key=2449 gid=None gid_start=2449 flags=[] title='结语：艺术之外'
+--- 第二部分 L2 列表 ---
+nid=5.1 key=1505 gid_start=1505 flags=[] title='中国语言文字学数字人文发展报告'
+nid=5.2 key=1769 gid_start=1769 flags=[] title='中国文学数字人文发展报告'
+nid=5.3 key=1972 gid_start=1972 flags=[] title='中国史学（含思想史）数字人文发展报告'
+nid=5.4 key=2128 gid_start=2128 flags=[] title='中国历史地理学数字人文发展报告'
+nid=5.5 key=toc:P2:2294:中国艺术学科数字人文发展报告 gid_start=2294 flags=['from_toc', 'needs_review', 'empty'] title='中国艺术学科数字人文发展报告'
+nid=5.6 key=add:2294 gid_start=2294 flags=['manual'] title='中国艺术学科数字人文发展报告——是否存在一个“数字艺术史”？'
+nid=5.7 key=2462 gid_start=2462 flags=[] title='中国图书馆与图书馆学科数字人文发展报告'
+nid=5.8 key=2703 gid_start=2703 flags=[] title='中国档案馆与档案学科数字人文发展报告'
+nid=5.9 key=2848 gid_start=2848 flags=[] title='中国博物馆及其相关学科数字人文发展报告'
+nid=5.10 key=3187 gid_start=3187 flags=[] title='中国数字记忆与数字重建发展报告'
+nid=5.11 key=3384 gid_start=3384 flags=[] title='中国信息技术及其产业界数字人文发展报告'
+node_total 416
+toc_repair [{"title": "中国艺术学科数字人文发展报告", "printed": 287, "status": "已补", "shard": "P2", "page_idx": 99, "gid": 2294, "key": "toc:P2:2294:中国艺术学科数字人文发展报告"}]

@@ -1,0 +1,215 @@
+{
+  "source_id": "中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329",
+  "name": "胡鸿杰：章/编标题由残缺真块换成完整标题，补回第二章",
+  "note": "凡「残缺真块 + 同 gid 目录节点」成对出现的，删残缺真块、留目录节点。第二章标题在正文里被拆成「档案学」「理论条件」两块，两块都删、按目录行原文在 gid=554 立断点。",
+  "items": [
+    {
+      "action": "delete",
+      "key": "351",
+      "snapshot": {
+        "title": "档案学生成背景",
+        "level": 3,
+        "marker": "plain",
+        "shard": "P1",
+        "page_idx": 48,
+        "chars": 0,
+        "own_chars": 0,
+        "blocks": 0,
+        "gid": 351
+      },
+      "evidence": "gid=351 的真块是「档案学生成背景」（被 OCR 漏了编号）；同 gid 上已有目录背书的合成节点「第一章 档案学的生成背景」"
+    },
+    {
+      "action": "delete",
+      "key": "720",
+      "snapshot": {
+        "title": "档案学 实践基础",
+        "level": 4,
+        "marker": "plain",
+        "shard": "P1",
+        "page_idx": 102,
+        "chars": 0,
+        "own_chars": 0,
+        "blocks": 0,
+        "gid": 720
+      },
+      "evidence": "gid=720 的真块是「档案学 实践基础」；同 gid 上已有合成节点「第三章 档案学的实践基础」"
+    },
+    {
+      "action": "delete",
+      "key": "1038",
+      "snapshot": {
+        "title": "第五章 档案学“基干体”一档案管理学",
+        "level": 2,
+        "marker": "chapter",
+        "shard": "P1",
+        "page_idx": 158,
+        "chars": 0,
+        "own_chars": 0,
+        "blocks": 0,
+        "gid": 1038
+      },
+      "evidence": "gid=1038 的真块是「第五章 档案学“基干体”一档案管理学」（破折号被认成「一」）；同 gid 上已有合成节点「第五章 档案学的“基干体”档案管理学」"
+    },
+    {
+      "action": "delete",
+      "key": "1168",
+      "snapshot": {
+        "title": "第六章 档案学“衍生群”（上）—档案文献编纂学",
+        "level": 2,
+        "marker": "chapter",
+        "shard": "P1",
+        "page_idx": 182,
+        "chars": 0,
+        "own_chars": 0,
+        "blocks": 0,
+        "gid": 1168
+      },
+      "evidence": "gid=1168 的真块是「第六章 档案学“衍生群”（上）—档案文献编纂学」；同 gid 上已有合成节点"
+    },
+    {
+      "action": "delete",
+      "key": "1477",
+      "snapshot": {
+        "title": "第八章 档案学“终极者”——档案学概论",
+        "level": 2,
+        "marker": "chapter",
+        "shard": "P2",
+        "page_idx": 32,
+        "chars": 0,
+        "own_chars": 0,
+        "blocks": 0,
+        "gid": 1477
+      },
+      "evidence": "gid=1477 的真块是「第八章 档案学“终极者”——档案学概论」；同 gid 上已有合成节点"
+    },
+    {
+      "action": "delete",
+      "key": "1608",
+      "snapshot": {
+        "title": "第九章 中国档案学评价机制",
+        "level": 2,
+        "marker": "chapter",
+        "shard": "P2",
+        "page_idx": 54,
+        "chars": 0,
+        "own_chars": 0,
+        "blocks": 0,
+        "gid": 1608
+      },
+      "evidence": "gid=1608 的真块是「第九章 中国档案学评价机制」（目录作「中国档案学的评价机制」）；同 gid 上已有合成节点"
+    },
+    {
+      "action": "delete",
+      "key": "554",
+      "snapshot": {
+        "title": "档案学",
+        "level": 2,
+        "marker": "plain",
+        "shard": "P1",
+        "page_idx": 78,
+        "chars": 3,
+        "own_chars": 3,
+        "blocks": 1,
+        "gid": 554
+      },
+      "evidence": "「档案学」是「第二章 档案学的理论条件」标题的前半，被 OCR 拆成独立标题块"
+    },
+    {
+      "action": "delete",
+      "key": "555",
+      "snapshot": {
+        "title": "理论条件",
+        "level": 2,
+        "marker": "plain",
+        "shard": "P1",
+        "page_idx": 78,
+        "chars": 578,
+        "own_chars": 578,
+        "blocks": 4,
+        "gid": 555
+      },
+      "evidence": "「理论条件」是同一标题的后半，也被拆成了独立标题块"
+    },
+    {
+      "action": "delete",
+      "key": "882",
+      "snapshot": {
+        "title": "第四章",
+        "level": 1,
+        "marker": "chapter",
+        "shard": "P1",
+        "page_idx": 128,
+        "chars": 16578,
+        "own_chars": 3,
+        "blocks": 65,
+        "gid": 882
+      },
+      "evidence": "gid=882 的真块只剩编号「第四章」，标题正文在 gid=883「档案学学者构成」（MinerU 已标标题）"
+    },
+    {
+      "action": "delete",
+      "key": "1022",
+      "snapshot": {
+        "title": "第二编",
+        "level": 1,
+        "marker": "part",
+        "shard": "P1",
+        "page_idx": 154,
+        "chars": 61162,
+        "own_chars": 3,
+        "blocks": 304,
+        "gid": 1022
+      },
+      "evidence": "gid=1022 的真块只剩编号「第二编」，编名在 gid=1023「中国档案学的结构功能」"
+    },
+    {
+      "action": "delete",
+      "key": "1594",
+      "snapshot": {
+        "title": "第三编",
+        "level": 1,
+        "marker": "part",
+        "shard": "P2",
+        "page_idx": 52,
+        "chars": 45330,
+        "own_chars": 14,
+        "blocks": 183,
+        "gid": 1594
+      },
+      "evidence": "gid=1594 的真块只剩编号「第三编」，编名在 gid=1596「中国档案学的价值」"
+    },
+    {
+      "action": "add",
+      "gid": 554,
+      "title": "第二章 档案学的理论条件",
+      "level": 1,
+      "offset": 0,
+      "evidence": "audit numbering_gap「第一章 → 第三章」缺第二章；书内目录列「第二章 档案学的理论条件」（印刷 63）；正文里这一标题被 OCR 拆成 gid=554「档案学」与 gid=555「理论条件」两块，R5 因「理论条件」四字是目录标题的子串而误判为已存在、没有补。标题取目录行原文"
+    },
+    {
+      "action": "add",
+      "gid": 883,
+      "title": "档案学学者构成",
+      "level": 1,
+      "offset": 0,
+      "evidence": "正文 gid=883 是标题正文（MinerU 已标 text_level），删掉只剩编号的 gid=882 后在此立断点，标题取正文原文"
+    },
+    {
+      "action": "add",
+      "gid": 1023,
+      "title": "中国档案学的结构功能",
+      "level": 1,
+      "offset": 0,
+      "evidence": "正文 gid=1023 是编名（MinerU 已标 text_level）；标题取正文原文"
+    },
+    {
+      "action": "add",
+      "gid": 1596,
+      "title": "中国档案学的价值",
+      "level": 1,
+      "offset": 0,
+      "evidence": "正文 gid=1596 是编名；标题取正文原文"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+manual_added: [{"gid": 2294, "key": "add:2294", "title": "中国艺术学科数字人文发展报告——是否存在一个“数字艺术史”？", "status": "已加", "level": 2, "offset": 0, "shard": "P2", "page_idx": 99, "on_heading": false}]
+manual_added_count: 1
+manual_level_count: 13

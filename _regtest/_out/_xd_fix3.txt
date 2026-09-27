@@ -1,0 +1,58 @@
+  树里 key=496: L2 nid=4.1 title='作为档案的历史手稿'
+  树里 key=497: 无节点
+[toc-export] rc=0 → _regtest/_out/_xd4_exp.txt
+
+导出第 8 条: {"seq": 9, "key": "496", "nid": "4.1", "level": 2, "title": "作为档案的历史手稿", "gid": 496, "page": "73", "shard": "P1", "page_idx": 84, "marker": "chapter", "offset": 0, "blocks": 23, "chars": 6323, "own_chars": 6323, "flags": []}
+改后 JSON（53 条）
+[toc-import] rc=0 → _regtest/_out/_xd4_dry.txt
+[toc-import] 演练：2 条将被应用（加 --apply 才落盘）
+        删　key=496　「作为档案的历史手稿」
+        增　gid=496　「作为档案的历史手稿——几种定义及其应用」　L2
+
+[toc-import] rc=0 → _regtest/_out/_xd4_apply.txt
+[toc-import] 应用 2 条
+[toc-import] 重算目录树
+[outline] 现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4：3 片 / 3608 块（含目录补章）
+[outline] 叠加人工定级 17 处
+[outline] 剔除人工删除 2 条
+[outline] 并入人工新增标题 6 条
+[outline] 节点 403 个 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4\outline.json
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+层级统计（现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4）　层级来源：中文编号推断
+  层级    节点数         切到本层=文件数        总字数       平均    空节点
+  L1     14               14    361,443   25,817      0
+  L2     39               39    355,716    9,120      0
+  L3    193              193    258,720    1,340      0
+  L4     30               30    142,195    4,739      0
+  L5     15               15    103,897    6,926      0
+  L6     15               15     87,598    5,839      0
+  L7     13               13     66,134    5,087      0
+  L8     11
+[toc-export] rc=0 → _regtest/_out/_xd4_reexp.txt
+[audit] rc=0 → _regtest/_out/_xd4_audit.txt
+[export] rc=0 → _regtest/_out/_xd4_export.txt
+[verify] rc=0 → _regtest/_out/_xd4_verify.txt
+# 校验报告：现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4
+
+- 生成：2026-09-22T18:36:50+08:00
+- 总判定：**⚠️ warn**
+
+| 闸门 | 名称 | 结果 | 说明 |
+| --- | --- | --- | --- |
+| G1 | 页锚覆盖率 | ✅ pass | 页锚覆盖良好 |
+| G2 | 内容无损 | ✅ pass | 全部源块可在导出文件中逐字回查 |
+| G3 | 页码一致性 | ⚠️ warn | 1 处需注意（含 2 处已声明断点） |
+| G4 | 入库硬条件（§2.3） | ✅ pass | 41/42 个文件含页锚 |
+
+## G3 已声明断点（不填、不外推）
+
+- P1 物理页 3→5：1 页无页码观测
+- P1 物理页 11→15：3 页无页码观测
+
+## G3 需注意
+
+- {'shard': 'P1', 'type': '低置信区间', 'page_idx_range': [3, 3], 'note': '仅 1 页观测、覆盖 100%'}
+
+

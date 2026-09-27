@@ -1,0 +1,52 @@
+{
+  "中国数字人文发展报告": {
+    "verdict": "fail",
+    "severity": {
+      "high": 2,
+      "warn": 9,
+      "info": 13
+    },
+    "nodes": 415,
+    "elapsed": 1.5
+  },
+  "魂系": {
+    "verdict": "warn",
+    "severity": {
+      "high": 0,
+      "warn": 21,
+      "info": 4
+    },
+    "nodes": 166,
+    "elapsed": 1.4
+  },
+  "现代档案": {
+    "verdict": "warn",
+    "severity": {
+      "high": 0,
+      "warn": 33,
+      "info": 10
+    },
+    "nodes": 402,
+    "elapsed": 1.5
+  },
+  "丁华东": {
+    "verdict": "warn",
+    "severity": {
+      "high": 0,
+      "warn": 8,
+      "info": 8
+    },
+    "nodes": 337,
+    "elapsed": 1.7
+  },
+  "胡鸿杰": {
+    "verdict": "warn",
+    "severity": {
+      "high": 0,
+      "warn": 13,
+      "info": 25
+    },
+    "nodes": 194,
+    "elapsed": 1.4
+  }
+}

@@ -1,0 +1,36 @@
+### export rc=0
+[export] 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\out\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\L2（深度 L2）
+[export] 35 个文件 / 194,915 字 / 1 张图
+[export] ⚠️ 16 处页锚无法映射到纸书页码，已标 p=pdf-N unmapped
+
+### verify rc=0
+[verify] 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329 ← C:\Users\Zhaoshuochen\Desktop\书籍\doclab\out\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\L2
+[verify] 总判定：warn
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+# 校验报告：中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329
+
+- 生成：2026-09-22T12:04:02+08:00
+- 总判定：**⚠️ warn**
+
+| 闸门 | 名称 | 结果 | 说明 |
+| --- | --- | --- | --- |
+| G1 | 页锚覆盖率 | ⚠️ warn | 存在未映射页，已用 p=pdf-N unmapped 显式标注 |
+| G2 | 内容无损 | ✅ pass | 全部源块可在导出文件中逐字回查 |
+| G3 | 页码一致性 | ⚠️ warn | 4 处需注意（含 3 处已声明断点） |
+| G4 | 入库硬条件（§2.3） | ✅ pass | 35/35 个文件含页锚 |
+
+## G3 已声明断点（不填、不外推）
+
+- P1 物理页 5→8：2 页无页码观测
+- P1 物理页 9→15：5 页无页码观测
+- P1 物理页 15→17：1 页无页码观测
+
+## G3 需注意
+
+- {'shard': 'P1', 'type': '低置信区间', 'page_idx_range': [5, 5], 'note': '仅 1 页观测、覆盖 100%'}
+- {'shard': 'P1', 'type': '低置信区间', 'page_idx_range': [8, 8], 'note': '仅 1 页观测、覆盖 100%'}
+- {'shard': 'P1', 'type': '低置信区间', 'page_idx_range': [9, 9], 'note': '仅 1 页观测、覆盖 100%'}
+- {'shard': 'P1', 'type': '低置信区间', 'page_idx_range': [15, 15], 'note': '仅 1 页观测、覆盖 100%'}
+

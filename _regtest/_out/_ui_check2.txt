@@ -1,0 +1,25 @@
+node --check rc = 0
+
+--- 一致性自检 ---
+  OK  定义 rowClick
+  OK  定义 setVDepth
+  OK  定义 setShowDel
+  OK  定义 renderViewBar
+  OK  定义 loadView
+  OK  boot 调 loadView
+  OK  行上挂 onclick
+  OK  勾选框不再自己 onclick
+  OK  toggleSelAt 已无残留
+  OK  渲染时按深度过滤
+  OK  藏起来的行不进 VISIBLE
+  OK  renderTreeList 调 renderViewBar
+  OK  vdKb 容器存在
+  OK  showDelCk 容器存在
+  OK  viewBar 容器存在
+  OK  vdMeta 容器存在
+  OK  勾选框指针穿透
+  {}: 438 / 438
+  (): 981 / 981
+  []: 157 / 157
+
+失败项： 0

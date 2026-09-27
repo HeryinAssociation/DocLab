@@ -1,0 +1,6 @@
+[中国数字人文发展报告] {"verdict": "fail", "severity": {"high": 8, "warn": 9, "info": 8}, "nodes": 415, "elapsed": 1.6}
+[魂系] {"verdict": "fail", "severity": {"high": 13, "warn": 18, "info": 16}, "nodes": 166, "elapsed": 1.4}
+[现代档案] {"verdict": "fail", "severity": {"high": 12, "warn": 29, "info": 10}, "nodes": 399, "elapsed": 1.8}
+[丁华东] {"verdict": "fail", "severity": {"high": 23, "warn": 3, "info": 9}, "nodes": 342, "elapsed": 1.7}
+[胡鸿杰] {"verdict": "fail", "severity": {"high": 10, "warn": 6, "info": 29}, "nodes": 200, "elapsed": 1.5}
+DONE

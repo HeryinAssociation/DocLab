@@ -1,0 +1,18 @@
+[audit] 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329：校核目录结构…
+[audit] 判定 fail｜🔴 4 🟡 7 ⚪ 26
+[audit] → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录校核.json / C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录校核.md
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+目录校核：中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329
+  节点 195｜判定 fail｜🔴 4 🟡 7 ⚪ 26
+  dropped_long_candidate       19
+  calib_short_segment          4
+  toc_entry_noisy              4
+  calib_segment_overlap        3
+  calib_declared_gap           3
+  numbering_restart            2
+  toc_page_mismatch            1
+  page_locator_collision       1
+
+完整清单见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录校核.md

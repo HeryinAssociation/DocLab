@@ -1,0 +1,52 @@
+{
+  "基线-数字人文": {
+    "verdict": "warn",
+    "sev": {
+      "high": 0,
+      "warn": 4,
+      "info": 8
+    },
+    "nodes": 415,
+    "high_by_check": {}
+  },
+  "魂系": {
+    "verdict": "warn",
+    "sev": {
+      "high": 0,
+      "warn": 21,
+      "info": 4
+    },
+    "nodes": 166,
+    "high_by_check": {}
+  },
+  "现代档案": {
+    "verdict": "warn",
+    "sev": {
+      "high": 0,
+      "warn": 33,
+      "info": 10
+    },
+    "nodes": 402,
+    "high_by_check": {}
+  },
+  "丁华东": {
+    "verdict": "warn",
+    "sev": {
+      "high": 0,
+      "warn": 8,
+      "info": 8
+    },
+    "nodes": 337,
+    "high_by_check": {}
+  },
+  "胡鸿杰": {
+    "verdict": "warn",
+    "sev": {
+      "high": 0,
+      "warn": 13,
+      "info": 25
+    },
+    "nodes": 194,
+    "high_by_check": {}
+  }
+}

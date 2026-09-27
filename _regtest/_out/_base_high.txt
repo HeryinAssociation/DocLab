@@ -1,0 +1,54 @@
+{
+  "id": "DROPPED-020",
+  "check": "dropped_toc_backed",
+  "severity": "high",
+  "scope": "",
+  "nids": [],
+  "keys": [],
+  "title": "书内目录列了、却被规则丢弃（标题真的漏了）",
+  "detail": "[不像标题（过长或带句末标点）] 中国艺术学科数字人文发展报告——是否存在一个“数字艺术史”？",
+  "evidence": {
+    "shard": "P2",
+    "page_idx": 99,
+    "reason": "不像标题（过长或带句末标点）",
+    "text": "中国艺术学科数字人文发展报告——是否存在一个“数字艺术史”？",
+    "toc_title": "中国艺术学科数字人文发展报告",
+    "toc_printed": 287
+  },
+  "probe": {
+    "kind": "dropped_candidate",
+    "physical": {
+      "shard": "P2",
+      "page_idx": 99
+    },
+    "expect": [
+      "中国艺术学科数字人文发展报告——是否存在一个“数字艺术史”？"
+    ],
+    "printed": 287,
+    "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"
+  }
+}
+---
+{
+  "id": "TOC-019",
+  "check": "toc_page_offset_shift",
+  "severity": "high",
+  "scope": "",
+  "nids": [],
+  "keys": [],
+  "title": "整批章节齐刷刷偏 +2 页（5 条）",
+  "detail": "同一区间内多条同时偏同一个值 —— 是**校准 offset 偏了**，不是这些标题各自定位错了。优先查人工锚点与前置/正文分界。",
+  "evidence": {
+    "delta": 2,
+    "count": 5,
+    "nids": [
+      "4.2",
+      "4.3",
+      "4.4",
+      "4.5",
+      "4.6"
+    ]
+  },
+  "probe": null
+}
+---

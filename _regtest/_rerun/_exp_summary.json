@@ -1,0 +1,14 @@
+{
+  "魂系": {
+    "err": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Zhaoshuochen\\\\Desktop\\\\书籍\\\\doclab\\\\_work\\\\魂系历史主义-西方档案学支柱理论发展研究-Pdg2Pic-黄霄羽著.8701935468\\\\校验报告.json'"
+  },
+  "现代档案": {
+    "err": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Zhaoshuochen\\\\Desktop\\\\书籍\\\\doclab\\\\_work\\\\现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4\\\\校验报告.json'"
+  },
+  "丁华东": {
+    "err": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Zhaoshuochen\\\\Desktop\\\\书籍\\\\doclab\\\\_work\\\\档案与社会记忆研究_丁华东.b8a64398d9\\\\校验报告.json'"
+  },
+  "胡鸿杰": {
+    "err": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\Zhaoshuochen\\\\Desktop\\\\书籍\\\\doclab\\\\_work\\\\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\\\\校验报告.json'"
+  }
+}

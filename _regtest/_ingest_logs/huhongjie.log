@@ -1,0 +1,17 @@
+[ingest] 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.) (z-library.sk, 1lib.sk, z-lib.sk).pdf：2 个分片（每片上限 200 页）｜切块方式 = 交由 MinerU（page_ranges）
+[ingest] P1 已上传 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.) (z-library.sk, 1lib.sk, z-lib.sk).pdf（page_ranges=1-200）
+[ingest]   P1 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__1-200.pdf: waiting-file
+[ingest]   P1 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__1-200.pdf: running 6/200 页
+[ingest]   P1 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__1-200.pdf: done
+[ingest] 下载 P1 ← 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__1-200.pdf …
+[ingest]   P1.zip 7.7 MB，校验收讫 ✓
+[ingest]   P1 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\projects\P1（200 页 / 1264 块）
+[ingest] P2 已上传 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.) (z-library.sk, 1lib.sk, z-lib.sk).pdf（page_ranges=201-337）
+[ingest]   P2 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__201-337.pdf: waiting-file
+[ingest]   P2 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__201-337.pdf: pending
+[ingest]   P2 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__201-337.pdf: running 4/137 页
+[ingest]   P2 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__201-337.pdf: done
+[ingest] 下载 P2 ← 中国档案学的理念与模式 (胡鸿杰著, Hu Hong Jie Zhu, 胡鸿杰, 1958-, 胡鸿杰著 etc.)__201-337.pdf …
+[ingest]   P2.zip 4.9 MB，校验收讫 ✓
+[ingest]   P2 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\projects\P2（137 页 / 754 块）
+[ingest] 完成：source_id=中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329

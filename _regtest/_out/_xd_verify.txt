@@ -1,0 +1,41 @@
+=== node_total: 404
+
+=== ① 前言（应 L1，key=add:42）===
+  d1 L1 nid=2 key=add:42 gid=None flags=['manual'] chars=None title='前 言'
+
+=== ② 第九编（应 L1 全题，一条）===
+  d1 L1 nid=11 key=add:2361 gid=None flags=['manual'] chars=None title='第九编 展览、教育服务和公共关系'
+
+=== ③ 档案与文化（应 L2，第九编下，key=add:2508）===
+  d3 L3 nid=11.3.1 key=2508 gid=None flags=['empty'] chars=None title='档案与文化'
+  d2 L2 nid=11.4 key=add:2508 gid=None flags=['manual'] chars=None title='档案与文化'
+
+=== L1 全列表（应 14 个：前言 + 第一~十二编 + ?）===
+  nid=1 L1 key=0 gid=None p=0 chars=None '前置（封面·书名页·版权页）'
+  nid=2 L1 key=add:42 gid=None p=8 chars=None '前 言'
+  nid=3 L1 key=64 gid=None p=12 chars=None '第一编 档案馆的作用'
+  nid=4 L1 key=495 gid=None p=82 chars=None '第二编 档案工作基本原则'
+  nid=5 L1 key=833 gid=None p=138 chars=None '第三编 基本的法律问题'
+  nid=6 L1 key=1038 gid=None p=166 chars=None '第四编 档案人员的专业培训'
+  nid=7 L1 key=1098 gid=None p=180 chars=None '第五编 档案和文件的管理'
+  nid=8 L1 key=1392 gid=None p=18 chars=None '第六编 鉴定和处置'
+  nid=9 L1 key=1886 gid=None p=100 chars=None '第七编 整理和著录'
+  nid=10 L1 key=2052 gid=None p=128 chars=None '第八编 利用和咨询服务'
+  nid=11 L1 key=add:2361 gid=None p=186 chars=None '第九编 展览、教育服务和公共关系'
+  nid=12 L1 key=2590 gid=None p=28 chars=None '第十编 档案的保护'
+  nid=13 L1 key=3001 gid=None p=74 chars=None '第十一编 现代技术与档案'
+  nid=14 L1 key=3298 gid=None p=108 chars=None '第十二编 联合国教科文组织与档案发展'
+
+=== 第九编下的 L2（应 4 章）===
+    nid=11.1 L2 gid=None chars=None '档案馆与学校教育—可能性、问题及局限'
+    nid=11.2 L2 gid=None chars=None '利用档案进行教学'
+    nid=11.3 L2 gid=None chars=None '档案与公共关系'
+    nid=11.4 L2 gid=None chars=None '档案与文化'
+
+=== 余下 high？===
+verdict: warn
+high 数: 0
+
+=== numbering_gap 两条（章级还是条目级）===
+
+=== dropped_numbered_heading 三条 ===

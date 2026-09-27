@@ -1,0 +1,39 @@
+=== 树尾 12 个节点 ===
+  L3 二 组织结构 gid_start=3491 n_blocks=1 own_chars=None key=3491
+  L3 1.会员和代表大会 gid_start=3492 n_blocks=7 own_chars=None key=3492
+  L3 2. 执行委员会、执行局和秘书处 gid_start=3503 n_blocks=4 own_chars=None key=3503
+  L3 3.各委员会和工作小组 gid_start=3509 n_blocks=6 own_chars=None key=3509
+  L3 4. 各地区分会和各处 gid_start=3522 n_blocks=5 own_chars=None key=3522
+  L3 三进行的活动和所取得的成就 gid_start=3532 n_blocks=1 own_chars=None key=3532
+  L3 1.经验与情报的交换—会议和出版物 gid_start=3533 n_blocks=14 own_chars=None key=3533
+  L3 2.在档案管理和档案技术各领域进一步采取专业方法的措施 gid_start=3560 n_blocks=5 own_chars=None key=3560
+  L3 3.进一步发展档案工作的措施（特别是在专业训练和高级培训方面） gid_start=3569 n_blocks=4 own_chars=None key=add:3569
+  L3 4.改善利用设施和检索工具 gid_start=3575 n_blocks=5 own_chars=None key=3575
+  L3 5.与情报和文件部门的其他组织的合作 gid_start=3584 n_blocks=13 own_chars=None key=3584
+  L4 四 目前存在的问题和对今后的展望 gid_start=3594 n_blocks=7 own_chars=None key=3594
+
+最后节点终点（按 n_blocks）: gid 3594..3600
+总块数: 3608
+区间外剩余块: 7，其中非空文本块 4
+
+L2 导出文件数: 41
+最后文件: 校验报告.md  长度 499 字符
+---- 尾部 400 字 ----
+- 总判定：**⚠️ warn**
+
+| 闸门 | 名称 | 结果 | 说明 |
+| --- | --- | --- | --- |
+| G1 | 页锚覆盖率 | ✅ pass | 页锚覆盖良好 |
+| G2 | 内容无损 | ✅ pass | 全部源块可在导出文件中逐字回查 |
+| G3 | 页码一致性 | ⚠️ warn | 1 处需注意（含 2 处已声明断点） |
+| G4 | 入库硬条件（§2.3） | ✅ pass | 39/39 个文件含页锚 |
+
+## G3 已声明断点（不填、不外推）
+
+- P1 物理页 3→5：1 页无页码观测
+- P1 物理页 11→15：3 页无页码观测
+
+## G3 需注意
+
+- {'shard': 'P1', 'type': '低置信区间', 'page_idx_range': [3, 3], 'note': '仅 1 页观测、覆盖 100%'}
+

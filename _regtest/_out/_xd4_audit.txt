@@ -1,0 +1,21 @@
+[audit] 现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4：校核目录结构…
+[audit] 判定 warn｜🔴 0 🟡 35 ⚪ 12
+[audit] → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4\目录校核.json / C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4\目录校核.md
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+目录校核：现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4
+  节点 403｜判定 warn｜🔴 0 🟡 35 ⚪ 12
+  numbering_restart            12
+  page_zone_crossing           9
+  top_node_in_front_zone       8
+  calib_short_segment          3
+  calib_segment_overlap        3
+  dropped_numbered_heading     3
+  numbering_gap                2
+  page_locator_collision       2
+  calib_declared_gap           2
+  dropped_long_candidate       2
+  level_jump                   1
+
+完整清单见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4\目录校核.md

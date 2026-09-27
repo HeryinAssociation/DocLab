@@ -1,0 +1,2 @@
+[toc-import] 无改动 —— 目录与这份 JSON 一致
+[toc-import] 演练：0 条将被应用（加 --apply 才落盘）

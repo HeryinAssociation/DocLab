@@ -1,0 +1,63 @@
+校核 check 命中： ['calib_continuity', 'calib_declared_gap', 'calib_segment_overlap', 'calib_short_segment', 'dropped_long_candidate', 'dropped_numbered_heading', 'dropped_toc_backed', 'duplicate_title', 'level_jump', 'numbering_gap', 'numbering_repeat', 'numbering_restart', 'page_decreasing', 'page_locator_collision', 'page_obs_outlier', 'page_parent_after_child', 'page_zone_crossing', 'toc_entry_noisy', 'toc_entry_undetected', 'toc_page_mismatch', 'top_node_in_front_zone']
+判定： fail {'high': 20, 'warn': 15, 'info': 5} 
+
+[结构]
+  ✅ level_jump 层级跳变
+  ✅ duplicate_title 同层同名
+[编号]
+  ✅ numbering_gap 跳号
+  ✅ numbering_repeat 重号
+  ✅ numbering_gap 带 probe 搜索窗口
+  ✅ numbering_gap 期望标题写成「二、」
+  ✅ numbering_restart 序号回退单列（warn）
+  ✅ 回退不再混进 numbering_gap（gap 恒为 high）
+  ✅ numbering_restart 的 probe 指向「是否换了篇」
+  ✅ 连续号（第一章→第二章）绝不判为重新起算
+[页码]
+  ✅ page_decreasing 页码倒退
+  ✅ page_parent_after_child 父子倒挂
+  ✅ page_zone_crossing 跨编号区间
+  ✅ top_node_in_front_zone 章级落前置区
+[印刷目录]
+  ✅ toc_entry_noisy 条目残留点线
+  ✅ toc_page_mismatch 页码对不上
+  ✅ toc_entry_undetected 目录有树里没有
+  ✅ toc_entry_undetected 带搜索窗口
+[被丢弃的候选]
+  ✅ dropped_toc_backed 目录背书却被弃（high）
+  ✅ dropped_numbered_heading 自带编号疑似误杀
+  ✅ dropped_long_candidate 长正文（info）
+[校准]
+  ✅ calib_segment_overlap 印刷区间重叠
+  ✅ calib_short_segment 极短区段
+  ✅ calib_continuity 跨片接续异常
+  ✅ calib_declared_gap 已声明断点
+  ✅ 无 calib_missing（校准在）
+[页码根因归并]
+  ✅ page_obs_outlier 单页离群（high）
+  ✅ 离群页给出「按两侧序列应为」
+  ✅ 离群页带取证窗口 probe
+  ✅ 离群页造成的区间重叠 → 不重复报
+  ✅ 离群页的极短区间 → 不重复报
+  ✅ 端点落在离群页的接续异常 → 不重复报
+  ✅ 与离群页无关的接续异常仍照报
+[页锚歧义]
+  ✅ page_locator_collision 定位符撞车
+  ✅ 撞车一律报出，正文区判 high
+  ✅ severity 与 zone 对应（前置区 warn）
+  ✅ depth=2：L3+ 的发现降级为非 high（但仍报出）
+[契约]
+  ✅ 所有 finding 都有 id/check/severity
+  ✅ id 唯一
+  ✅ high 排在 warn 前
+  ✅ 落盘 目录校核.json / .md
+  ✅ 不改动 outline.json / page_calibration.json
+  ✅ outline_flat 只到关注深度
+
+[阈值]
+  ✅ verdict 因高危为 fail
+  ✅ severity 计数与 findings 一致
+
+============================================================
+通过 45／失败 0
+夹具目录：C:\Users\ZHAOSH~1\AppData\Local\Temp\doclab-audit-438se24g

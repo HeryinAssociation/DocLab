@@ -1,0 +1,10 @@
+
+const fs = require('fs');
+const html = fs.readFileSync(process.argv[2], 'utf8');
+const src = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+const m = src.match(/function reflowPreview\(\)\{[\s\S]*?\n\}/);
+const reflowPreview = eval('(' + m[0] + ')');
+const p = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
+global.EDIT = { nodes: p.nodes, levels: p.levels, level_stats: {} };
+const r = reflowPreview();
+console.log(JSON.stringify({ depth: r.depth, ic: r.ic }));

@@ -1,0 +1,8 @@
+  首页 ✓ —— 目录视图开关（藏层级 / 藏已删）与点行选择都在
+  待续跑：_zz_smoke.0000000000  1/2 片就绪，P2 错误已带出 → BadZipFile: File is not a zip file
+  source_detail.pending_ingest ✓
+  删源 ✓  →  C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_trash\20260922-190141___zz_smoke.0000000000
+  路由 /api/resume /api/delete /api/ingest ✓
+
+✓ 界面后端冒烟通过
+rc=0

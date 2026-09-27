@@ -1,0 +1,317 @@
+##############################################################################
+魂系  nodes=166
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：7-7→2-2 与 10-12→2-4
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 7, "page_idx_end": 7, "printed_start": 2, "printed_end": 2, "offset": -5, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low", "basis_pages": [7], "derived": false}, "b": {"shard": "P1", "kind": "front", "page_idx_start": 10, "page_idx_end": 12, "printed_start": 2, "printed_end": 4, "offset": -8, "n_obs": 2, "span": 3, "coverage": 0.667, "confidence": "
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：10-12→2-4 与 16-198→1-183
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 10, "page_idx_end": 12, "printed_start": 2, "printed_end": 4, "offset": -8, "n_obs": 2, "span": 3, "coverage": 0.667, "confidence": "medium", "basis_pages": [10, 12], "derived": true}, "b": {"shard": "P1", "kind": "body", "page_idx_start": 16, "page_idx_end": 198, "printed_start": 1, "printed_end": 183, "offset": -15, "n_obs": 0, "span": 183, "coverage": 0.0, "
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [R1 位于书内目录页（条目误标为标题）] 第二部分 西方档案学两大支柱理论的并立—来源原则  
+  evid  : {"shard": "P1", "page_idx": 14, "reason": "R1 位于书内目录页（条目误标为标题）", "text": "第二部分 西方档案学两大支柱理论的并立—来源原则  \n发展中遭受冲击，文件生命周期理论产生与盛行……57  \n第四章 来源原则发展中遭受冲击…… …59  \n第", "toc_title": "第二部分 西方档案学两大支柱理论的并立—来源原则", "toc_printed": null}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P1", "page_idx": 14}, "expect": ["第二部分 西方档案学两大支柱理论的并立—来源原则  "], "printed": null, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [numbering_gap] scope=4.4 keys=['toc:P1:744:第五章文件生命周期理论的产生与盛行……', '1231']
+  title : 第五章 → 第七章：缺 1 条（第六章 … 第六章）
+  detail: 第五章 文件生命周期理论的产生与盛行… … ▸ 第七章 文件生命期理论“笑对挑战”
+  evid  : {"tier": "chapter", "prev_n": 5, "n": 7, "gap": 1, "parent": "4"}
+  probe : {"kind": "gap_between", "expect": ["第六章"], "gid_range": [744, 1231], "after_nid": "4.3", "before_nid": "4.4", "hint": "在 gid_range 区间内的正文块里搜这些编号原样（OCR 常把编号与标题之间的空格吃掉，建议按「第」+数字/汉字模糊搜）"}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=4.5 keys=['1231', 'toc:P1:1231:第七章文件生命周期理论笑对挑战…']
+  title : 同档位序号重复
+  detail: 「第七章」出现两次：第七章 文件生命期理论“笑对挑战” ▸ 第七章 文件生命周期理论“笑对挑战” …
+  evid  : {"tier": "chapter", "n": 7, "parent": "4"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=4.2.1 keys=['490']
+  title : 页序差 -6 页（目录 65 ／ 树里 59）
+  detail: 4.2.1 第一节 来源原则的传播和运用
+  evid  : {"toc_title": "第一节 来源原则的传播和运用…………. …59", "toc_printed": 65, "printed": 59, "loc": "59"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=4.2.4 keys=['640']
+  title : 页序差 -13 页（目录 92 ／ 树里 79）
+  detail: 4.2.4 第四节 来源原则遭受冲击
+  evid  : {"toc_title": "第四节 来源原则遭受冲击……… …79", "toc_printed": 92, "printed": 79, "loc": "79"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=4.3.1 keys=['746']
+  title : 页序差 -4 页（目录 99 ／ 树里 95）
+  detail: 4.3.1 第一节 文件生命周期理论产生的专业背景
+  evid  : {"toc_title": "第一节 文件生命周期理论产生的专业背景………. …95", "toc_printed": 99, "printed": 95, "loc": "95"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=4.3.10 keys=['1102']
+  title : 页序差 -9 页（目录 156 ／ 树里 147）
+  detail: 4.3.10 第四节 来源原则被“重新发现”的实质
+  evid  : {"toc_title": "第四节 来源原则被“重新发现”的实质 …… …147", "toc_printed": 156, "printed": 147, "loc": "147"}
+----------------------------------------------------------------------
+ [toc_entry_undetected] scope= keys=[]
+  title : 书内目录列了、树里没有：第三部分 西方档案学两大支柱理论的完善——来源原则被
+  detail: kind=part printed=None
+  evid  : {"toc_entry": {"title": "第三部分 西方档案学两大支柱理论的完善——来源原则被", "printed": null, "kind": "part", "page_idx": 14}}
+----------------------------------------------------------------------
+ [toc_entry_undetected] scope= keys=[]
+  title : 书内目录列了、树里没有：第六章 来源原则被“重新发现” .
+  detail: kind=chapter printed=131
+  evid  : {"toc_entry": {"title": "第六章 来源原则被“重新发现” .", "printed": 131, "kind": "chapter", "page_idx": null}}
+  probe : {"kind": "search_page", "expect": ["第六章来源原则被重新发现"], "physical": {"shard": "P1", "page_idx": 146}, "window_pages": 3, "printed": 131, "hint": "目录说它在纸书这一页；到该物理页前后几页的正文块里搜标题原文（点线/空格/全半角都可能被 OCR 改动）"}
+----------------------------------------------------------------------
+ [toc_entry_undetected] scope= keys=[]
+  title : 书内目录列了、树里没有：第四部分 西方档案学两大支柱理论的深层联系与发展规律…… 191
+  detail: kind=part printed=None
+  evid  : {"toc_entry": {"title": "第四部分 西方档案学两大支柱理论的深层联系与发展规律…… 191", "printed": null, "kind": "part", "page_idx": 14}}
+----------------------------------------------------------------------
+ [toc_entry_undetected] scope= keys=[]
+  title : 书内目录列了、树里没有：主要参考文献 … …229
+  detail: kind=chapter printed=241
+  evid  : {"toc_entry": {"title": "主要参考文献 … …229", "printed": 241, "kind": "chapter", "page_idx": null}}
+  probe : {"kind": "search_anywhere", "expect": ["主要参考文献 … …229"], "printed": 241, "hint": "目录给了页码，但该页码映射不到任何物理页 —— 先看校准区间表是否覆盖这一页"}
+##############################################################################
+现代档案  nodes=399
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：3-3→1-1 与 5-7→1-3
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 3, "page_idx_end": 3, "printed_start": 1, "printed_end": 1, "offset": -2, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low", "basis_pages": [3], "derived": false}, "b": {"shard": "P1", "kind": "front", "page_idx_start": 5, "page_idx_end": 7, "printed_start": 1, "printed_end": 3, "offset": -4, "n_obs": 3, "span": 3, "coverage": 1.0, "confidence": "high
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：5-7→1-3 与 8-9→1-2
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 5, "page_idx_end": 7, "printed_start": 1, "printed_end": 3, "offset": -4, "n_obs": 3, "span": 3, "coverage": 1.0, "confidence": "high", "basis_pages": [5, 6, 7], "derived": false}, "b": {"shard": "P1", "kind": "front", "page_idx_start": 8, "page_idx_end": 9, "printed_start": 1, "printed_end": 2, "offset": -7, "n_obs": 2, "span": 2, "coverage": 1.0, "confidence"
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：8-9→1-2 与 10-11→1-2
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 8, "page_idx_end": 9, "printed_start": 1, "printed_end": 2, "offset": -7, "n_obs": 2, "span": 2, "coverage": 1.0, "confidence": "medium", "basis_pages": [8, 9], "derived": false}, "b": {"shard": "P1", "kind": "front", "page_idx_start": 10, "page_idx_end": 11, "printed_start": 1, "printed_end": 2, "offset": -9, "n_obs": 2, "span": 2, "coverage": 1.0, "confidence
+----------------------------------------------------------------------
+ [numbering_gap] scope=2.3.5 keys=['375', '382']
+  title : 2.  → 8. ：缺 5 条（3.  … 7. ）
+  detail: 2.档案馆——自身名声的牺牲品 ▸ 8.政府——档案馆名声的牺牲品
+  evid  : {"tier": "arabic", "prev_n": 2, "n": 8, "gap": 5, "parent": "2.3"}
+  probe : {"kind": "gap_between", "expect": ["3. ", "4. ", "5. ", "6. ", "7. "], "gid_range": [375, 382], "after_nid": "2.3.4", "before_nid": "2.3.5", "hint": "在 gid_range 区间内的正文块里搜这些编号原样（OCR 常把编号与标题之间的空格吃掉，建议按「第」+数字/汉字模糊搜）"}
+----------------------------------------------------------------------
+ [numbering_gap] scope=4.2.17 keys=['938', '943']
+  title : 27.  → 30. ：缺 2 条（28.  … 29. ）
+  detail: 27. 国际间的合作与理解 ▸ 30. 编制资料目录
+  evid  : {"tier": "arabic", "prev_n": 27, "n": 30, "gap": 2, "parent": "4.2"}
+  probe : {"kind": "gap_between", "expect": ["28. ", "29. "], "gid_range": [938, 943], "after_nid": "4.2.15", "before_nid": "4.2.17", "hint": "在 gid_range 区间内的正文块里搜这些编号原样（OCR 常把编号与标题之间的空格吃掉，建议按「第」+数字/汉字模糊搜）"}
+----------------------------------------------------------------------
+ [numbering_gap] scope=13.1.32 keys=['3423', '3427']
+  title : 7.  → 9. ：缺 1 条（8.  … 8. ）
+  detail: 7.项目文件中科技情报判别和鉴定方法研究 ▸ 9.私人档案的保护和管理研究
+  evid  : {"tier": "arabic", "prev_n": 7, "n": 9, "gap": 1, "parent": "13.1"}
+  probe : {"kind": "gap_between", "expect": ["8. "], "gid_range": [3423, 3427], "after_nid": "13.1.31", "before_nid": "13.1.32", "hint": "在 gid_range 区间内的正文块里搜这些编号原样（OCR 常把编号与标题之间的空格吃掉，建议按「第」+数字/汉字模糊搜）"}
+----------------------------------------------------------------------
+ [numbering_gap] scope=13.1.39 keys=['3440', '3444']
+  title : 2.  → 4. ：缺 1 条（3.  … 3. ）
+  detail: 2.评价培训需要地区研讨会 ▸ 4.东南亚地区缩微技术人员培训班
+  evid  : {"tier": "arabic", "prev_n": 2, "n": 4, "gap": 1, "parent": "13.1"}
+  probe : {"kind": "gap_between", "expect": ["3. "], "gid_range": [3440, 3444], "after_nid": "13.1.38", "before_nid": "13.1.39", "hint": "在 gid_range 区间内的正文块里搜这些编号原样（OCR 常把编号与标题之间的空格吃掉，建议按「第」+数字/汉字模糊搜）"}
+----------------------------------------------------------------------
+ [numbering_gap] scope=13.2.9 keys=['3560', '3575']
+  title : 2.  → 4. ：缺 1 条（3.  … 3. ）
+  detail: 2.在档案管理和档案技术各领域进一步采取专业方法的措施 ▸ 4.改善利用设施和检索工具
+  evid  : {"tier": "arabic", "prev_n": 2, "n": 4, "gap": 1, "parent": "13.2"}
+  probe : {"kind": "gap_between", "expect": ["3. "], "gid_range": [3560, 3575], "after_nid": "13.2.8", "before_nid": "13.2.9", "hint": "在 gid_range 区间内的正文块里搜这些编号原样（OCR 常把编号与标题之间的空格吃掉，建议按「第」+数字/汉字模糊搜）"}
+----------------------------------------------------------------------
+ [page_obs_outlier] scope=P1 keys=[]
+  title : 2 处单页页码与整段序列冲突（P1）
+  detail: 本片主 offset -11；物理 43：观测 82（两侧序列按 offset -11 应为 32）；物理 60：观测 48（两侧序列按 offset -11 应为 49）
+  evid  : {"shard": "P1", "dom_offset": -11, "pages": [43, 60], "items": [{"page_idx_start": 43, "page_idx_end": 43, "observed": 82, "expected": 32, "shard_offset": -11, "segment_offset": 39, "n_obs": 1, "confidence": "low", "before": {"page_idx_end": 42, "printed_end": 31, "offset": -11}, "after": {"page_idx_start": 44, "printed_start": 33, "offset": -11}}, {"page_idx_start": 60, "page_idx_end": 60, "observed": 48, "expected"
+  probe : {"kind": "page_obs", "physical": {"shard": "P1", "page_idx": 43}, "expect": ["32", "49"], "observed": [82, 48], "hint": "这些页上的页码块只有一个数字，且与前后整段序列只差一两位（315 认成 815 / 238 认成 288）。按现映射会读成「314 → 815 → 316」这种真书不可能出现的序列。先到该物理页核对原文；确认是误读后，用**人工锚点**在该页钉死对应关系，别去改区间表。"}
+----------------------------------------------------------------------
+ [page_obs_outlier] scope=P2 keys=[]
+  title : 8 处单页页码与整段序列冲突（P2）
+  detail: 本片主 offset +189；物理 24：观测 218（两侧序列按 offset +189 应为 213）；物理 49：观测 288（两侧序列按 offset +189 应为 238）；物理 126：观测 815（两侧序列按 offset +189 应为 315）；物理 140：观测 829（两侧序列按 offset +189 应为 329）；物理 141：观测 380（两侧序列按 offset +189 应为 330）；物理 159：观测 848（两侧序列按 offset +189 应为 348）；物理 171
+  evid  : {"shard": "P2", "dom_offset": 189, "pages": [24, 49, 126, 140, 141, 159, 171, 183], "items": [{"page_idx_start": 24, "page_idx_end": 24, "observed": 218, "expected": 213, "shard_offset": 189, "segment_offset": 194, "n_obs": 1, "confidence": "low", "before": {"page_idx_end": 23, "printed_end": 212, "offset": 189}, "after": {"page_idx_start": 25, "printed_start": 214, "offset": 189}}, {"page_idx_start": 49, "page_idx_e
+  probe : {"kind": "page_obs", "physical": {"shard": "P2", "page_idx": 24}, "expect": ["213", "238", "315", "329", "330", "348", "360", "372"], "observed": [218, 288, 815, 829, 380, 848, 860, 872], "hint": "这些页上的页码块只有一个数字，且与前后整段序列只差一两位（315 认成 815 / 238 认成 288）。按现映射会读成「314 → 815 → 316」这种真书不可能出现的序列。先到该物理页核对原文；确认是误读后，用**人工锚点**在该页钉死对应关系，别去改区间表。"}
+----------------------------------------------------------------------
+ [page_obs_outlier] scope=P3 keys=[]
+  title : 4 处单页页码与整段序列冲突（P3）
+  detail: 本片主 offset +389；物理 13：观测 492（两侧序列按 offset +389 应为 402）；物理 17：观测 408（两侧序列按 offset +389 应为 406）；物理 147：观测 636（两侧序列按 offset +389 应为 536）；物理 151：观测 549（两侧序列按 offset +389 应为 540）
+  evid  : {"shard": "P3", "dom_offset": 389, "pages": [13, 17, 147, 151], "items": [{"page_idx_start": 13, "page_idx_end": 13, "observed": 492, "expected": 402, "shard_offset": 389, "segment_offset": 479, "n_obs": 1, "confidence": "low", "before": {"page_idx_end": 12, "printed_end": 401, "offset": 389}, "after": {"page_idx_start": 14, "printed_start": 403, "offset": 389}}, {"page_idx_start": 17, "page_idx_end": 17, "observed":
+  probe : {"kind": "page_obs", "physical": {"shard": "P3", "page_idx": 13}, "expect": ["402", "406", "536", "540"], "observed": [492, 408, 636, 549], "hint": "这些页上的页码块只有一个数字，且与前后整段序列只差一两位（315 认成 815 / 238 认成 288）。按现映射会读成「314 → 815 → 316」这种真书不可能出现的序列。先到该物理页核对原文；确认是误读后，用**人工锚点**在该页钉死对应关系，别去改区间表。"}
+----------------------------------------------------------------------
+ [page_locator_collision] scope=P2 keys=[]
+  title : 2 个物理页共用定位符 `380`
+  detail: P2 物理页 [141, 191]
+  evid  : {"shard": "P2", "locator": "380", "pages": [141, 191], "zone": 0}
+##############################################################################
+丁华东  nodes=342
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：3-4→1-2 与 5-199→1-195
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 3, "page_idx_end": 4, "printed_start": 1, "printed_end": 2, "offset": -2, "n_obs": 2, "span": 2, "coverage": 1.0, "confidence": "medium", "basis_pages": [3, 4], "derived": false}, "b": {"shard": "P1", "kind": "body", "page_idx_start": 5, "page_idx_end": 199, "printed_start": 1, "printed_end": 195, "offset": -4, "n_obs": 186, "span": 195, "coverage": 0.954, "con
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [不像标题（过长或带句末标点）] 第一章“社会记忆理论与档案记忆研究的学术坐标”部分，主要对社会记忆研究的起源、社会记忆研究的主要理论成果、社会记忆的内涵、档
+  evid  : {"shard": "P3", "page_idx": 10, "reason": "不像标题（过长或带句末标点）", "text": "第一章“社会记忆理论与档案记忆研究的学术坐标”部分，主要对社会记忆研究的起源、社会记忆研究的主要理论成果、社会记忆的内涵、档案记忆研究在社会记忆研究中的学术坐标", "toc_title": "第一章 社会记忆理论与档案记忆研究的学术坐标", "toc_printed": 23}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P3", "page_idx": 10}, "expect": ["第一章“社会记忆理论与档案记忆研究的学术坐标”部分，主要对社会记忆研究的起源、社会记忆研究的主要理论成果、社会记忆的内涵"], "printed": 23, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [不像标题（过长或带句末标点）] 第二章“档案：社会记忆的形态”部分，主要对档案形成的原初功能，档案的社会记忆质性，档案在社会记忆结构类型中的质态，档案与社会
+  evid  : {"shard": "P3", "page_idx": 10, "reason": "不像标题（过长或带句末标点）", "text": "第二章“档案：社会记忆的形态”部分，主要对档案形成的原初功能，档案的社会记忆质性，档案在社会记忆结构类型中的质态，档案与社会失忆、历史再现，档案记忆的结构与特点", "toc_title": "第二章 档案：社会记忆的形态.", "toc_printed": 69}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P3", "page_idx": 10}, "expect": ["第二章“档案：社会记忆的形态”部分，主要对档案形成的原初功能，档案的社会记忆质性，档案在社会记忆结构类型中的质态，档案与"], "printed": 69, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [不像标题（过长或带句末标点）] 第三章“档案与社会记忆传承”部分，主要对社会记忆传承体系、档案记忆传承的沿革与发展、档案传承社会记忆的机制、档案馆作为社会记
+  evid  : {"shard": "P3", "page_idx": 10, "reason": "不像标题（过长或带句末标点）", "text": "第三章“档案与社会记忆传承”部分，主要对社会记忆传承体系、档案记忆传承的沿革与发展、档案传承社会记忆的机制、档案馆作为社会记忆存储库的功能、我国传承下来的珍贵档", "toc_title": "第三章档案与社会记忆传承....", "toc_printed": 120}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P3", "page_idx": 10}, "expect": ["第三章“档案与社会记忆传承”部分，主要对社会记忆传承体系、档案记忆传承的沿革与发展、档案传承社会记忆的机制、档案馆作为社"], "printed": 120, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [不像标题（过长或带句末标点）] 第五章“档案与社会记忆控制”部分，主要对社会记忆的争夺及其政治性、档案在社会记忆控制中的“结构性媒介”功能、档案对社会记忆的
+  evid  : {"shard": "P3", "page_idx": 11, "reason": "不像标题（过长或带句末标点）", "text": "第五章“档案与社会记忆控制”部分，主要对社会记忆的争夺及其政治性、档案在社会记忆控制中的“结构性媒介”功能、档案对社会记忆的控制模式与工作机制、档案与社会“反记", "toc_title": "第五章 档案与社会记忆控制.", "toc_printed": 213}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P3", "page_idx": 11}, "expect": ["第五章“档案与社会记忆控制”部分，主要对社会记忆的争夺及其政治性、档案在社会记忆控制中的“结构性媒介”功能、档案对社会记"], "printed": 213, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [不像标题（过长或带句末标点）] 第七章“档案记忆与现代传媒展演”部分，主要对媒体“宰制”的时代背景、社会记忆的媒体研究法、现代传媒与社会记忆再生产、现代传媒
+  evid  : {"shard": "P3", "page_idx": 12, "reason": "不像标题（过长或带句末标点）", "text": "第七章“档案记忆与现代传媒展演”部分，主要对媒体“宰制”的时代背景、社会记忆的媒体研究法、现代传媒与社会记忆再生产、现代传媒对档案记忆的展演方式与展演机制、档案", "toc_title": "第七章档案记忆与现代传媒展演", "toc_printed": 309}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P3", "page_idx": 12}, "expect": ["第七章“档案记忆与现代传媒展演”部分，主要对媒体“宰制”的时代背景、社会记忆的媒体研究法、现代传媒与社会记忆再生产、现代"], "printed": 309, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [dropped_toc_backed] scope= keys=[]
+  title : 书内目录列了、却被规则丢弃（标题真的漏了）
+  detail: [不像标题（过长或带句末标点）] 第八章“档案工作与社会记忆构筑”部分，主要对档案部门在构筑社会记忆中的角色形象、资源对象、规则要求、实践典范、理论体系等进行
+  evid  : {"shard": "P3", "page_idx": 12, "reason": "不像标题（过长或带句末标点）", "text": "第八章“档案工作与社会记忆构筑”部分，主要对档案部门在构筑社会记忆中的角色形象、资源对象、规则要求、实践典范、理论体系等进行论述，旨在从实践层面和学科建设层面思", "toc_title": "第八章 档案工作与社会记忆构筑", "toc_printed": 355}
+  probe : {"kind": "dropped_candidate", "physical": {"shard": "P3", "page_idx": 12}, "expect": ["第八章“档案工作与社会记忆构筑”部分，主要对档案部门在构筑社会记忆中的角色形象、资源对象、规则要求、实践典范、理论体系等"], "printed": 355, "hint": "到该物理页的正文块里取**原文**当标题（不要用目录的简写顶替，目录常常省掉副题）；确认后走「新增标题断点」，不要改正文"}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=8 keys=['233', 'toc:P1:233:第一章社会记忆理论与档案记忆研究的学术坐标']
+  title : 同档位序号重复
+  detail: 「第一章」出现两次：第一章 ▸ 第一章 社会记忆理论与档案记忆研究的学术坐标
+  evid  : {"tier": "chapter", "n": 1, "parent": null}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=10 keys=['690', 'toc:P1:690:第二章档案社会记忆的形态']
+  title : 同档位序号重复
+  detail: 「第二章」出现两次：第二章 ▸ 第二章 档案：社会记忆的形态.
+  evid  : {"tier": "chapter", "n": 2, "parent": null}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=12 keys=['1135', 'toc:P1:1149:第三章档案与社会记忆传承']
+  title : 同档位序号重复
+  detail: 「第三章」出现两次：第三章 ▸ 第三章档案与社会记忆传承....
+  evid  : {"tier": "chapter", "n": 3, "parent": null}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=15 keys=['2031', 'toc:P2:2031:第五章档案与社会记忆控制']
+  title : 同档位序号重复
+  detail: 「第五章」出现两次：第五章 ▸ 第五章 档案与社会记忆控制.
+  evid  : {"tier": "chapter", "n": 5, "parent": null}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=18 keys=['2934', 'toc:P2:2934:第七章档案记忆与现代传媒展演']
+  title : 同档位序号重复
+  detail: 「第七章」出现两次：第七章 ▸ 第七章档案记忆与现代传媒展演
+  evid  : {"tier": "chapter", "n": 7, "parent": null}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=20 keys=['3333', 'toc:P2:3333:第八章档案工作与社会记忆构筑']
+  title : 同档位序号重复
+  detail: 「第八章」出现两次：第八章 ▸ 第八章 档案工作与社会记忆构筑
+  evid  : {"tier": "chapter", "n": 8, "parent": null}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=10.4 keys=['943']
+  title : 页序差 -9 页（目录 106 ／ 树里 97）
+  detail: 10.4 第四节 档案记忆的结构与特点
+  evid  : {"toc_title": "第四节 档案记忆的结构与特点..... .97", "toc_printed": 106, "printed": 97, "loc": "97"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=12.11 keys=['1489']
+  title : 页序差 -11 页（目录 165 ／ 树里 154）
+  detail: 12.11 第五节 我国传承下来的珍贵档案记忆
+  evid  : {"toc_title": "第五节 我国传承下来的珍贵档案记忆.... …154", "toc_printed": 165, "printed": 154, "loc": "154"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=13.3 keys=['1752']
+  title : 页序差 -9 页（目录 193 ／ 树里 184）
+  detail: 13.3 第三节 档案建构社会记忆的机制
+  evid  : {"toc_title": "第三节 档案建构社会记忆的机制...", "toc_printed": 193, "printed": 184, "loc": "184"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=15.1 keys=['2045']
+  title : 页序差 +192 页（目录 24 ／ 树里 216）
+  detail: 15.1 第一节记忆的争夺:社会记忆的政治学
+  evid  : {"toc_title": "第一节记忆的争夺：社会记忆的政治学……. .216", "toc_printed": 24, "printed": 216, "loc": "216"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=15.4 keys=['2302']
+  title : 页序差 -10 页（目录 251 ／ 树里 241）
+  detail: 15.4 第四节 档案对社会记忆控制的工作机制
+  evid  : {"toc_title": "第四节 档案对社会记忆控制的工作机制 …241", "toc_printed": 251, "printed": 241, "loc": "241"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=16.2 keys=['2594']
+  title : 页序差 -9 页（目录 279 ／ 树里 270）
+  detail: 16.2 第二节 档案资源量与记忆能量
+  evid  : {"toc_title": "第二节 档案资源量与记忆能量…..", "toc_printed": 279, "printed": 270, "loc": "270"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=18.3 keys=['3103']
+  title : 页序差 -16 页（目录 344 ／ 树里 328）
+  detail: 18.3 第三节 现代传媒对档案记忆展演的方式
+  evid  : {"toc_title": "第三节 现代传媒对档案记忆展演的方式…", "toc_printed": 344, "printed": 328, "loc": "328"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=20.4 keys=['3624']
+  title : 页序差 -9 页（目录 395 ／ 树里 386）
+  detail: 20.4 第四节 新实践:社会记忆构筑的新典范
+  evid  : {"toc_title": "第四节 新实践：社会记忆构筑的新典范..... …386", "toc_printed": 395, "printed": 386, "loc": "386"}
+----------------------------------------------------------------------
+ [toc_page_offset_shift] scope= keys=[]
+  title : 整批章节齐刷刷偏 -9 页（4 条）
+  detail: 同一区间内多条同时偏同一个值 —— 是**校准 offset 偏了**，不是这些标题各自定位错了。优先查人工锚点与前置/正文分界。
+  evid  : {"delta": -9, "count": 4, "nids": ["10.4", "13.3", "16.2", "20.4"]}
+----------------------------------------------------------------------
+ [toc_entry_undetected] scope= keys=[]
+  title : 书内目录列了、树里没有：后记.
+  detail: kind=chapter printed=425
+  evid  : {"toc_entry": {"title": "后记.", "printed": 425, "kind": "chapter", "page_idx": null}}
+  probe : {"kind": "search_page", "expect": ["后记"], "physical": {"shard": "P3", "page_idx": 29}, "window_pages": 3, "printed": 425, "hint": "目录说它在纸书这一页；到该物理页前后几页的正文块里搜标题原文（点线/空格/全半角都可能被 OCR 改动）"}
+##############################################################################
+胡鸿杰  nodes=200
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：5-5→2-2 与 8-8→2-2
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 5, "page_idx_end": 5, "printed_start": 2, "printed_end": 2, "offset": -3, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low", "basis_pages": [5], "derived": false}, "b": {"shard": "P1", "kind": "front", "page_idx_start": 8, "page_idx_end": 8, "printed_start": 2, "printed_end": 2, "offset": -6, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low"
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：8-8→2-2 与 9-9→1-1
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 8, "page_idx_end": 8, "printed_start": 2, "printed_end": 2, "offset": -6, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low", "basis_pages": [8], "derived": false}, "b": {"shard": "P1", "kind": "front", "page_idx_start": 9, "page_idx_end": 9, "printed_start": 1, "printed_end": 1, "offset": -8, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low"
+----------------------------------------------------------------------
+ [calib_segment_overlap] scope= keys=[]
+  title : 同一分片内印刷页码范围重叠
+  detail: P1：15-15→4-4 与 17-197→2-182
+  evid  : {"a": {"shard": "P1", "kind": "front", "page_idx_start": 15, "page_idx_end": 15, "printed_start": 4, "printed_end": 4, "offset": -11, "n_obs": 1, "span": 1, "coverage": 1.0, "confidence": "low", "basis_pages": [15], "derived": false}, "b": {"shard": "P1", "kind": "body", "page_idx_start": 17, "page_idx_end": 197, "printed_start": 2, "printed_end": 182, "offset": -15, "n_obs": 121, "span": 181, "coverage": 0.669, "con
+----------------------------------------------------------------------
+ [numbering_repeat] scope=8.3 keys=['1038', 'toc:P1:1038:第五章档案学的基干体档案管理学']
+  title : 同档位序号重复
+  detail: 「第五章」出现两次：第五章 档案学“基干体”一档案管理学 ▸ 第五章 档案学的“基干体”档案管理学
+  evid  : {"tier": "chapter", "n": 5, "parent": "8"}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=8.5 keys=['1168', 'toc:P1:1168:第六章档案学的衍生群上档案文献编纂学']
+  title : 同档位序号重复
+  detail: 「第六章」出现两次：第六章 档案学“衍生群”（上）—档案文献编纂学 ▸ 第六章 档案学的“衍生群”（上）档案文献编纂学
+  evid  : {"tier": "chapter", "n": 6, "parent": "8"}
+----------------------------------------------------------------------
+ [numbering_repeat] scope=8.9 keys=['1477', 'toc:P2:1477:第八章档案学的终极者档案学概论']
+  title : 同档位序号重复
+  detail: 「第八章」出现两次：第八章 档案学“终极者”——档案学概论 ▸ 第八章 档案学的“终极者”档案学概论
+  evid  : {"tier": "chapter", "n": 8, "parent": "8"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=5.9 keys=['555']
+  title : 页序差 -1 页（目录 64 ／ 树里 63）
+  detail: 5.9 理论条件
+  evid  : {"toc_title": "第二章 档案学的理论条件 ……… …63", "toc_printed": 64, "printed": 63, "loc": "63"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=6.2 keys=['788']
+  title : 页序差 -15 页（目录 113 ／ 树里 98）
+  detail: 6.2 第二节 档案学与实践的关系
+  evid  : {"toc_title": "第二节 档案学与实践的关系 …… …98", "toc_printed": 113, "printed": 98, "loc": "98"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=7.2 keys=['885']
+  title : 页序差 -17 页（目录 131 ／ 树里 114）
+  detail: 7.2 第一节 中国档案学者的自然状况
+  evid  : {"toc_title": "第一节 中国档案学者的自然状况 …114", "toc_printed": 131, "printed": 114, "loc": "114"}
+----------------------------------------------------------------------
+ [toc_page_mismatch] scope=9.2.1 keys=['1610']
+  title : 页序差 -5 页（目录 244 ／ 树里 239）
+  detail: 9.2.1 第一节 中国档案学理论评价标准的选择
+  evid  : {"toc_title": "第一节 中国档案学理论评价标准的选择 … …239", "toc_printed": 244, "printed": 239, "loc": "239"}

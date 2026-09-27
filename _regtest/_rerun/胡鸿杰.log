@@ -1,0 +1,77 @@
+### pagecal rc=0
+[pagecal] 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329：扫描 2018 块取页码观测 …
+[pagecal] 判定 calibrated／paginated：正文区 2 个区间、共 195 页观测、覆盖 0.615，分片接续通过
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+# 页码校准报告
+
+- 生成：2026-09-22T12:03:37+08:00
+- 判定：**calibrated** ／ locator_type = `paginated`
+- 依据：正文区 2 个区间、共 195 页观测、覆盖 0.615，分片接续通过
+
+## 区间表
+
+| 分片 | 类型 | 物理页 range | 纸书页 range | offset | 观测 | 覆盖 | 置信 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| P1 | front | 5–5 | 2–2 | -3 | 1 | 100% | low |
+| P1 | front | 8–8 | 2–2 | -6 | 1 | 100% | low |
+| P1 | front | 9–9 | 1–1 | -8 | 1 | 100% | low |
+| P1 | front | 15–15 | 4–4 | -11 | 1 | 100% | low |
+| P1 | body | 17–197 | 2–182 | -15 | 121 | 67% | medium |
+| P2 | body | 0–135 | 185–320 | +185 | 74 | 54% | medium |
+
+> offset = 纸书页码 − 物理页序，区间内恒定。
+
+## 断点（不填、不外推）
+
+- P1 物理页 5→8 之间 漏 2 页（推算纸书页 [3, 4]）
+- P1 物理页 9→15 之间 漏 5 页（推算纸书页 [2, 3, 4, 5, 6]）
+- P1 物理页 15→17 之间 漏 1 页（推算纸书页 [5]）
+
+## 跨分片接续
+
+| 从 | 到 | 期望 | 实际 | 结论 |
+| --- | --- | --- | --- | --- |
+| P1:197 | P2:0 | 183 | 185 | ✅ 断开（中间可能有插图页/空白页未编号） |
+### outline rc=0
+[outline] 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329：2 片 / 2018 块（含目录补章）
+[outline] 剔除人工删除 11 条
+[outline] 并入人工新增标题 4 条
+[outline] 节点 194 个 → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\outline.json
+[outline] 目录补章：补入 6 个漏标章（另有 0 个跳过）
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+层级统计（中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329）　层级来源：中文编号推断
+  层级    节点数         切到本层=文件数        总字数       平均    空节点
+  L1     11               11    198,231   18,021      0
+  L2     27               27    185,835    6,882      3
+  L3     53               53    173,924    3,281      0
+  L4     51               51    111,607    2,188      0
+  L5     45               45     36,806      817      0
+  L6      7                7      2,493      356      0
+
+印刷目录交叉校验：目录 34 条，树里找到 23 条（目录覆盖率 68%）
+  本级标题 44 个，其中 23 个有目录背书（52%；目录通常只列到章，此数偏低属正常）
+
+完整目录树见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录索引.md
+选好深度后：python doclab.py export 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329 --depth N
+### audit rc=0
+[audit] 中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329：校核目录结构…
+[audit] 判定 warn｜🔴 0 🟡 13 ⚪ 25
+[audit] → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录校核.json / C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录校核.md
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+目录校核：中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329
+  节点 194｜判定 warn｜🔴 0 🟡 13 ⚪ 25
+  dropped_long_candidate       19
+  level_jump                   6
+  calib_short_segment          4
+  calib_declared_gap           3
+  toc_entry_noisy              3
+  calib_segment_overlap        2
+  page_locator_collision       1
+
+完整清单见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\中国档案学的理念与模式-胡鸿杰著-Hu-Hong-Jie-Zhu-胡鸿杰-1958--胡鸿杰著-.60ddbd4329\目录校核.md

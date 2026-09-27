@@ -1,0 +1,5 @@
+8801 pids: none
+8801 still listening: False
+8765 (他自己的) still listening: True
+temp profile removed: True
+dup shot removed: True

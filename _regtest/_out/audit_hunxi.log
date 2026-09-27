@@ -1,0 +1,23 @@
+[audit] 魂系历史主义-西方档案学支柱理论发展研究-Pdg2Pic-黄霄羽著.8701935468：校核目录结构…
+[audit] 判定 fail｜🔴 9 🟡 21 ⚪ 25
+[audit] → C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\魂系历史主义-西方档案学支柱理论发展研究-Pdg2Pic-黄霄羽著.8701935468\目录校核.json / C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\魂系历史主义-西方档案学支柱理论发展研究-Pdg2Pic-黄霄羽著.8701935468\目录校核.md
+
+doclab v0.1.0｜砚 · 文献处理工作台
+
+目录校核：魂系历史主义-西方档案学支柱理论发展研究-Pdg2Pic-黄霄羽著.8701935468
+  节点 165｜判定 fail｜🔴 9 🟡 21 ⚪ 25
+  level_jump                   13
+  top_node_in_front_zone       12
+  toc_entry_noisy              11
+  toc_entry_undetected         4
+  page_locator_collision       3
+  calib_segment_overlap        2
+  calib_short_segment          2
+  page_zone_crossing           2
+  calib_declared_gap           2
+  dropped_toc_backed           1
+  numbering_repeat             1
+  numbering_gap                1
+  numbering_restart            1
+
+完整清单见 C:\Users\Zhaoshuochen\Desktop\书籍\doclab\_work\魂系历史主义-西方档案学支柱理论发展研究-Pdg2Pic-黄霄羽著.8701935468\目录校核.md

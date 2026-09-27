@@ -1,0 +1,2 @@
+shots: ['ui_chars_20260921.png', 'ui_default.png', 'ui_lv_flat_20260921.png', 'ui_lv_ok_20260921.png', 'ui_pending.png', 'ui_pending2.png', 'ui_proofread_20260921.png', 'ui_work.png', 'v2_page.png', 'v2_tree.png', 'v3_page.png', 'v4_anchored.png', 'v5_page.png', 'v5_tree.png']
+js probes: ['ui_check.js', '_add_probe.js', '_adj_probe.js', '_chars_probe.js', '_link_probe.js', '_live_probe.js', '_multisel_probe.js', '_multi_probe.js', '_pagemap_probe.js', '_reflow_probe.js', '_uiview_probe.js', '_ui_check.js', '_ui_script.js']

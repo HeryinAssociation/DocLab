@@ -1,0 +1,4 @@
+C:\Users\Zhaoshuochen\.workbuddy\binaries\node\versions\22.22.2-3\node_modules -> .bin, @tencent, corepack, npm
+C:\nvm4w\nodejs\node_modules -> corepack, npm
+C:\Users\Zhaoshuochen\AppData\Roaming\npm\node_modules -> (missing)
+ms-playwright: .links, chromium-1124, chromium-1228, ffmpeg-1009, ffmpeg-1011, firefox-1454, webkit-2035, winldd-1007

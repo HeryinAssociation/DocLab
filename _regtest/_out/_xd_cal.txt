@@ -1,0 +1,80 @@
+=== 校准顶层 ===
+['continuity', 'gaps', 'generated_at', 'header_conflicts', 'locator_type', 'observation_count', 'observations', 'reason', 'segments', 'shard_pages', 'shards', 'source_id', 'thresholds', 'verdict']
+
+=== segments（20 段）===
+  shard=P1 kind=front off=-2 pages=[None..None] src=None obs=
+  shard=P1 kind=front off=-4 pages=[None..None] src=None obs=
+  shard=P1 kind=front off=-7 pages=[None..None] src=None obs=
+  shard=P1 kind=front off=-9 pages=[None..None] src=None obs=
+  shard=P1 kind=front off=-11 pages=[None..None] src=None obs=
+  shard=P1 kind=front off=-11 pages=[None..None] src=None obs=
+  shard=P1 kind=body off=-11 pages=[None..None] src=None obs=
+  shard=P2 kind=front off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=front off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=body off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=body off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=body off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=body off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=body off=189 pages=[None..None] src=None obs=
+  shard=P2 kind=body off=189 pages=[None..None] src=None obs=
+  shard=P3 kind=front off=389 pages=[None..None] src=None obs=
+  shard=P3 kind=front off=389 pages=[None..None] src=None obs=
+  shard=P3 kind=body off=389 pages=[None..None] src=None obs=
+  shard=P3 kind=body off=389 pages=[None..None] src=None obs=
+  shard=P3 kind=body off=389 pages=[None..None] src=None obs=
+
+=== 各分片观测（前若干条）===
+   {"shard": "P1", "page_idx": 3, "printed": 1, "source": "page_number"}
+   {"shard": "P1", "page_idx": 5, "printed": 1, "source": "page_number"}
+   {"shard": "P1", "page_idx": 6, "printed": 2, "source": "page_number"}
+   {"shard": "P1", "page_idx": 7, "printed": 3, "source": "page_number"}
+   {"shard": "P1", "page_idx": 8, "printed": 1, "source": "page_number"}
+   {"shard": "P1", "page_idx": 9, "printed": 2, "source": "page_number"}
+   {"shard": "P1", "page_idx": 10, "printed": 1, "source": "page_number"}
+   {"shard": "P1", "page_idx": 11, "printed": 2, "source": "page_number"}
+   {"shard": "P1", "page_idx": 15, "printed": 4, "source": "page_number"}
+   {"shard": "P1", "page_idx": 16, "printed": 5, "source": "page_number"}
+   {"shard": "P1", "page_idx": 17, "printed": 6, "source": "page_number"}
+   {"shard": "P1", "page_idx": 19, "printed": 8, "source": "page_number"}
+   {"shard": "P1", "page_idx": 20, "printed": 9, "source": "page_number"}
+   {"shard": "P1", "page_idx": 21, "printed": 10, "source": "page_number"}
+   {"shard": "P1", "page_idx": 22, "printed": 11, "source": "page_number"}
+   {"shard": "P1", "page_idx": 23, "printed": 12, "source": "page_number"}
+   {"shard": "P1", "page_idx": 24, "printed": 13, "source": "page_number"}
+   {"shard": "P1", "page_idx": 25, "printed": 14, "source": "page_number"}
+   {"shard": "P1", "page_idx": 26, "printed": 15, "source": "page_number"}
+   {"shard": "P1", "page_idx": 27, "printed": 16, "source": "page_number"}
+   {"shard": "P1", "page_idx": 28, "printed": 17, "source": "page_number"}
+   {"shard": "P1", "page_idx": 29, "printed": 18, "source": "page_number"}
+   {"shard": "P1", "page_idx": 30, "printed": 19, "source": "page_number"}
+   {"shard": "P1", "page_idx": 31, "printed": 20, "source": "page_number"}
+   {"shard": "P1", "page_idx": 32, "printed": 21, "source": "page_number"}
+   {"shard": "P1", "page_idx": 33, "printed": 22, "source": "page_number"}
+   {"shard": "P1", "page_idx": 34, "printed": 23, "source": "page_number"}
+   {"shard": "P1", "page_idx": 35, "printed": 24, "source": "page_number"}
+   {"shard": "P1", "page_idx": 36, "printed": 25, "source": "page_number"}
+   {"shard": "P1", "page_idx": 37, "printed": 26, "source": "page_number"}
+   {"shard": "P1", "page_idx": 38, "printed": 27, "source": "page_number"}
+   {"shard": "P1", "page_idx": 39, "printed": 28, "source": "page_number"}
+   {"shard": "P1", "page_idx": 40, "printed": 29, "source": "page_number"}
+   {"shard": "P1", "page_idx": 41, "printed": 30, "source": "page_number"}
+   {"shard": "P1", "page_idx": 42, "printed": 31, "source": "page_number"}
+   {"shard": "P1", "page_idx": 43, "printed": 82, "source": "page_number"}
+   {"shard": "P1", "page_idx": 44, "printed": 33, "source": "page_number"}
+   {"shard": "P1", "page_idx": 45, "printed": 34, "source": "page_number"}
+   {"shard": "P1", "page_idx": 46, "printed": 35, "source": "page_number"}
+   {"shard": "P1", "page_idx": 47, "printed": 36, "source": "page_number"}
+
+=== header/locator 相关键 ===
+  generated_at: "2026-09-22T12:03:33+08:00"
+  source_id: "现代档案与文件管理必读-法-瓦尔纳主编-国际档案理事会工作组编-孙钢等译-法-瓦尔纳主编-etc.e2ef74edc4"
+  locator_type: "paginated"
+  verdict: "calibrated"
+  reason: "正文区 10 个区间、共 394 页观测、覆盖 0.921，分片接续通过；另有 14 页单页页码与整段序列冲突（如物理 43 观测 82、按两侧序列应为 32），判为 OCR 误读，已并回主导序列"
+  shards: ["P1", "P2", "P3"]
+  shard_pages: {"P1": 200, "P2": 200, "P3": 158}
+  thresholds: {"seg_high_obs": 3, "seg_medium_obs": 2, "seg_high_coverage": 0.75, "seg_min_coverage": 0.5, "body_min_obs": 5, "body_min_coverage": 0.6}
+  gaps: [{"shard": "P1", "after_page_idx": 3, "before_page_idx": 5, "n_unmapped_pages": 1, "missing_printed": [2], "note": "该区间未观测到页码，页锚按物理页序标注，不外推"}, {"shard": "P1", "after_page_idx": 11, "before_page_idx": 15, "n_unmapped_pages": 3, "missing_printed": [3, 4, 5], "note": "该区间未观测到页码，页锚按物理页序标注，不外推"}]
+  continuity: {"ok": true, "checks": [{"from": "P1:199", "to": "P2:50", "prev_printed": 188, "next_printed": 239, "expected": 189, "ok": true, "note": "断开（中间可能有插图页/空白页未编号）"}, {"from": "P2:126", "to": "P2:127", "prev_printed": 315, "next_printed": 316, "expected": 316, "ok": true, "note": "接续"}, {"from": "P2:141",
+  header_conflicts: []
+  observation_count: 520
