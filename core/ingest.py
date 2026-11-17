@@ -89,7 +89,9 @@ def plan_shards(src: Path, wd: Path, pages: int, mode: str, label: str) -> list[
     if mode == "local" and len(spans) > 1:
         # 用清洗过的 label 当分片名，别让「(z-library.sk, 1lib.sk)」跟着进文件名
         parts = shard_pdf(src, wd / "sources", shard_pages=pages, stem=label)
-        return [{"tag": f"P{i}", "page_ranges": spans[i - 1],
+        # 文件已按片切好，page_ranges 必须留空：带上绝对范围（如 201-400）会被
+        # MinerU 拿去套在这份只剩 200 页的分片文件上，直接报超出文档页范围。
+        return [{"tag": f"P{i}", "page_ranges": "",
                  "expect_pages": ranges[i - 1][1] - ranges[i - 1][0] + 1,
                  "upload_from": str(p), "name": p.name, "state": "pending"}
                 for i, p in enumerate(parts, 1)]

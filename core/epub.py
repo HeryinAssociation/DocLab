@@ -264,8 +264,18 @@ def walk_list(ul: Node, out: list, quoted: bool) -> None:
 
 
 def walk_table(tbl: Node, out: list, quoted: bool) -> None:
+    # 行可能直接挂在 table 下，也可能包在 thead / tbody / tfoot 里（EPUB3 常见）。
+    # 只认直接子节点会漏掉整张表，所以三种容器都要下钻一层。
+    trs: list[Node] = []
+    for c in tbl.children:
+        if not isinstance(c, Node):
+            continue
+        if c.tag == 'tr':
+            trs.append(c)
+        elif c.tag in ('thead', 'tbody', 'tfoot'):
+            trs.extend(x for x in c.children if isinstance(x, Node) and x.tag == 'tr')
     rows = []
-    for tr in [c for c in tbl.children if isinstance(c, Node) and c.tag == 'tr']:
+    for tr in trs:
         cells = [clean(inline(td)).replace('\n', ' ')
                  for td in tr.children if isinstance(td, Node) and td.tag in ('td', 'th')]
         if cells:

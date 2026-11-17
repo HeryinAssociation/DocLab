@@ -211,6 +211,26 @@ def coerce_level(v) -> int | None:
     return int(s) if s.lstrip("-").isdigit() else None
 
 
+def item_text(item: dict) -> str:
+    """Read MinerU list payloads without changing block identities or list numbering."""
+    def content(value):
+        if isinstance(value, str):
+            return value.strip()
+        if isinstance(value, list):
+            return '\n'.join(t for t in (content(v) for v in value) if t)
+        if isinstance(value, dict):
+            return item_text(value)
+        if value is None:
+            return ''
+        raise ValueError('Unsupported MinerU text payload: ' + type(value).__name__)
+    text = content(item.get('text'))
+    listed = content(item.get('list_items'))
+    # Some versions duplicate the complete list in text; emit that only once.
+    if listed and re.sub(r'\s+', '', listed) not in re.sub(r'\s+', '', text):
+        return '\n'.join(t for t in (text, listed) if t)
+    return text
+
+
 def iter_blocks(shards: list[Shard]) -> list[Block]:
     """按分片顺序读全部块，赋跨片连续的 gid。"""
     out: list[Block] = []
@@ -222,7 +242,7 @@ def iter_blocks(shards: list[Shard]) -> list[Block]:
                 gid=gid, shard=sh.tag, local=local,
                 page_idx=int(it.get("page_idx") or 0),
                 type=str(it.get("type") or "unknown"),
-                text=(it.get("text") or "").strip(),
+                text=item_text(it),
                 text_level=coerce_level(it.get("text_level")),
                 bbox=it.get("bbox"),
                 img_path=(it.get("img_path") or "").strip(),

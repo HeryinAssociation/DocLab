@@ -84,6 +84,8 @@ def main() -> int:
         sizes = [len(PdfReader(str(p)).pages) for p in paths]
         check(sizes == [200, 200, 57], f"分片页数 {sizes}（期望 [200, 200, 57]）")
         check("z-library" not in paths[0].name, f"分片名已清干净：{paths[0].name}")
+        check([s["page_ranges"] for s in plan_l] == ["", "", ""],
+              "分片已切好 → 不带 page_ranges（否则绝对页范围会被套到分片文件上而越界）")
 
         print("\n【4】边界：不超阈 / 读不出页数")
         small = tmp / "small.pdf"

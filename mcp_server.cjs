@@ -17,6 +17,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { parseJson } = require('./mcp_json.cjs');
 
 const ROOT = process.env.DOCLAB_ROOT || __dirname;
 const CLI = path.join(ROOT, 'doclab.py');
@@ -50,15 +51,6 @@ function runCli(args, timeoutMs = 3600000) {
   });
 }
 
-/** 从 CLI 输出里抠出 JSON。带 --json 时 stdout 末尾就是纯 JSON。 */
-function parseJson(out) {
-  const s = out.trim();
-  if (!s) return null;
-  const i = s.search(/^[[{]/m);
-  if (i < 0) return null;
-  try { return JSON.parse(s.slice(i)); } catch (_) { return null; }
-}
-
 async function cliJson(args, timeoutMs) {
   const r = await runCli([...args, '--json'], timeoutMs);
   const j = parseJson(r.out);
@@ -72,7 +64,7 @@ async function cliJson(args, timeoutMs) {
 
 const S = (props, required = []) => ({ type: 'object', properties: props, required });
 
-const TOOLS = [
+let TOOLS = [
   {
     name: 'doclab_probe',
     description: '自检：MinerU API 是否连通鉴权、token 来源、分片上限、pypdf 是否可用。',
@@ -138,18 +130,38 @@ const TOOLS = [
   {
     name: 'doclab_export',
     description: '按深度切分导出：一节一个 markdown，段落级页锚 <!-- p=N -->（纸书页码），'
-      + '附 conversion_meta.json / manifest.json / 00-目录.md。只写 md，不碰 Zotero 与证据表。',
+      + '附 conversion_meta.json / manifest.json / 00-目录.md；默认同时把分节 md 装订成 EPUB'
+      + '（<书名>.epub，页锚变不可见 pagebreak 锚、保留脚注/图片/表格）。'
+      + 'epub=false 时只导出 md。只写本地产物，不碰 Zotero 与证据表。',
     inputSchema: S({
       source: { type: 'string' },
       depth: { type: 'integer', description: '切到第几层；0 = 整本一个文件' },
       footnotes: { type: 'string', enum: ['page-end', 'inline', 'drop'] },
       no_images: { type: 'boolean' },
+      epub: { type: 'boolean', description: '是否同时装订 EPUB（默认 true）' },
     }, ['depth']),
     run: (a) => cliJson(['export',
       ...(a.source ? [a.source] : []),
       '--depth', String(a.depth),
       ...(a.footnotes ? ['--footnotes', a.footnotes] : []),
-      ...(a.no_images ? ['--no-images'] : [])]),
+      ...(a.no_images ? ['--no-images'] : []),
+      ...(a.epub === false ? ['--no-epub'] : [])]),
+  },
+  {
+    name: 'doclab_epub',
+    description: '把某深度已导出的分节 markdown 装订成 EPUB（不重跑导出、不改 md）。'
+      + '用于单独重做：换书名/作者，或 EPUB 被删。返回 epub 路径、章数、图片数、'
+      + '目录条数与结构自检结果（zip/OPF/spine/nav/XHTML/图片引用）。',
+    inputSchema: S({
+      source: { type: 'string' },
+      depth: { type: 'integer', description: '用哪个深度的导出装订（默认 2）' },
+      title: { type: 'string', description: '覆盖书名（默认取源 doc_title）' },
+      author: { type: 'string', description: '覆盖作者（默认取 EPUB 源 dc:creator）' },
+    }),
+    run: (a) => cliJson(['epub', ...(a.source ? [a.source] : []),
+      '--depth', String(a.depth === undefined ? 2 : a.depth),
+      ...(a.title ? ['--title', a.title] : []),
+      ...(a.author ? ['--author', a.author] : [])]),
   },
   {
     name: 'doclab_verify',
@@ -206,7 +218,7 @@ const TOOLS = [
   },
   {
     name: 'doclab_run',
-    description: '一次跑完 pagecal → outline → export → verify。文献处理环节的一键入口。',
+    description: '一次跑完 pagecal → outline → export（md + EPUB）→ verify。文献处理环节的一键入口。',
     inputSchema: S({
       source: { type: 'string' },
       depth: { type: 'integer' },
@@ -246,6 +258,9 @@ const TOOLS = [
   },
 ];
 
+const workflowTools = require('./workflow_tools.cjs')(ROOT, PYTHON);
+TOOLS = process.env.DOCLAB_WORKFLOW_ONLY === '1' ? workflowTools : [...TOOLS, ...workflowTools];
+
 // ------------------------------------------------------------------ JSON-RPC
 
 function send(msg) {
@@ -262,7 +277,7 @@ async function handle(req) {
       return reply({
         protocolVersion: '2024-11-05',
         capabilities: { tools: {} },
-        serverInfo: { name: 'doclab', version: '0.1.0' },
+        serverInfo: { name: 'doclab', version: '0.3.0' },
       });
     }
     if (method === 'notifications/initialized' || method === 'initialized') return;
@@ -282,10 +297,16 @@ async function handle(req) {
       const tool = TOOLS.find((t) => t.name === name);
       if (!tool) return fail(-32602, `未知工具 ${name}`);
       const data = await tool.run(args);
+      if (data && data._image) {
+        const imagePath = data._image;
+        delete data._image;
+        return reply({ content: [{type:'text',text:JSON.stringify(data)},
+          {type:'image',mimeType:'image/png',data:fs.readFileSync(imagePath).toString('base64')}], isError:false });
+      }
       return reply({
         content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
         structuredContent: data,
-        isError: false,
+        isError: data && data.ok === false,
       });
     }
 

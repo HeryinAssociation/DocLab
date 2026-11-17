@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import tempfile
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -80,14 +81,31 @@ def read_json(path: os.PathLike | str, default=None):
 
 
 def write_json(path: os.PathLike | str, obj, indent: int = 2) -> Path:
-    """原子写：先写临时文件再替换，避免半截 JSON。"""
+    """原子写：先写临时文件再替换，避免半截 JSON。
+
+    目标文件被别处（界面/监视器）短暂打开时，Windows 的 os.replace 会抛
+    PermissionError(WinError 5)。写入方不能因此丢掉一次成功的修订，
+    所以对替换做有限次退避重试。
+    """
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=str(p.parent), prefix=".tmp-", suffix=".json")
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             json.dump(obj, f, ensure_ascii=False, indent=indent)
-        os.replace(tmp, p)
+            f.flush()
+            os.fsync(f.fileno())
+        last = None
+        for attempt in range(20):
+            try:
+                os.replace(tmp, p)
+                last = None
+                break
+            except PermissionError as e:      # WinError 5：目标被短暂占用
+                last = e
+                time.sleep(0.05 * (1 + attempt % 4))
+        if last is not None:
+            raise last
     finally:
         if os.path.exists(tmp):
             try:
@@ -100,7 +118,8 @@ def write_json(path: os.PathLike | str, obj, indent: int = 2) -> Path:
 def write_text(path: os.PathLike | str, text: str) -> Path:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(text, encoding="utf-8", newline="\n")
+    with p.open('w', encoding='utf-8', newline='\n') as stream:
+        stream.write(text)
     return p
 
 

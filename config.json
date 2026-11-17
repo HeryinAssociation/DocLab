@@ -7,9 +7,14 @@
     "is_ocr": false,
     "model_version": "",
     "shard_pages": 200,
+    "shard_mode": "local",
     "poll_interval": 8,
     "poll_timeout": 3600
   },
   "mineru_output_root": "C:/Users/Zhaoshuochen/MinerU",
-  "_note": "token 不写在这里，放 .env.local 或环境变量 MINERU_TOKEN"
+  "_note": "token 不写在这里，放 .env.local 或环境变量 MINERU_TOKEN",
+  "ai": {
+    "base_url": "https://api.deepseek.com/v1",
+    "model": "deepseek-chat"
+  }
 }

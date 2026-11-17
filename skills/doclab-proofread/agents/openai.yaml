@@ -1,0 +1,4 @@
+interface:
+  display_name: "Doclab 目录与页码核校"
+  short_description: "通过目录 JSON 往返与页码修订单核校书籍索引，验证导出并保留疑难项"
+  default_prompt: "请使用 $doclab-proofread 核校指定 Doclab 书籍的目录和页码，修正证据充分的问题，并验证章节导出。"

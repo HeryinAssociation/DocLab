@@ -20,8 +20,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
-from .config import (OUT_DIR, UI_DIR, WORK_DIR, load_config, list_sources,
-                     out_dir, resolve_source, save_env_token, work_dir)
+from .config import (AI_ENV_KEY, OUT_DIR, UI_DIR, WORK_DIR, load_ai_config,
+                     load_config, list_sources, out_dir, resolve_source,
+                     save_ai_config, save_ai_token, save_env_token, work_dir)
 from .util import now_iso, read_json
 
 JOBS: dict[str, dict] = {}
@@ -35,7 +36,8 @@ _JOB_LOCK = threading.Lock()
 # **界面是新的、后端是旧的** —— 新界面去调不存在的接口，后端如实回
 # 404 unknown path。使用者看到的是一句没头没尾的「unknown path」，而不是
 # 「你这个服务还是上次那个进程」。加接口时把名字补进来，前端就知道该要什么。
-API_CAPS = ("edit", "edit_add", "blocks", "epub", "config_token")
+API_CAPS = ("edit", "edit_add", "blocks", "epub", "epub_export", "ai_review",
+            "config_token")
 
 
 def _code_stamp() -> str:
@@ -461,7 +463,7 @@ def edit_view(sid: str) -> dict:
     }
 
 
-def act_export(sid: str, depth: int, footnotes: str, no_images: bool, log):
+def act_export(sid: str, depth: int, footnotes: str, no_images: bool, epub: bool, log):
     from .exporter import export
     from .outline import load_outline
     from .pagecal import load_calibration
@@ -474,18 +476,95 @@ def act_export(sid: str, depth: int, footnotes: str, no_images: bool, log):
         pj = read_json(wd / "project.json", {}) or {}
         footnotes = (pj.get("defaults") or {}).get("footnotes") or "page-end"
     od = out_dir(sid) / f"L{depth}"
-    log(f"[export] → {od}（脚注：{footnotes}）")
+    log(f"[export] → {od}（脚注：{footnotes}｜EPUB：{'装订' if epub else '跳过'}）")
     meta = export(sid, wd, od, blocks, calib, outline, depth,
                   copy_images=not no_images, footnote_mode=footnotes,
-                  shards_meta=[s.to_dict() for s in shards])
+                  shards_meta=[s.to_dict() for s in shards], epub=epub)
     log(f"[export] {meta['stats']['files']} 个文件 / {meta['stats']['chars']:,} 字 / "
         f"{meta['stats']['images_copied']} 张图")
+    ep = meta.get("epub")
+    if ep:
+        log(f"[export] EPUB → {ep['name']}（{ep['chapters']} 章 / "
+            f"{ep['bytes'] / 1024:.0f} KB / 目录 {ep['nav_entries']} 条）")
+        for w in (ep.get("warnings") or [])[:4]:
+            log(f"[export] ⚠️ {w}")
     if meta["stats"].get("stale_removed"):
         log(f"[export] 清掉 {meta['stats']['stale_removed']} 个上一轮留下的文件"
             f"（这一轮已经不再切出它们了）：{', '.join(meta.get('stale_removed', [])[:6])}"
             + (" …" if meta["stats"]["stale_removed"] > 6 else ""))
-    return {"out_dir": str(od), "stats": meta["stats"],
+    return {"out_dir": str(od), "stats": meta["stats"], "epub": ep,
             "locator_type": meta["locator_type"], "page_offset": meta["page_offset"]}
+
+
+def act_epub(sid: str, depth: int, log):
+    """用已导出的 md 重做 EPUB；不改 md、不重跑导出。"""
+    from .epub_export import build_epub
+    from .cover import resolve_cover
+    wd = work_dir(sid)
+    od = out_dir(sid) / f"L{depth}"
+    if not od.is_dir():
+        raise FileNotFoundError(f"{od} 不存在 —— 先导出该深度")
+    pj = read_json(wd / "project.json", {}) or {}
+    dc = ((pj.get("epub") or {}).get("epub_dc") or {})
+    cover, cover_warning = resolve_cover(wd)
+    log(f"[epub] {sid} ← {od}")
+    info = build_epub(od, title=pj.get("doc_title"), author=dc.get("creator"),
+                      language=dc.get("language"), source_id=sid, record=True,
+                      cover=cover, cover_warning=cover_warning)
+    log(f"[epub] {info['name']}：{info['chapters']} 章 / {info['images']} 图 / "
+        f"{info['bytes'] / 1024:.0f} KB")
+    if info.get("cover"):
+        c = info["cover"]
+        log(f"[epub] 封面：{c.get('kind')} · {c.get('width')}×{c.get('height')}")
+    for w in (info.get("warnings") or [])[:4]:
+        log(f"[epub] ⚠️ {w}")
+    return {"out_dir": str(od), "epub": info}
+
+
+def ai_public() -> dict:
+    cfg = load_ai_config()
+    return {"ok": True, "config": cfg.public(),
+            "env_overrides": bool(os.environ.get(AI_ENV_KEY, "").strip())}
+
+
+def act_ai_test(log):
+    from .ai_review import test_connection
+    log("[ai] 测试 OpenAI 兼容接口…")
+    r = test_connection(load_ai_config())
+    log(f"[ai] {r['base_url']} / {r['model']}："
+        f"{'✅ 可用' if r['ok'] else '❌ 不可用'}（{r['usage'].get('total_tokens', 0)} tokens）")
+    return r
+
+
+def act_ai_review(sid: str, depth: int, log):
+    from .ai_review import preview
+    log(f"[ai] {sid}：收集目录/audit/正文取证证据（L{depth}）…")
+    p = preview(sid, depth)
+    log(f"[ai] {p['model']}：{p['usage'].get('total_tokens', 0)} tokens"
+        f"｜目录改动 {len(p.get('operations') or [])}｜页码建议 "
+        f"{len(p.get('page_fixes') or [])}｜未决 {len(p.get('unresolved') or [])}")
+    for e in p.get("errors") or []:
+        log(f"[ai] ❌ {e}")
+    for w in (p.get("warnings") or [])[:5]:
+        log(f"[ai] ⚠️ {w}")
+    return p
+
+
+def act_ai_apply(sid: str, preview_id: str, log):
+    from .ai_review import apply_preview
+    log(f"[ai] 应用预览 {preview_id}（先备份）…")
+    r = apply_preview(sid, preview_id)
+    if r.get("message"):
+        log(f"[ai] {r['message']}")
+        return r
+    pa = r.get("post_audit") or {}
+    log(f"[ai] 已应用目录改动 {r.get('applied_operations', 0)} 条 / 页码锚点 "
+        f"{r.get('applied_anchors', 0)} 条；应用后 audit={pa.get('verdict', '?')}")
+    if r.get("report"):
+        log(f"[ai] 报告：{r['report']}")
+    if r.get("backup"):
+        log(f"[ai] 备份：{r['backup']}")
+    return r
 
 
 def act_verify(sid: str, depth: int, log):
@@ -618,6 +697,17 @@ class Handler(BaseHTTPRequestHandler):
                 self.serve_file(q.get("path", [""])[0])
             elif p == "/api/download":
                 self.serve_zip(q.get("id", [""])[0], q.get("depth", ["2"])[0])
+            elif p == "/api/epub":
+                self.serve_epub(q.get("source", [""])[0], q.get("depth", ["2"])[0])
+            elif p == "/api/ai":
+                self._json(ai_public())
+            elif p == "/api/ai/preview":
+                from .ai_review import preview_status
+                try:
+                    sid = resolve_source(q.get("source", [""])[0])
+                    self._json({"ok": True, "preview": preview_status(sid)})
+                except (FileNotFoundError, ValueError) as e:
+                    self._json({"ok": True, "preview": None, "note": str(e)})
             else:
                 self._err("unknown path", 404)
         except Exception as e:                      # noqa: BLE001
@@ -640,7 +730,40 @@ class Handler(BaseHTTPRequestHandler):
                 depth = int(b.get("depth", 2))
                 self._json({"ok": True, "job": start_job("export",
                             lambda log: act_export(sid, depth, b.get("footnotes", "page-end"),
-                                                   bool(b.get("no_images")), log))["id"]})
+                                                   bool(b.get("no_images")),
+                                                   b.get("epub", True) is not False,
+                                                   log))["id"]})
+            elif u.path == "/api/epub":
+                sid = resolve_source(b.get("source"))
+                depth = int(b.get("depth", 2))
+                self._json({"ok": True, "job": start_job("epub",
+                            lambda log: act_epub(sid, depth, log))["id"]})
+            elif u.path == "/api/ai/config":
+                patch = {k: b.get(k) for k in ("base_url", "model", "timeout", "max_tokens",
+                                               "max_input_chars", "temperature")
+                         if k in b}
+                if patch:
+                    save_ai_config(patch)
+                if b.get("clear_token"):
+                    save_ai_token("")
+                elif str(b.get("token") or "").strip():
+                    save_ai_token(str(b["token"]).strip())
+                self._json(ai_public())
+            elif u.path == "/api/ai/test":
+                self._json({"ok": True, "job": start_job("ai_test",
+                            lambda log: act_ai_test(log))["id"]})
+            elif u.path == "/api/ai/review":
+                sid = resolve_source(b.get("source"))
+                depth = int(b.get("depth", 3))
+                self._json({"ok": True, "job": start_job("ai_review",
+                            lambda log: act_ai_review(sid, depth, log))["id"]})
+            elif u.path == "/api/ai/apply":
+                sid = resolve_source(b.get("source"))
+                pid = str(b.get("preview_id") or "").strip()
+                if not pid:
+                    return self._err("缺少 preview_id", 400)
+                self._json({"ok": True, "job": start_job("ai_apply",
+                            lambda log: act_ai_apply(sid, pid, log))["id"]})
             elif u.path == "/api/verify":
                 sid = resolve_source(b.get("source"))
                 depth = int(b.get("depth", 2))
@@ -754,6 +877,7 @@ class Handler(BaseHTTPRequestHandler):
                 "pages": sum(int(s.get("n_pages") or 0) for s in pj.get("shards", [])),
                 "has": {"outline": bool(oc), "pagecal": bool(pc),
                         "export": out_dir(sid).is_dir() and any(out_dir(sid).glob("L*")),
+                        "epub": out_dir(sid).is_dir() and any(out_dir(sid).glob("L*/*.epub")),
                         "verify": bool(vf)},
                 "verify": vf.get("verdict", ""),
                 "locator_type": pc.get("locator_type", ""),
@@ -763,6 +887,7 @@ class Handler(BaseHTTPRequestHandler):
         return {"ok": True, "config": cfg.public(), "sources": rows,
                 "pending": list_pending(),
                 "mineru_root": str(cfg.mineru_output_root),
+                "ai": ai_public(),
                 # 版本自检用：前端拿 caps 比对自己需要的能力，拿 code_stamp 显示
                 "caps": list(API_CAPS),
                 "code_stamp": _code_stamp(),
@@ -813,8 +938,26 @@ class Handler(BaseHTTPRequestHandler):
         for d in sorted(out_dir(sid).glob("L*")) if out_dir(sid).is_dir() else []:
             if d.is_dir():
                 meta = read_json(d / "conversion_meta.json", {}) or {}
+                ep = meta.get("epub") or {}
+                ep_file = d / ep["name"] if ep.get("name") else None
+                if ep_file is not None and ep_file.is_file():
+                    verified = ep.get("verified")
+                    if verified is None:
+                        verified = (ep.get("verify") or {}).get("ok")
+                    epub = {
+                        "name": ep.get("name"), "bytes": ep_file.stat().st_size,
+                        "chapters": ep.get("chapters"), "images": ep.get("images"),
+                        "verified": None if verified is None else bool(verified),
+                        "warnings": len(ep.get("warnings") or []),
+                    }
+                else:
+                    # 旧导出没有 conversion_meta.epub：按文件兜底，界面仍能下载
+                    found = sorted(p for p in d.glob("*.epub") if p.is_file())
+                    epub = ({"name": found[0].name, "bytes": found[0].stat().st_size,
+                             "chapters": None, "images": None, "verified": None,
+                             "warnings": 0} if found else None)
                 exports.append({"depth": d.name, "path": str(d),
-                                "stats": meta.get("stats", {}),
+                                "stats": meta.get("stats", {}), "epub": epub,
                                 "files": sorted(p.name for p in d.glob("*.md"))})
         # 目录树裁剪：只带必要字段，避免前端渲染几 MB
         def slim(n):
@@ -840,10 +983,32 @@ class Handler(BaseHTTPRequestHandler):
         target = (OUT_DIR / rel).resolve()
         if not str(target).startswith(str(OUT_DIR.resolve())) or not target.is_file():
             return self._err("forbidden", 403)
-        ct = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
-        if ct.startswith("text/") and "charset" not in ct:
-            ct += "; charset=utf-8"
+        if target.suffix.lower() == ".epub":
+            ct = "application/epub+zip"
+        else:
+            ct = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+            if ct.startswith("text/") and "charset" not in ct:
+                ct += "; charset=utf-8"
         self._send(200, target.read_bytes(), ct)
+
+    def serve_epub(self, arg: str, depth: str):
+        """按源+深度下载 EPUB（文件名保留书名，浏览器按附件保存）。"""
+        from urllib.parse import quote
+        sid = resolve_source(arg)
+        d = out_dir(sid) / (depth if depth.startswith("L") else f"L{depth}")
+        files = sorted(p for p in d.glob("*.epub") if p.is_file()) if d.is_dir() else []
+        if not files:
+            return self._err("该深度还没有 EPUB —— 先导出（或点“重做 EPUB”）", 404)
+        target = files[0]
+        data = target.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/epub+zip")
+        self.send_header("Content-Disposition",
+                         "attachment; filename*=UTF-8''" + quote(target.name))
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(data)
 
     def serve_zip(self, arg: str, depth: str):
         import io

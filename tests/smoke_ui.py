@@ -119,7 +119,8 @@ def main() -> int:
         with opener.open(f"http://127.0.0.1:{PORT}/", timeout=15) as r:
             page = r.read().decode("utf-8")
         miss = [n for n in ('id="vdKb"', 'id="showDelCk"', 'id="viewBar"',
-                            "function rowClick", "let VDEPTH", "function setVDepth")
+                            "function rowClick", "let VDEPTH", "function setVDepth",
+                            "function aiSection", "AI 一键核校")
                 if n not in page]
         if miss:
             fails.append("首页缺少：" + "、".join(miss))
@@ -128,6 +129,13 @@ def main() -> int:
 
         # 1) pending 检测：半成品必须出现在 bootstrap.pending 里
         b = get("/api/bootstrap")
+        if "ai_review" not in (b.get("caps") or []):
+            fails.append("bootstrap.caps 缺 ai_review")
+        ai_cfg = (b.get("ai") or {}).get("config") or {}
+        if "token_present" not in ai_cfg:
+            fails.append("bootstrap.ai 缺配置摘要")
+        if "token" in ai_cfg:
+            fails.append("bootstrap.ai 回传了 token 字段")
         pend = {p["source_id"]: p for p in b.get("pending", [])}
         if SID not in pend:
             fails.append("bootstrap.pending 没认出半成品 ingest")

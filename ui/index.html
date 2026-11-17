@@ -48,7 +48,7 @@
   button.primary:hover{filter:brightness(1.08)}
   button:disabled{opacity:.45;cursor:not-allowed}
   button.sm{padding:3px 8px;font-size:12px}
-  input[type=text],select{font:13px/1.4 inherit;padding:5px 8px;border:1px solid var(--line);
+  input[type=text],input[type=password],select{font:13px/1.4 inherit;padding:5px 8px;border:1px solid var(--line);
           border-radius:6px;background:#fff;color:var(--ink);width:100%}
   label.fld{display:block;margin:7px 0 3px;font-size:12px;color:var(--dim)}
   .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -73,6 +73,20 @@
   .tag.pass{color:var(--ok);border-color:#bcd9c7;background:#f1f8f3}
   .tag.warn{color:var(--warn);border-color:#e2d2ab;background:#fdf7e8}
   .tag.fail{color:var(--bad);border-color:#e3bcbc;background:#fdf0f0}
+  /* ---- 内置 AI 核校 ---- */
+  .aibox{border:1px solid #dfd0b0;background:#fdfaf2;border-radius:8px;
+         padding:10px 12px;margin:0 0 12px}
+  .aibox h3{font-size:12.5px;margin:0 0 7px;font-weight:600;color:#6d5426;
+            display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .aibox .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:7px 10px}
+  .aibox .grid label{font-size:11.5px;color:var(--dim);display:block;margin-bottom:2px}
+  .aibox .meta{font:11px/1.7 var(--mono);color:var(--dim)}
+  .aiprev{border-top:1px dashed #dfd0b0;margin-top:9px;padding-top:8px}
+  .aichg{font:12px/1.75 var(--mono);margin:2px 0;word-break:break-all}
+  .aichg.err{color:var(--bad)}
+  .aichg.warn{color:var(--warn)}
+  .aichg.ok{color:var(--ok)}
+  .aiquest{font-size:12px;color:#6d5426;margin:3px 0 3px 2px}
   /* ---- 分片状态 ---- */
   .shd{display:inline-flex;align-items:center;gap:5px;font:11px/1.6 var(--mono);
        border:1px solid var(--line);border-radius:5px;padding:1px 7px;background:#fbfbf8;
@@ -420,7 +434,7 @@
     </div>
 
     <details class="panel" id="pOut" style="display:none">
-      <summary>导出与校验</summary>
+      <summary>导出、AI 核校与校验</summary>
       <div class="body" id="outBody"></div>
     </details>
   </main>
@@ -438,6 +452,9 @@
 <script>
 let BOOT = null, CUR = null, EDIT = null, DETAIL = null;
 let DEPTH = 2, TAB = 'tree', DIRTY = false, BUSY = false;
+let AI_PREVIEW = null;       // 当前源的 AI 核校预览（未应用）
+let AI_BUSY = false;
+let AI_DEPTH = 3;
 let PAGE_ROWS = [], PAGE_BY_SHARD = {};
 /* 选中集合：存条目的**主键 key**，不是 gid。
    为什么不拿 gid 当键：从印刷目录补出来的合成节点借用了「该页第一个真实块」的 gid，
@@ -519,6 +536,7 @@ async function poll(jid){
    「后端是旧进程」，而不是等某个功能自己撞出 unknown path。
    以后加后端接口，同时把名字加进这里，防呆才跟得上。 */
 const NEED_CAPS = {blocks: '正文块 · 补标题', edit_add: '新增标题断点', epub: 'EPUB 入库',
+                   epub_export: '导出 EPUB', ai_review: '内置 AI 核校',
                    config_token: 'MinerU Key 设置'};
 
 /* 后端有没有这个能力。boot 之前 BOOT 还是 null，一律按「没有」处理 ——
@@ -646,7 +664,7 @@ function renderSources(){
       <div class="t">${esc(s.title)}</div>
       <div class="m">
         <span>${s.pages}页/${s.shards.length}片</span>
-        <span>${d('pagecal')}页码 ${d('outline')}目录 ${d('export')}导出</span>
+        <span>${d('pagecal')}页码 ${d('outline')}目录 ${d('export')}导出 ${d('epub')}EPUB</span>
         ${s.verify ? `<span class="tag ${esc(s.verify)}">${esc(s.verify)}</span>` : ''}
       </div></div>`;
   }).join('');
@@ -690,6 +708,10 @@ async function selectSource(id){
   $('pNoSrc').style.display = 'none';
 
   DETAIL = await api('/api/source?id=' + encodeURIComponent(id));
+  try {
+    const ar = await api('/api/ai/preview?source=' + encodeURIComponent(id));
+    AI_PREVIEW = ar.preview || null;
+  } catch (_) { AI_PREVIEW = null; }
   renderIngest();
   renderOut();
 
@@ -1473,6 +1495,8 @@ async function applyEdits(){
 /* ---------------------------------------------------------------- 阶段 */
 async function runStage(kind){
   const body = {source: CUR, depth: DEPTH, footnotes: ($('fnMode') || {}).value || 'page-end'};
+  // 勾选框在导出前读一次；EPUB 是否装订由使用者当场决定，不替人默认改历史行为。
+  if (kind === 'export' && $('epubToo')) body.epub = $('epubToo').checked;
   try {
     const r = await post('/api/' + kind, body);
     const j = await poll(r.job);
@@ -1498,6 +1522,8 @@ function renderOut(){
     ${vf.verdict ? `<span class="tag ${esc(vf.verdict)}">${esc(vf.verdict)}</span>` : ''}
   </div>`);
 
+  body.push(aiSection());
+
   const keys = Object.keys(stats).sort((a, b) => a - b);
   body.push('<div class="hint" style="margin-bottom:5px">按第几层导出（数字＝切出的文件数）</div><div class="dep">');
   keys.forEach(k => {
@@ -1510,10 +1536,27 @@ function renderOut(){
     <label class="hint">脚注 <select id="fnMode" style="width:auto">
       <option value="page-end">页末</option><option value="inline">随文</option>
       <option value="drop">丢弃</option></select></label>
+    ${hasCap('epub_export') ? '<label class="hint"><input type="checkbox" id="epubToo" checked> 同时装订 EPUB</label>' : ''}
     <button class="primary sm" onclick="runStage('export')">导出 L${DEPTH}</button>
+    ${hasCap('epub_export') ? '<button class="sm" onclick="runStage(\'epub\')">重做 EPUB</button>' : ''}
     <button class="sm" onclick="runStage('verify')">校验</button>
     <button class="sm" onclick="dl()">下载 zip</button>
   </div>`);
+
+  // EPUB 与 md 同目录：导出后立刻能看到文件名、章数和结构自检结果，并能单独下载。
+  const curExport = exports.find(e => e.depth === 'L' + DEPTH) || {};
+  const ep = curExport.epub;
+  if (ep){
+    const ok = ep.verified === false ? ' <span class="tag warn">结构自检未通过</span>'
+             : ep.verified ? ' · 结构自检通过' : '';
+    body.push(`<div class="hint" style="margin-top:6px">EPUB：
+      <a href="/api/epub?source=${encodeURIComponent(CUR)}&depth=L${DEPTH}">${esc(ep.name)}</a>
+      ${ep.chapters ? `· ${ep.chapters} 章` : ''} · ${Math.max(0, Math.round((ep.bytes || 0) / 1024))} KB
+      ${ep.cover ? '· 含封面' : ''}
+      ${ep.warnings ? `· ${ep.warnings} 条提示` : ''}${ok}</div>`);
+  } else if (exports.length){
+    body.push('<p class="hint" style="margin-top:6px">该深度还没有 EPUB；点“导出”会同时生成，或点“重做 EPUB”用现有 md 装订。</p>');
+  }
 
 
   if (exports.length){
@@ -1546,6 +1589,166 @@ function renderOut(){
   if ($('fnMode') && d.footnote_default) $('fnMode').value = d.footnote_default;
 }
 function dl(){ window.location = `/api/download?id=${encodeURIComponent(CUR)}&depth=${DEPTH}`; }
+
+/* ---------------------------------------------------------------- 内置 AI 核校
+   与外部 MCP 并存：这里只是把「读证据 → 让 AI 提改动 → 预览 → 用户点应用」
+   收进本页；落盘仍走 manual/tocio/fixplan，和 review_apply 是同一层。
+   预览与应用分成两次点击，避免模型直接改书。 */
+function aiSection(){
+  if (!hasCap('ai_review')) return '';
+  const ai = (BOOT && BOOT.ai) || {};
+  const c = ai.config || {};
+  const has = !!c.token_present;
+  const p = AI_PREVIEW;
+  const canRun = !AI_BUSY && has && DETAIL && DETAIL.outline && DETAIL.outline.node_total;
+  const out = [];
+  out.push('<div class="aibox">');
+  out.push(`<h3>内置 AI 核校
+    <span class="hint">目录层级/编号/漏标题；页码只做字符与序列推断，不看原页图</span>
+    <span class="tag ${has ? 'pass' : 'warn'}">${has ? 'Token 已配置' : '未配置 Token'}</span>
+  </h3>`);
+  out.push(`<div class="grid">
+    <div><label>OpenAI 兼容 base_url</label>
+      <input type="text" id="aiBase" value="${esc(c.base_url || '')}"></div>
+    <div><label>模型（便宜优先）</label>
+      <input type="text" id="aiModel" value="${esc(c.model || '')}"></div>
+    <div style="grid-column:1/3"><label>API Token
+      ${has ? `（已配置 ${esc(c.token_hint || '')}，留空不修改）` : ''}</label>
+      <input type="password" id="aiToken" autocomplete="off"
+        placeholder="${has ? '留空保持不变' : 'sk-…'}"></div>
+  </div>
+  <div class="row" style="margin-top:7px">
+    <button class="sm" onclick="saveAIConfig()">保存 AI 设置</button>
+    <button class="sm" onclick="testAI()" ${has ? '' : 'disabled'}>测试连接</button>
+    ${has ? '<button class="sm" onclick="clearAIToken()">清除 Token</button>' : ''}
+    <label class="hint">核对到
+      <select id="aiDepth" style="width:auto" onchange="AI_DEPTH=+this.value">
+        ${[1,2,3,4,5].map(n => `<option value="${n}" ${n===AI_DEPTH?'selected':''}>L${n}</option>`).join('')}
+      </select></label>
+    <button class="primary sm" onclick="runAIReview()" ${canRun ? '' : 'disabled'}>
+      ${AI_BUSY ? 'AI 核校中…' : 'AI 一键核校'}</button>
+    <span class="hint">先预览，确认后应用；外部 AI 的 MCP 通道不受影响</span>
+  </div>`);
+  if (ai.env_overrides) {
+    out.push('<div class="hint" style="margin-top:5px">环境变量已覆盖 AI 配置；这里保存的值可能不生效。</div>');
+  }
+  if (p) out.push(aiPreviewHtml(p));
+  out.push('</div>');
+  return out.join('');
+}
+
+function aiPreviewHtml(p){
+  const out = ['<div class="aiprev">'];
+  const usage = p.usage || {};
+  out.push(`<div class="meta">模型 ${esc(p.model || '?')} · ${usage.total_tokens || 0} tokens
+    · ${esc(p.created_at || '')} · 预览 ${esc(p.preview_id || '')}
+    ${p.status === 'applied' ? '<span class="tag pass">已应用</span>' : ''}
+    ${p.stale ? '<span class="tag warn">预览已过期</span>' : ''}</div>`);
+  for (const e of (p.errors || [])) out.push(`<div class="aichg err">❌ ${esc(e)}</div>`);
+  for (const w of (p.warnings || [])) out.push(`<div class="aichg warn">⚠️ ${esc(w)}</div>`);
+  const changes = p.changes || [];
+  if (changes.length) {
+    out.push('<div class="hint" style="margin-top:6px">建议改动（未应用）</div>');
+    for (const c of changes) out.push(`<div class="aichg ok">${esc(c)}</div>`);
+  } else {
+    out.push('<div class="hint" style="margin-top:6px">没有建议改动。</div>');
+  }
+  for (const u of (p.unresolved || [])) {
+    out.push(`<div class="aiquest">⏳ ${esc(u.target || '')}：${esc(u.question || '')}</div>`);
+  }
+  if (p.review_note) {
+    out.push(`<details style="margin-top:6px"><summary class="hint">模型说明</summary>
+      <div class="hint" style="white-space:pre-wrap;margin-top:4px">${esc(p.review_note)}</div></details>`);
+  }
+  if (p.status === 'applied') {
+    out.push(`<div class="hint" style="margin-top:6px">已应用；备份：<span class="mono">${esc(p.backup || '')}</span></div>`);
+  } else {
+    out.push(`<div class="row" style="margin-top:7px">
+      <button class="primary sm" onclick="applyAIPreview()"
+        ${(p.stale || (p.errors || []).length) ? 'disabled' : ''}>应用这些修改</button>
+      <button class="sm" onclick="discardAIPreview()">收起预览</button>
+      <span class="hint">应用前自动备份 manual/outline/page_calibration</span>
+    </div>`);
+  }
+  out.push('</div>');
+  return out.join('');
+}
+
+async function saveAIConfig(){
+  const body = {base_url: ($('aiBase') || {}).value || '',
+                model: ($('aiModel') || {}).value || ''};
+  const tok = (($('aiToken') || {}).value || '').trim();
+  if (tok) body.token = tok;
+  try {
+    const r = await post('/api/ai/config', body);
+    BOOT.ai = r;
+    if ($('aiToken')) $('aiToken').value = '';
+    log('AI 设置已保存' + (r.config.token_present ? '（token 已配置）' : '（未配置 token）'));
+    renderOut();
+  } catch (e){ log('❌ AI 设置保存失败：' + e.message); }
+}
+
+async function testAI(){
+  try {
+    const r = await post('/api/ai/test', {});
+    const j = await poll(r.job);
+    if (j.status !== 'done') return log('❌ AI 测试失败：' + (j.error || ''));
+    log(`✅ AI 可用：${j.result.model} · ${(j.result.usage || {}).total_tokens || 0} tokens`);
+  } catch (e){ log('❌ AI 测试失败：' + e.message); }
+}
+
+async function clearAIToken(){
+  if (!confirm('清除已保存的 AI Token？清除后 AI 核校不可用。')) return;
+  try {
+    const r = await post('/api/ai/config', {clear_token: true});
+    BOOT.ai = r;
+    log('AI Token 已清除');
+    renderOut();
+  } catch (e){ log('❌ 清除失败：' + e.message); }
+}
+
+async function runAIReview(){
+  if (AI_BUSY || !CUR) return;
+  AI_BUSY = true; renderOut();
+  try {
+    const r = await post('/api/ai/review', {source: CUR, depth: AI_DEPTH});
+    const j = await poll(r.job);
+    if (j.status !== 'done'){
+      log('❌ AI 核校失败：' + (j.error || ''));
+      return;
+    }
+    AI_PREVIEW = j.result;
+    log(`AI 核校预览：目录改动 ${(j.result.operations || []).length}，页码建议 `
+        + `${(j.result.page_fixes || []).length}，未决 ${(j.result.unresolved || []).length}`);
+  } catch (e){ log('❌ AI 核校失败：' + e.message); }
+  finally { AI_BUSY = false; renderOut(); }
+}
+
+async function applyAIPreview(){
+  if (!AI_PREVIEW || !AI_PREVIEW.preview_id) return;
+  if (AI_PREVIEW.stale) return log('❌ 预览已过期，请重新核校');
+  if ((AI_PREVIEW.errors || []).length) return log('❌ 预览含校验错误，不能应用');
+  try {
+    const r = await post('/api/ai/apply',
+      {source: CUR, preview_id: AI_PREVIEW.preview_id});
+    const j = await poll(r.job);
+    if (j.status !== 'done') return log('❌ 应用失败：' + (j.error || ''));
+    const res = j.result || {};
+    AI_PREVIEW = null;
+    if (res.message) {
+      log('✅ ' + res.message);
+    } else {
+      log(`✅ 已应用：目录 ${res.applied_operations || 0} 条，页码锚点 `
+          + `${res.applied_anchors || 0} 条；备份 ${res.backup || ''}`);
+    }
+    await selectSource(CUR);
+  } catch (e){ log('❌ 应用失败：' + e.message); }
+}
+
+function discardAIPreview(){
+  AI_PREVIEW = null;
+  renderOut();
+}
 
 /* ---------------------------------------------------------------- 新增源 */
 async function loadMineruDirs(){

@@ -95,7 +95,14 @@ class Calibration:
             if seg.shard != shard or not seg.contains(page_idx):
                 continue
             printed = page_idx + seg.offset
-            return f"front-{printed}" if seg.kind == "front" else str(printed)
+            if seg.kind != "front":
+                return str(printed)
+            collisions = [s for s in self.segments if s.kind == 'front'
+                          and s.contains_printed(printed)]
+            if len(collisions) > 1:
+                # Retain the printed number, qualify only ambiguous front matter.
+                return f"front-{printed}-{shard}-s{seg.page_idx_start}"
+            return f"front-{printed}"
         return None
 
     def physical_of(self, printed: int, prefer_body: bool = True) -> tuple[str, int] | None:

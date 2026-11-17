@@ -1,11 +1,13 @@
 """校验闸门：导出产物能不能用，由这里裁定。
 
-三道闸门（缺一不可）：
+四道闸门（缺一不可）：
   G1 页锚覆盖率   —— 能不能按刊期/页码引用（对齐 §2.3 入库硬条件）
   G2 内容无损     —— 导出文件能否逐块回查到源块，不增不减不改字
   G3 页码一致性   —— 区间内步长恒为 1、断点已显式声明、跨片接续通过
+  G4 入库硬条件   —— 有页锚，或 locator_type=section_only 的替代条件成立
 
 任何一道不通过都会写进 report，且整体 verdict 置 fail/warn —— 不静默放行。
+EPUB 的结构自检在 core/epub_export.verify_epub，单独记录，不混入这里的 G1–G4。
 """
 from __future__ import annotations
 

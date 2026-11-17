@@ -34,6 +34,11 @@ CONFIG_FILE = ROOT / "config.json"
 DEFAULT_API_BASE = "https://mineru.net/api/v4"
 DEFAULT_SHARD_PAGES = 200          # MinerU 单文件页数上限
 DEFAULT_SHARD_MODE = "mineru"      # mineru = 交由 MinerU 按 page_ranges 切；local = 本机 pypdf 切
+AI_ENV_KEY = "DOCLAB_AI_TOKEN"
+AI_ENV_BASE = "DOCLAB_AI_BASE_URL"
+AI_ENV_MODEL = "DOCLAB_AI_MODEL"
+DEFAULT_AI_BASE = "https://api.deepseek.com/v1"
+DEFAULT_AI_MODEL = "deepseek-chat"
 
 
 def _load_env_file(path: Path) -> dict[str, str]:
@@ -47,6 +52,89 @@ def _load_env_file(path: Path) -> dict[str, str]:
         k, v = line.split("=", 1)
         out[k.strip()] = v.strip().strip('"').strip("'")
     return out
+
+
+@dataclass
+class AIConfig:
+    """内置 AI 核校的配置。
+
+    与 MinerU 一样，**token 只从环境变量或 .env.local 读**，绝不回传明文；
+    base/model 可写 config.json（非秘密）。
+    """
+    base_url: str = DEFAULT_AI_BASE
+    model: str = DEFAULT_AI_MODEL
+    token: str = ""
+    token_source: str = "none"
+    timeout: int = 120
+    max_tokens: int = 4096
+    max_input_chars: int = 52000
+    temperature: float = 0.0
+    vision: bool = False
+
+    def public(self) -> dict[str, Any]:
+        return {
+            "base_url": self.base_url,
+            "model": self.model,
+            "timeout": self.timeout,
+            "max_tokens": self.max_tokens,
+            "max_input_chars": self.max_input_chars,
+            "temperature": self.temperature,
+            "vision": self.vision,
+            "token_present": bool(self.token),
+            "token_source": self.token_source,
+            "token_hint": (self.token[:6] + "…" + self.token[-4:]) if self.token else "",
+        }
+
+
+def load_ai_config() -> AIConfig:
+    cfg = AIConfig()
+    file_cfg = read_json(CONFIG_FILE, {}) or {}
+    ai = file_cfg.get("ai") if isinstance(file_cfg, dict) else {}
+    if isinstance(ai, dict):
+        cfg.base_url = str(ai.get("base_url") or cfg.base_url)
+        cfg.model = str(ai.get("model") or cfg.model)
+        cfg.timeout = int(ai.get("timeout") or cfg.timeout)
+        cfg.max_tokens = int(ai.get("max_tokens") or cfg.max_tokens)
+        cfg.max_input_chars = int(ai.get("max_input_chars") or cfg.max_input_chars)
+        cfg.temperature = float(ai.get("temperature", cfg.temperature) or 0.0)
+        cfg.vision = bool(ai.get("vision", cfg.vision))
+
+    env_map = _load_env_file(ENV_FILE)
+    env_base = os.environ.get(AI_ENV_BASE, "").strip() or env_map.get(AI_ENV_BASE, "").strip()
+    env_model = os.environ.get(AI_ENV_MODEL, "").strip() or env_map.get(AI_ENV_MODEL, "").strip()
+    if env_base:
+        cfg.base_url = env_base
+    if env_model:
+        cfg.model = env_model
+
+    env_token = os.environ.get(AI_ENV_KEY, "").strip()
+    if env_token:
+        cfg.token, cfg.token_source = env_token, f"env:{AI_ENV_KEY}"
+    elif env_map.get(AI_ENV_KEY):
+        cfg.token, cfg.token_source = env_map[AI_ENV_KEY], ".env.local"
+    elif isinstance(ai, dict) and ai.get("token"):
+        # 兼容旧配置，但界面向导永远写 .env.local。
+        cfg.token, cfg.token_source = str(ai["token"]), "config.json(ai.token)"
+    return cfg
+
+
+def save_ai_config(patch: dict) -> Path:
+    """只合并 ai 段里的非秘密字段；token 走 save_ai_token。"""
+    cur = read_json(CONFIG_FILE, {}) or {}
+    if not isinstance(cur, dict):
+        cur = {}
+    ai = cur.get("ai") if isinstance(cur.get("ai"), dict) else {}
+    for k in ("base_url", "model", "timeout", "max_tokens", "max_input_chars",
+              "temperature", "vision"):
+        if k in patch and patch[k] not in (None, ""):
+            ai[k] = patch[k]
+    cur["ai"] = ai
+    return write_json(CONFIG_FILE, cur)
+
+
+def save_ai_token(token: str) -> None:
+    """写入 / 清除 .env.local 里的 DOCLAB_AI_TOKEN（其他行原样保留）。"""
+    save_env_value(AI_ENV_KEY, token)
 
 
 @dataclass
@@ -118,6 +206,26 @@ def load_config() -> Config:
     return cfg
 
 
+def save_env_value(key: str, value: str) -> None:
+    """写 / 删 .env.local 里的一个键；其他行原样保留。
+
+    这是所有本机 Key 的统一落盘点：文件在 .gitignore 里，永不入库。
+    值为空 = 删除该行（彻底清除，不是留空值）。
+    """
+    key = str(key or "").strip()
+    if not key or "=" in key or "\n" in key:
+        raise ValueError(f"非法环境变量名：{key!r}")
+    lines: list[str] = []
+    if ENV_FILE.exists():
+        lines = ENV_FILE.read_text(encoding="utf-8").splitlines()
+    value = (value or "").strip()
+    kept = [l for l in lines
+            if not (l.strip() == key or l.strip().startswith(key + "="))]
+    if value:
+        kept.append(f"{key}={value}")
+    ENV_FILE.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
+
+
 def save_env_token(token: str) -> None:
     """写入 / 清除 .env.local 里的 MINERU_TOKEN（其他行原样保留）。
 
@@ -126,15 +234,7 @@ def save_env_token(token: str) -> None:
     注意环境变量 MINERU_TOKEN 优先级更高：它存在时这里写的值不生效，
     调用方要能把这一点告诉用户。
     """
-    lines: list[str] = []
-    if ENV_FILE.exists():
-        lines = ENV_FILE.read_text(encoding="utf-8").splitlines()
-    token = (token or "").strip()
-    kept = [l for l in lines
-            if not (l.strip() == "MINERU_TOKEN" or l.strip().startswith("MINERU_TOKEN="))]
-    if token:
-        kept.append(f"MINERU_TOKEN={token}")
-    ENV_FILE.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
+    save_env_value("MINERU_TOKEN", token)
 
 
 def save_config_patch(patch: dict) -> Path:

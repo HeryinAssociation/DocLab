@@ -10,6 +10,8 @@
     python doclab.py remove <source_id>           移出工作台（产物进 _trash，可恢复）
     python doclab.py outline <source_id>          构建目录索引（先看，再选深度）
     python doclab.py audit <source_id>            目录校核（结构/编号/页码/印刷目录，只读）
+    python doclab.py ai-review <source_id> -d 3   内置 AI 目录核校（默认只预览；--apply 应用）
+    python doclab.py ai-review --test            测试已配置的 OpenAI 兼容 AI 接口
     python doclab.py fix <source_id> --plan P     按修订单改人工核定层（默认演练）
 
   目录核对（JSON 往返）：
@@ -18,9 +20,10 @@
     python doclab.py toc-import <source_id> --file 改后.json --apply  把 AI 改好的 JSON 导回（默认演练）
 
     python doclab.py pagecal <source_id>          页码校准
-    python doclab.py export <source_id> -d 2      按第 2 层切分导出
-    python doclab.py verify <source_id>           三道闸门校验
-    python doclab.py run <source_id> -d 2         一次跑完 outline→pagecal→export→verify
+    python doclab.py export <source_id> -d 2      按第 2 层切分导出 md，并装订 EPUB
+    python doclab.py epub <source_id> -d 2        用已有 md 单独重做 EPUB（不重跑导出）
+    python doclab.py verify <source_id>           四道闸门校验
+    python doclab.py run <source_id> -d 2         一次跑完 pagecal→outline→export(md+EPUB)→verify
     python doclab.py sources                      列出已登记的源
     python doclab.py status <source_id>           看某源的状态
     python doclab.py ui --port 8765               起本地界面
@@ -131,6 +134,8 @@ def cmd_sources(args) -> int:
         stages = {f: (p / f).exists() for f in
                   ("project.json", "outline.json", "page_calibration.json",
                    "export_index.json", "verify.json")}
+        od = out_dir(p.name)
+        stages["epub"] = bool(od.is_dir() and any(od.glob("L*/*.epub")))
         v = read_json(p / "verify.json", {}) or {}
         rows.append({
             "source_id": p.name,
@@ -152,10 +157,10 @@ def cmd_sources(args) -> int:
     for r in rows:
         stages = "".join("●" if r["stages"][k] else "○" for k in
                          ("project.json", "outline.json", "page_calibration.json",
-                          "export_index.json", "verify.json"))
+                          "export_index.json", "epub", "verify.json"))
         print(f"{r['source_id']:44s} {r['shards']:>3d} {r['pages']:>5d} "
               f"{r['verify']:>6s}  {stages}")
-    print("\n阶段顺序：工程 ●目录 ●页码 ●导出 ●校验")
+    print("\n阶段顺序：工程 ●目录 ●页码 ●导出 ●EPUB ●校验")
     return 0
 
 
@@ -315,10 +320,18 @@ def cmd_export(args) -> int:
     meta = export(sid, wd, od, blocks, calib, outline, args.depth,
                   copy_images=not args.no_images,
                   footnote_mode=fn_mode(wd, args.footnotes),
-                  shards_meta=[s.to_dict() for s in shards])
+                  shards_meta=[s.to_dict() for s in shards],
+                  epub=not args.no_epub)
     write_text(od / "conversion_meta.json", json.dumps(meta, ensure_ascii=False, indent=2))
     _log(f"[export] {meta['stats']['files']} 个文件 / {meta['stats']['chars']:,} 字 / "
          f"{meta['stats']['images_copied']} 张图")
+    ep = meta.get("epub")
+    if ep:
+        _log(f"[export] EPUB → {ep['name']}（{ep['chapters']} 章 / "
+             f"{ep['bytes'] / 1024:.0f} KB / {ep['images']} 图 / 目录 {ep['nav_entries']} 条）")
+        if ep.get("warnings"):
+            _log(f"[export] ⚠️ EPUB 提示 {len(ep['warnings'])} 条："
+                 f"{ep['warnings'][0]}" + (" …" if len(ep["warnings"]) > 1 else ""))
     if meta["stats"].get("stale_removed"):
         _log(f"[export] 清掉 {meta['stats']['stale_removed']} 个上一轮留下的文件"
              f"（这一轮已经不再切出它们了）：{', '.join(meta.get('stale_removed', [])[:6])}"
@@ -329,9 +342,122 @@ def cmd_export(args) -> int:
     if args.json:
         print(json.dumps({"source_id": sid, "depth": args.depth, "out_dir": str(od),
                           "stats": meta["stats"], "locator_type": meta["locator_type"],
-                          "page_offset": meta["page_offset"]},
+                          "page_offset": meta["page_offset"], "epub": meta.get("epub")},
                          ensure_ascii=False, indent=2))
     return 0
+
+
+def cmd_epub(args) -> int:
+    """把已导出的分节 md 装订成 EPUB（不重跑导出、不改 md）。
+
+    与 `export` 自动生成的那一份是同一个函数：这里只是允许「md 已经在、想单独
+    重做 EPUB」的场合（例如换书名、补作者、上一轮 EPUB 被删了）。
+    """
+    from core.epub_export import build_epub
+    from core.cover import resolve_cover
+    sid = resolve_source(args.source)
+    wd = work_dir(sid)
+    od = out_dir(sid) / f"L{args.depth}"
+    if not od.is_dir():
+        raise SystemExit(f"{od} 不存在 —— 先跑 export {sid} -d {args.depth}")
+    pj = read_json(wd / "project.json", {}) or {}
+    dc = ((pj.get("epub") or {}).get("epub_dc") or {})
+    cover, cover_warning = resolve_cover(wd)
+    _log(f"[epub] {sid} ← {od}（L{args.depth} 的 md）")
+    info = build_epub(od, dest=args.out, title=args.title or pj.get("doc_title"),
+                      author=args.author or dc.get("creator"),
+                      language=dc.get("language"), source_id=sid,
+                      record=True, cover=cover, cover_warning=cover_warning)
+    _log(f"[epub] {info['name']}：{info['chapters']} 章 / {info['images']} 图 / "
+         f"{info['bytes'] / 1024:.0f} KB / 目录 {info['nav_entries']} 条 → {info['path']}")
+    if info.get("cover"):
+        c = info["cover"]
+        _log(f"[epub] 封面：{c.get('kind')} · {c.get('width')}×{c.get('height')} · "
+             f"{c.get('bytes', 0) / 1024:.0f} KB")
+    for w in info.get("warnings", [])[:6]:
+        _log(f"[epub] ⚠️ {w}")
+    if args.json:
+        print(json.dumps(info, ensure_ascii=False, indent=2))
+    else:
+        v = info["verify"]
+        print(f"\n结构自检：{'✅ 通过' if v['ok'] else '❌ 未通过'} "
+              f"（{v['stats'].get('entries')} 个条目 / spine {v['stats'].get('spine')} 篇）")
+        for e in v["errors"][:8]:
+            print(f"  ❌ {e}")
+    return 0 if info["verify"]["ok"] else 2
+
+
+def cmd_ai_review(args) -> int:
+    """内置 AI 目录核校：默认只生成预览，--apply 才落盘。
+
+    与外部 AI/MCP 并存：外部 AI 继续用 review_read/review_apply；这里只是
+    另一个客户端，同样只能写人工核定层，不直接改 outline/page_calibration。
+    """
+    from core.ai_review import (AIError, apply_preview, latest_preview, preview,
+                                test_connection)
+    from core.config import load_ai_config
+    cfg = load_ai_config()
+    if args.test:
+        r = test_connection(cfg)
+        _log(f"[ai] {r['base_url']} / {r['model']}："
+             f"{'✅ 可用' if r['ok'] else '❌ 不可用'}"
+             f"（{r['usage'].get('total_tokens', 0)} tokens）")
+        if args.json:
+            print(json.dumps(r, ensure_ascii=False, indent=2))
+        return 0 if r["ok"] else 2
+    sid = resolve_source(args.source)
+    if args.apply:
+        p = latest_preview(sid)
+        if not p:
+            raise SystemExit("没有可应用的 AI 核校预览 —— 先跑 ai-review（不加 --apply）")
+        pid = args.preview_id or p.get("preview_id")
+        if not pid:
+            raise SystemExit("预览文件没有 preview_id，请重新生成")
+        _log(f"[ai] 应用预览 {pid}（备份在 _work/{sid}/AI核校备份/）")
+        r = apply_preview(sid, pid, cfg)
+        if r.get("message"):
+            _log(f"[ai] {r['message']}")
+        else:
+            pa = r.get("post_audit") or {}
+            _log(f"[ai] 目录改动 {r.get('applied_operations', 0)} 条，页码锚点 "
+                 f"{r.get('applied_anchors', 0)} 条；应用后 audit={pa.get('verdict', '?')}")
+        if r.get("warnings"):
+            for w in r["warnings"][:8]:
+                _log(f"[ai] ⚠️ {w}")
+        if args.json:
+            print(json.dumps(r, ensure_ascii=False, indent=2))
+        else:
+            for c in r.get("changes") or []:
+                print(f"  {c}")
+            if r.get("report"):
+                print(f"\n报告：{r['report']}")
+            if r.get("backup"):
+                print(f"备份：{r['backup']}")
+        return 0
+
+    _log(f"[ai] {sid}：收集目录/audit/正文取证证据（深度 L{args.depth}）…")
+    p = preview(sid, args.depth, cfg)
+    _log(f"[ai] {p['model']}：{p['usage'].get('total_tokens', 0)} tokens"
+         f"｜目录改动 {len(p.get('operations') or [])} 条｜页码建议 "
+         f"{len(p.get('page_fixes') or [])} 条｜未决 {len(p.get('unresolved') or [])} 条")
+    for e in p.get("errors") or []:
+        _log(f"[ai] ❌ {e}")
+    if args.json:
+        print(json.dumps(p, ensure_ascii=False, indent=2))
+    else:
+        print(f"\n模型：{p['model']}　用量：{p['usage']}")
+        print(f"预览：{p['preview_id']}（未应用；确认后加 --apply）")
+        if p.get("review_note"):
+            print(f"\n说明：{p['review_note']}\n")
+        for c in p.get("changes") or []:
+            print(f"  {c}")
+        for w in p.get("warnings") or []:
+            print(f"  ⚠️ {w}")
+        for u in p.get("unresolved") or []:
+            print(f"  ⏳ {u.get('target', '')}：{u.get('question', '')}")
+        if not (p.get("changes") or p.get("errors") or p.get("unresolved")):
+            print("  （没有建议改动）")
+    return 2 if p.get("errors") else 0
 
 
 def cmd_audit(args) -> int:
@@ -593,7 +719,7 @@ def cmd_run(args) -> int:
                     (cmd_outline, {"source": args.source, "json": False}),
                     (cmd_export, {"source": args.source, "depth": args.depth,
                                   "no_images": args.no_images, "footnotes": args.footnotes,
-                                  "json": False}),
+                                  "no_epub": args.no_epub, "json": False}),
                     (cmd_verify, {"source": args.source, "depth": args.depth, "json": False})):
         rc = fn(argparse.Namespace(**sub))
         if rc:
@@ -612,6 +738,11 @@ def cmd_status(args) -> int:
         out[key] = read_json(wd / f, None)
     out["outputs"] = sorted(str(p) for p in out_dir(sid).glob("L*") if p.is_dir()) \
         if out_dir(sid).is_dir() else []
+    out["exports"] = []
+    for o in out["outputs"]:
+        meta = read_json(Path(o) / "conversion_meta.json", {}) or {}
+        ep = meta.get("epub") or {}
+        out["exports"].append({"dir": o, "epub": ep or None})
     if args.json:
         print(json.dumps(out, ensure_ascii=False, indent=2))
     else:
@@ -635,8 +766,11 @@ def cmd_status(args) -> int:
                 f"{g['id']}={g['status']}" for g in vf["gates"]))
         if out["outputs"]:
             print("导出目录  :")
-            for o in out["outputs"]:
-                print(f"  {o}")
+            for row in out["exports"]:
+                ep = row.get("epub") or {}
+                extra = (f"｜EPUB {ep['name']}（{ep.get('chapters', '?')} 章）"
+                         if ep.get("name") else "｜无 EPUB")
+                print(f"  {row['dir']}{extra}")
     return 0
 
 
@@ -765,14 +899,34 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_pagecal)
 
-    s = sub.add_parser("export", help="按层级切分导出")
+    s = sub.add_parser("export", help="按层级切分导出（默认同时装订 EPUB）")
     s.add_argument("source", nargs="?")
     s.add_argument("-d", "--depth", type=int, required=True, help="切到第几层（0=整本一个文件）")
-    s.add_argument("--no-images", action="store_true", help="不搬运图片")
+    s.add_argument("--no-images", action="store_true", help="不搬运图片（EPUB 里会留占位说明）")
+    s.add_argument("--no-epub", action="store_true", help="只导出 md，不装订 EPUB")
     s.add_argument("--footnotes", choices=("page-end", "inline", "drop"), default=None,
                    help="脚注档位（不给则取源自己的默认：EPUB 随文，PDF 页末）")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_export)
+
+    s = sub.add_parser("epub", help="把已导出的分节 md 装订成 EPUB（不重跑导出）")
+    s.add_argument("source", nargs="?")
+    s.add_argument("-d", "--depth", type=int, default=2, help="用哪个深度的导出装订（默认 2）")
+    s.add_argument("--title", help="覆盖书名（默认取 project.json 的 doc_title）")
+    s.add_argument("--author", help="覆盖作者（默认取 EPUB 源 dc:creator）")
+    s.add_argument("--out", help="输出路径（默认写在导出目录里，文件名=书名.epub）")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_epub)
+
+    s = sub.add_parser("ai-review",
+                       help="内置 AI 目录核校（OpenAI 兼容；默认只预览，--apply 应用）")
+    s.add_argument("source", nargs="?", help="source_id（--test 时可省略）")
+    s.add_argument("-d", "--depth", type=int, default=3, help="核对深度（默认 3）")
+    s.add_argument("--apply", action="store_true", help="应用最近一次预览（默认只生成预览）")
+    s.add_argument("--preview-id", help="指定要应用的预览编号（默认最近一次）")
+    s.add_argument("--test", action="store_true", help="只测试 AI 接口连通性")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(func=cmd_ai_review)
 
     s = sub.add_parser("audit", help="目录校核（结构/编号/页码/印刷目录对照，只读不改）")
     s.add_argument("source", nargs="?")
@@ -812,16 +966,17 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_toc_import)
 
-    s = sub.add_parser("verify", help="三道闸门校验")
+    s = sub.add_parser("verify", help="四道闸门校验")
     s.add_argument("source", nargs="?")
     s.add_argument("-d", "--depth", type=int, default=2)
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_verify)
 
-    s = sub.add_parser("run", help="outline→pagecal→export→verify 一次跑完")
+    s = sub.add_parser("run", help="pagecal→outline→export(md+EPUB)→verify 一次跑完")
     s.add_argument("source", nargs="?")
     s.add_argument("-d", "--depth", type=int, default=2)
     s.add_argument("--no-images", action="store_true")
+    s.add_argument("--no-epub", action="store_true", help="只导出 md，不装订 EPUB")
     s.add_argument("--footnotes", choices=("page-end", "inline", "drop"), default=None,
                    help="脚注档位（不给则取源自己的默认：EPUB 随文，PDF 页末）")
     s.set_defaults(func=cmd_run)

@@ -1,10 +1,11 @@
-"""按层级切分导出：一节一个 md，段落级页锚，附转换元数据。
+"""按层级切分导出：一节一个 md，段落级页锚，附转换元数据，并装订整书 EPUB。
 
 输出严格对齐 JingyeLab APR-20260920-001：
   - 页锚唯一样式 `<!-- p=N -->`（N = 纸书页码），前置页 `<!-- p=front-N -->`；
   - 无法映射到纸书页码的页显式写 `<!-- p=pdf-N unmapped -->`，不冒充纸书页码；
-  - `conversion_meta.json` 必含 converter / converted_at / page_offset / locator_type / outputs；
-  - 只输出 md 与元数据，不碰 Zotero / evidence_table / library_index。
+  - `conversion_meta.json` 必含 converter / converted_at / page_offset / locator_type / outputs，
+    另带 `epub` 段（文件、章数、自检结果）；
+  - 只输出 md / EPUB 与元数据，不碰 Zotero / evidence_table / library_index。
 """
 from __future__ import annotations
 
@@ -19,7 +20,7 @@ from .project import NOISE_TYPES, Block, is_noise_text
 from .util import (now_iso, write_json, read_json, safe_filename, sha256_text,
                    write_text)
 
-DOCLAB_VERSION = "0.1.0"
+DOCLAB_VERSION = "0.3.0"
 FOOTNOTE_MODES = ("page-end", "inline", "drop")
 # doclab 自己切出来的正文文件名（`NNN_标题.md`）。重跑导出时靠它认领「上一轮的遗留文件」，
 # 见 export 里清理那一段。刻意不匹配 `00-目录.md`（分隔符是 `-`）与 `校验报告.md`。
@@ -41,6 +42,14 @@ def frontier(nodes: list[dict], depth: int) -> list[dict]:
         if n["level"] >= depth or not n.get("children"):
             out.append(n)
         else:
+            # Preserve the parent's introduction before its first child. Without
+            # this boundary, deep exports silently lose those source blocks.
+            first = n['children'][0]
+            start = (int(n['gid_start']), int(n.get('offset') or 0))
+            stop = (int(first['gid_start']), int(first.get('offset') or 0))
+            if start < stop:
+                own = dict(n, children=[], gid_end=stop[0] - (stop[1] == 0))
+                out.append(own)
             out.extend(frontier(n["children"], depth))
     return out
 
@@ -209,7 +218,8 @@ def _slice_block(b: Block, a: int, z: int | None) -> Block | None:
 def export(source_id: str, wd: Path, out_root: Path, blocks: list[Block],
            calib: Calibration, outline: dict, depth: int,
            copy_images: bool = True, footnote_mode: str = "page-end",
-           shards_meta: list[dict] | None = None) -> dict:
+           shards_meta: list[dict] | None = None, epub: bool = True,
+           epub_options: dict | None = None) -> dict:
     if footnote_mode not in FOOTNOTE_MODES:
         raise ValueError(f"footnote_mode 必须是 {FOOTNOTE_MODES}")
 
@@ -376,6 +386,44 @@ def export(source_id: str, wd: Path, out_root: Path, blocks: list[Block],
     for name in stale:
         (out_root / name).unlink()
 
+    # --no-epub：上一轮的 EPUB 是上一轮 md 的派生物，留着会被界面/归档当成当前产物。
+    removed_epubs: list[str] = []
+    if not epub:
+        removed_epubs = sorted(p.name for p in out_root.glob("*.epub"))
+        for name in removed_epubs:
+            (out_root / name).unlink(missing_ok=True)
+
+    # EPUB 装订：md 是主产物，EPUB 是同一份产物的另一种装帧。它读的就是刚写出的
+    # 分节 md（不重读块、不重跑算法），所以 md 里是什么，EPUB 里就是什么。
+    # 失败时让导出如实失败 —— 不能留下「md 有了、EPUB 悄悄没有」的半成品。
+    converted_at = now_iso()
+    epub_meta = None
+    if epub:
+        from .epub_export import build_epub
+        opts = dict(epub_options or {})
+        cover_warning = ""
+        if "cover" not in opts:
+            from .cover import resolve_cover
+            opts["cover"], cover_warning = resolve_cover(wd)
+        opts.setdefault("cover_warning", cover_warning)
+        if not opts.get("title"):
+            opts["title"] = outline.get("doc_title") or source_id
+        if not opts.get("source_id"):
+            opts["source_id"] = source_id
+        if not opts.get("author") or not opts.get("language"):
+            # EPUB 源自带 dc:creator / dc:language；PDF 源一般没有，就留空 / zh。
+            pj = read_json(wd / "project.json", {}) or {}
+            dc = ((pj.get("epub") or {}).get("epub_dc") or {})
+            if not opts.get("author"):
+                opts["author"] = dc.get("creator") or ""
+            if not opts.get("language"):
+                opts["language"] = dc.get("language") or ""
+        opts.setdefault("modified", converted_at)
+        try:
+            epub_meta = build_epub(out_root, chapters=outputs, **opts)
+        except Exception as e:                                  # noqa: BLE001
+            raise RuntimeError(f"EPUB 装订失败：{e}") from e
+
     # 元数据：字段名对齐 APR-20260920-001 §2.3
     offsets = {}
     for s in calib.segments:
@@ -385,7 +433,7 @@ def export(source_id: str, wd: Path, out_root: Path, blocks: list[Block],
                                                 "confidence": s.confidence})
     meta = {
         "converter": f"doclab/{DOCLAB_VERSION} (MinerU v4 API adapter)",
-        "converted_at": now_iso(),
+        "converted_at": converted_at,
         "source_id": source_id,
         "source_file": outline.get("doc_title") or source_id,
         "decode_depth": depth,
@@ -395,12 +443,16 @@ def export(source_id: str, wd: Path, out_root: Path, blocks: list[Block],
         "calibration_note": calib.reason,
         "footnote_mode": footnote_mode,
         "outputs": outputs,
+        "epub": epub_meta,
         "stats": {
             "files": len(outputs),
             "chars": total_chars,
             "images_copied": len(copied),
             "unmapped_pages": sum(o["unmapped_pages"] for o in outputs),
             "stale_removed": len(stale),
+            "epub_bytes": epub_meta["bytes"] if epub_meta else 0,
+            "epub_chapters": epub_meta["chapters"] if epub_meta else 0,
+            "epub_removed": len(removed_epubs),
         },
         "stale_removed": stale[:40],
         "gate_note": ("书级文献入库前须满足：md 有页锚或 locator_type=section_only；"
