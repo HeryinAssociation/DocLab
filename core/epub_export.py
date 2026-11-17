@@ -104,17 +104,32 @@ body.cover { margin: 0; padding: 0; }
 
 # ---------------------------------------------------------------- 文本层
 
+# XML 1.0 不允许的 C0 控制符（\t\n\r 除外）与 DEL/C1。
+# 扫描 OCR 文本里偶尔会带 \x0b / \x0c / \x00，ElementTree 会直接报
+# “not well-formed (invalid token)”，但错误信息只给行列，不告诉你是哪个字符。
+_XML_INVALID_RE = re.compile(
+    "[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f\ud800-\udfff\ufffe\uffff]"
+)
+
+
+def _xml_safe(value) -> str:
+    """去掉 XML 1.0 非法字符；可读空白控制符换成空格，其余直接删除。"""
+    s = str(value or "")
+    s = s.replace("\x0b", " ").replace("\x0c", " ")
+    return _XML_INVALID_RE.sub("", s)
+
+
 def _local(tag: str) -> str:
     return tag.rsplit("}", 1)[-1] if tag else ""
 
 
 def _text(value) -> str:
     """XML 文本转义。先 unescape 一次：md 里可能残留 `&lt;` 这类实体。"""
-    return html.escape(html.unescape(str(value or "")), quote=False)
+    return html.escape(_xml_safe(html.unescape(str(value or ""))), quote=False)
 
 
 def _attr(value) -> str:
-    return html.escape(html.unescape(str(value or "")), quote=True)
+    return html.escape(_xml_safe(html.unescape(str(value or ""))), quote=True)
 
 
 _CODE_RE = re.compile(r"`([^`]+)`")
@@ -130,7 +145,8 @@ def _inline(text: str) -> str:
 
     def stash(m):
         tags.append(m.group(0))
-        return "\x00%d\x00" % (len(tags) - 1)
+        # 不能用 \x00：_text 会清掉 XML 非法控制符，占位符必须用合法字符。
+        return "\ue000%d\ue001" % (len(tags) - 1)
 
     s = _RAW_INLINE.sub(stash, text or "")
     s = _text(s)
@@ -151,7 +167,7 @@ def _inline(text: str) -> str:
             rep = "<sub>"
         else:
             rep = ""
-        s = s.replace("\x00%d\x00" % i, rep)
+        s = s.replace("\ue000%d\ue001" % i, rep)
     return s
 
 
@@ -675,7 +691,7 @@ def _nav_count(nodes: list[dict]) -> int:
 
 
 def _nav_xhtml(roots: list[dict], lang: str) -> str:
-    return ('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
             '<html xmlns="%s" xmlns:epub="%s" lang="%s" xml:lang="%s">\n'
             '<head><meta charset="utf-8"/><title>目录</title>'
             '<link rel="stylesheet" type="text/css" href="style.css"/></head>\n'
@@ -703,7 +719,7 @@ def _ncx(title: str, roots: list[dict], identifier: str, lang: str) -> str:
         return "".join(out), max_depth
 
     body, depth = points(roots, 1)
-    return ('<?xml version="1.0" encoding="utf-8"?>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n'
             '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" '
             'xml:lang="%s">\n'
             '<head><meta name="dtb:uid" content="%s"/><meta name="dtb:depth" content="%d"/>'
@@ -715,7 +731,7 @@ def _ncx(title: str, roots: list[dict], identifier: str, lang: str) -> str:
 
 def _titlepage_xhtml(title: str, author: str, subtitle: str, lang: str) -> str:
     author_p = ('<p class="author">%s</p>' % _text(author)) if author else ""
-    return ('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
             '<html xmlns="%s" xmlns:epub="%s" lang="%s" xml:lang="%s">\n'
             '<head><meta charset="utf-8"/><title>%s</title>'
             '<link rel="stylesheet" type="text/css" href="../style.css"/></head>\n'
@@ -729,7 +745,7 @@ def _titlepage_xhtml(title: str, author: str, subtitle: str, lang: str) -> str:
 
 def _cover_xhtml(href: str, lang: str) -> str:
     """封面页：只放一张图，不加标题/说明，避免阅读器封面页出现多余文字。"""
-    return ('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
             '<html xmlns="%s" xmlns:epub="%s" lang="%s" xml:lang="%s">\n'
             '<head><meta charset="utf-8"/><title>封面</title>'
             '<link rel="stylesheet" type="text/css" href="../style.css"/></head>\n'
@@ -739,7 +755,7 @@ def _cover_xhtml(href: str, lang: str) -> str:
 
 
 def _chapter_xhtml(ch: dict, body: str, lang: str) -> str:
-    return ('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n'
             '<html xmlns="%s" xmlns:epub="%s" lang="%s" xml:lang="%s">\n'
             '<head><meta charset="utf-8"/><title>%s</title>'
             '<link rel="stylesheet" type="text/css" href="../style.css"/></head>\n'
@@ -780,7 +796,7 @@ def _package_opf(title: str, author: str, lang: str, identifier: str,
             _href_url(cover_href))
     guide += '<reference type="text" title="正文" href="%s"/></guide>' % _attr(
         _href_url(text_href))
-    return ('<?xml version="1.0" encoding="utf-8"?>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n'
             '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" '
             'unique-identifier="bookid" xml:lang="%s">\n'
             '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n%s\n</metadata>\n'
@@ -792,7 +808,7 @@ def _package_opf(title: str, author: str, lang: str, identifier: str,
 
 
 def _container_xml(opf_path: str) -> str:
-    return ('<?xml version="1.0" encoding="utf-8"?>\n'
+    return _xml_safe('<?xml version="1.0" encoding="utf-8"?>\n'
             '<container version="1.0" '
             'xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n'
             '<rootfiles><rootfile full-path="%s" '
@@ -1317,13 +1333,30 @@ def _parse_opf(z: zipfile.ZipFile, opf_path: str, names: list[str],
     return items, spine_ids
 
 
+def _xml_error_snippet(z: zipfile.ZipFile, rel: str, exc: ET.ParseError) -> str:
+    try:
+        data = z.read(rel).decode("utf-8", "replace")
+    except Exception:                                      # noqa: BLE001
+        return ""
+    try:
+        line, col = exc.position
+    except Exception:                                      # noqa: BLE001
+        return ""
+    lines = data.splitlines()
+    if not (1 <= line <= len(lines)):
+        return ""
+    s = lines[line - 1]
+    start, end = max(0, col - 45), min(len(s), col + 45)
+    return "；附近：" + _xml_safe(s[start:end])
+
+
 def _parse_xhtml(z: zipfile.ZipFile, rel: str, errors: list[str]):
     try:
         return ET.fromstring(z.read(rel))
     except KeyError:
         return None
     except ET.ParseError as e:
-        errors.append("%s 不是合法 XHTML：%s" % (rel, e))
+        errors.append("%s 不是合法 XHTML：%s%s" % (rel, e, _xml_error_snippet(z, rel, e)))
         return None
     except (zipfile.BadZipFile, OSError) as e:
         errors.append("读取 %s 失败：%s" % (rel, e))

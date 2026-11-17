@@ -1,6 +1,6 @@
 # 本仓库接口约定
 
-适用于 Doclab 0.3.0；运行前核实工具实际参数。CLI 在 Doclab 根目录执行，MCP 通过 node mcp_server.cjs 调用同一 CLI，DOCLAB_PYTHON 必须指向真实解释器。
+适用于 Doclab 0.3.1；运行前核实工具实际参数。CLI 在 Doclab 根目录执行，MCP 通过 node mcp_server.cjs 调用同一 CLI，DOCLAB_PYTHON 必须指向真实解释器。
 
 ## 常用映射
 

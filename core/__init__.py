@@ -10,4 +10,4 @@ OpenAI 兼容 AI 先预览后应用，供多 Agent workflow 作为「文献处�
   - 一切结论落盘（state.json / 各产物 json），会话不是唯一真相。
 """
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"

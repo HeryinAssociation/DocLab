@@ -277,7 +277,7 @@ async function handle(req) {
       return reply({
         protocolVersion: '2024-11-05',
         capabilities: { tools: {} },
-        serverInfo: { name: 'doclab', version: '0.3.0' },
+        serverInfo: { name: 'doclab', version: '0.3.1' },
       });
     }
     if (method === 'notifications/initialized' || method === 'initialized') return;

@@ -167,6 +167,22 @@ class EpubExportTest(unittest.TestCase):
         with zipfile.ZipFile(self.epub) as z:
             self.assertNotIn("OEBPS/text/cover.xhtml", z.namelist())
 
+    def test_control_chars_are_removed(self):
+        # 另一台机器上的 Human-Centered-AI 就是这类：OCR 文本里混入 \x0b/\x0c/\x00，
+        # ElementTree 报 invalid token，但行列信息无法直接定位字符。
+        p = self.out / "001_第一章_起点.md"
+        p.write_text(MD1 + "\n\n坏字符：\x0b\x0c\x00\x01 与实体 &#x0B; 与裸 & < >\n",
+                     encoding="utf-8")
+        info = self.build()
+        self.assertTrue(info["verify"]["ok"], info["verify"]["errors"])
+        with zipfile.ZipFile(self.epub) as z:
+            ch = z.read("OEBPS/text/ch001.xhtml").decode("utf-8")
+        for bad in ("\x00", "\x01", "\x0b", "\x0c"):
+            self.assertNotIn(bad, ch)
+        self.assertIn("坏字符", ch)
+        self.assertIn("&amp;", ch)
+        self.assertIn("&lt;", ch)
+
     def test_package_structure_and_metadata(self):
         info = self.build()
         self.assertTrue(self.epub.is_file())

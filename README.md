@@ -2,7 +2,7 @@
 
 PDF / EPUB 文献处理工作台：把电子书转换为正文块，建立章节索引，核校目录层级和页码，再按深度输出 Markdown、整书目录与转换元数据，并把同一份分节 Markdown 装订成带封面的 EPUB，供 AI 按章节读取，也便于作为附件归入 Zotero 专著条目。
 
-本文依据本仓库实际代码编写。Doclab 核心版本为 `0.3.0`；图形工作台、命令行与 stdio MCP 共用同一套处理逻辑。旧 CLI 导出写入本地文件；入库工作流可通过本机 Zotero 插件归档。
+本文依据本仓库实际代码编写。Doclab 核心版本为 `0.3.1`；图形工作台、命令行与 stdio MCP 共用同一套处理逻辑。旧 CLI 导出写入本地文件；入库工作流可通过本机 Zotero 插件归档。
 
 2026-10-17 已接入 DSH 书籍工作区 `Doclab-Inbox`、6 个入库 MCP 工具和 Zotero 归档插件 0.1.2。《档案馆的现在与未来》已归入“书籍专著”，68 个附件本机回读通过；跨设备同步尚未验证。当前接入状态、测试范围和剩余工作见 [接入记录](docs/intake-implementation.md)，原打通方案见 [实施方案](docs/dsh-doclab-zotero-integration-plan.md)。
 
@@ -109,6 +109,7 @@ OCR 未完成可用 `python doclab.py resume --source SOURCE_ID` 补未就绪分
 需要明确的限制：
 
 - 这是**结构核验**，不是阅读器视觉验收；排版效果仍需人打开看。
+- XML 1.0 非法控制符（OCR 常见的 `\x0b`/`\x0c`/`\x00` 等）会在转义前清理；如果仍出现 XHTML 解析错误，`verify_epub` 会带出出错行列附近的一小段原文，便于定位具体字符。
 - 支持 MinerU 直接写进 `table_body` 的原始 HTML `<table>`（含 colspan/rowspan）与行内 `<sup>`、`<sub>`、`<br>`；其他未列出的原始 HTML 标签仍按文本保留，不执行脚本、不加载外部资源。
 - EPUB 是 md 的派生产物。正文要改，应改源工程或人工核定层后重新 `export`，不要直接编辑 EPUB，也不要通过改 EPUB 去“修复”目录。
 - 页锚是定位信息，不是原书排版；EPUB 阅读器自己的页码/进度与纸书页码无关。
@@ -263,6 +264,6 @@ DocLab/
 
 上述为 2026-10-15 的初始核实记录。2026-10-17 已处理真实 PDF 并完成 Zotero 归档；恢复 246 条列表参考文献、修正 7 个类目层级、消除前置页定位符冲突。另有 12 项入库测试、8 项插件契约检查和通知测试通过。`test_pagemap.py` 仍依赖另一份旧本机样书，未纳入本轮通过项。
 
-2026-11-17：新增 Markdown → EPUB 装订与结构自检（`core/epub_export.py`），接入 CLI、工作台、MCP 和入库 finalize/归档。新测试 `tests/test_epub_export.py` 16 项、`tests/test_intake.py` 17 项、`tests/test_mcp_json.cjs` 6 组通过；对真实导出目录 `_regtest/_exp_regress`（21 节、506 个页锚）完成装订冒烟，结构自检通过。同日新增封面：PDF 第一页渲染或原 EPUB 封面提取，写入 `text/cover.xhtml` 与 `properties="cover-image"`；`tests/test_cover.py` 5 项、带封面的 `_regtest` 冒烟通过（1021×1433 JPEG，整包 522 KB，结构自检通过）。顺带修复 MCP 包装器的 JSON 提取：CLI 日志行以 `[export]`、`[epub]` 开头时，旧实现会误把日志当 JSON 起点而报「未返回 JSON」。同日为已完成入库的《空间叙事学》《被计算的历史》补挂整书 EPUB；后者 8 处原始 HTML 表格与 3 处 `<sup>` 已由修订后的转换器渲染，替换同一附件 PN2NV89R 的文件并重新校验（附件 key 不变），结构自检通过，独立读取 Zotero storage 的哈希与源文件一致。未重建条目、未删除或改动其他既有附件。未做阅读器视觉验收，跨设备同步仍未验证。
+2026-11-17：新增 Markdown → EPUB 装订与结构自检（`core/epub_export.py`），接入 CLI、工作台、MCP 和入库 finalize/归档。新测试 `tests/test_epub_export.py` 17 项、`tests/test_intake.py` 17 项、`tests/test_mcp_json.cjs` 6 组通过；对真实导出目录 `_regtest/_exp_regress`（21 节、506 个页锚）完成装订冒烟，结构自检通过。同日新增封面：PDF 第一页渲染或原 EPUB 封面提取，写入 `text/cover.xhtml` 与 `properties="cover-image"`；`tests/test_cover.py` 5 项、带封面的 `_regtest` 冒烟通过（1021×1433 JPEG，整包 522 KB，结构自检通过）。另修复 OCR 文本混入 XML 非法控制符时 EPUB 结构自检报 `invalid token` 的问题：转义前清理 C0/C1 控制符，并让校验错误带出错行列附近的原文片段。顺带修复 MCP 包装器的 JSON 提取：CLI 日志行以 `[export]`、`[epub]` 开头时，旧实现会误把日志当 JSON 起点而报「未返回 JSON」。同日为已完成入库的《空间叙事学》《被计算的历史》补挂整书 EPUB；后者 8 处原始 HTML 表格与 3 处 `<sup>` 已由修订后的转换器渲染，替换同一附件 PN2NV89R 的文件并重新校验（附件 key 不变），结构自检通过，独立读取 Zotero storage 的哈希与源文件一致。未重建条目、未删除或改动其他既有附件。未做阅读器视觉验收，跨设备同步仍未验证。
 
 2026-11-17 内置 AI 目录核校：新增 OpenAI 兼容客户端、证据包、严格校验、预览/应用与备份；工作台可填 token 后点“AI 一键核校”，外部 MCP 通道保持原样。离线测试 `tests/test_ai_review.py` 18 项通过。真实实验使用 DeepSeek 兼容端点（实际返回模型 `deepseek-flash`），对 2 本书做了 3 次内容预览、2 次连接自检，共 5 次请求、约 2.4 万 tokens；只生成预览，未应用任何真实改动。模型对一本 76 节点书正确判断出证据包内 39 条编号“重复”为误报，未强行改目录；页码仅在字符/序列有据时提出，否则列入未决。

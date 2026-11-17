@@ -20,7 +20,7 @@ from .project import NOISE_TYPES, Block, is_noise_text
 from .util import (now_iso, write_json, read_json, safe_filename, sha256_text,
                    write_text)
 
-DOCLAB_VERSION = "0.3.0"
+DOCLAB_VERSION = "0.3.1"
 FOOTNOTE_MODES = ("page-end", "inline", "drop")
 # doclab 自己切出来的正文文件名（`NNN_标题.md`）。重跑导出时靠它认领「上一轮的遗留文件」，
 # 见 export 里清理那一段。刻意不匹配 `00-目录.md`（分隔符是 `-`）与 `校验报告.md`。
